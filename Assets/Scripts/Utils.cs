@@ -40,6 +40,12 @@ public static class Utils
 
 public static class ExtensionFunctions
 {
+    public static IEnumerator DoNextFrame(this MonoBehaviour obj, Action action)
+    {
+        yield return null;
+        action.Invoke();
+    }
+
     public static T GetRandom<T>(this IList<T> list)
     {
         if (list.Count == 0)

@@ -10,12 +10,13 @@ public class PlayerPanel : MonoBehaviour
     public void UpdatePanel()
     {
         PlayerStats stats = Player.Instance.Stats;
+        string weaponName = stats.Inventory.EquippedWeapon == null ? "Fists" : stats.Inventory.EquippedWeapon.Name;
         string data = string.Format(
 @"Level: {0}
 HP: {1}
 Energy: {2}
 Weapon: {3}
-", stats.Level, stats.HP, stats.Energy, stats.Inventory.EquippedWeapon.Name);
+", stats.Level, stats.HP, stats.Energy, weaponName);
         this.TextBox.text = data;
     }
 

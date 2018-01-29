@@ -9,14 +9,12 @@ public class UIManager : SingletonObject<UIManager>
 
     public EntityPanel EntityPanel;
 
+    public InventoryPanel InventoryPanel;
+
     void Awake()
     {
         Instance = this;
-    }
 
-    // Use this for initialization
-    void Start ()
-    {
         if (this.PlayerPanel == null)
         {
             this.PlayerPanel = GameObject.FindObjectOfType<PlayerPanel>();
@@ -24,14 +22,40 @@ public class UIManager : SingletonObject<UIManager>
 
         if (this.EntityPanel == null)
         {
-            this.EntityPanel = GameObject.FindObjectOfType<EntityPanel>(); 
-        }          
-	}
+            this.EntityPanel = GameObject.FindObjectOfType<EntityPanel>();
+        }
+
+        if (this.InventoryPanel == null)
+        {
+            this.InventoryPanel = GameObject.FindObjectOfType<InventoryPanel>();
+            this.InventoryPanel.gameObject.SetActive(false);
+        }
+    }
+
+    // Use this for initialization
+    void Start ()
+    {
+    }
 	
 	// Update is called once per frame
 	void Update ()
     {
         this.UpdateUI();
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            // Toggle inventory pane
+            this.InventoryPanel.gameObject.SetActive(!this.InventoryPanel.gameObject.activeSelf);
+            if (this.InventoryPanel.gameObject.activeSelf)
+            {
+                // Note: activeSelf doesn't activate until next frame, so this happens when the UI
+                //  is actually shown.
+                StartCoroutine(this.DoNextFrame(() =>
+                {
+                    this.UpdateInventory();
+                }));
+            }
+        }
     }
 
     public void UpdateUI()
@@ -57,5 +81,13 @@ public class UIManager : SingletonObject<UIManager>
     public void ToggleEntityPanel(bool show)
     {
         this.EntityPanel.gameObject.SetActive(show);
+    }
+
+    public void UpdateInventory()
+    {
+        if (this.InventoryPanel.gameObject.activeSelf)
+        {
+            this.InventoryPanel.UpdateInventory();
+        }
     }
 }

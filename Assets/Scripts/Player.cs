@@ -16,6 +16,10 @@ public class Player : TileEntity
     {
         Instance = this;        
     }
+
+    void Start()
+    {
+    }    
 	
 	// Update is called once per frame
 	void Update ()
@@ -75,7 +79,83 @@ public class Player : TileEntity
 
     private void AttackEnemy(Enemy enemy)
     {
-        enemy.TakeDamage(3);    
+        int damage = this.Stats.BaseStrength;
+        if (this.Stats.Inventory.EquippedWeapon != null)
+        {
+            damage += this.Stats.Inventory.EquippedWeapon.Data.Power;
+        }
+
+        enemy.TakeDamage(damage);
+    }
+
+    public bool Unequip(InventoryItem item)
+    {
+        PlayerInventory inv = this.Stats.Inventory;
+        if (this.TryMoveToInventory(item))
+        {
+            if (item is Weapon)
+            {
+                inv.EquippedWeapon = null;
+            }
+            else if (item is Armor)
+            {
+                inv.EquippedArmor = null;
+            }
+            else if (item is Accessory)
+            {
+                inv.EquippedAccessory = null;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void Equip(InventoryItem item)
+    {
+        PlayerInventory inv = this.Stats.Inventory;
+        InventoryItem temp = null;
+        if (item is Weapon)
+        {
+            temp = inv.EquippedWeapon;
+            inv.EquippedWeapon = item as Weapon;
+        }
+        else if (item is Armor)
+        {
+            temp = inv.EquippedArmor;
+            inv.EquippedArmor = item as Armor;
+        }
+        else if (item is Accessory)
+        {
+            temp = inv.EquippedAccessory;
+            inv.EquippedAccessory = item as Accessory;
+        }
+
+        if (inv.InventoryItems.Contains(item))
+        {
+            inv.InventoryItems.Remove(item);
+        }
+
+        this.TryMoveToInventory(temp);
+        UIManager.Instance.UpdateInventory();                
+    }
+
+    public bool TryMoveToInventory(InventoryItem item)
+    {
+        if (item == null)
+        {
+            return false;
+        }
+
+        PlayerInventory inv = Player.Instance.Stats.Inventory;
+        if (inv.InventoryItems.Count < inv.MaxItems)
+        {
+            inv.InventoryItems.Add(item);
+            return true;
+        }
+
+        return false;
     }
 }
 
@@ -95,5 +175,11 @@ public class PlayerInventory
 {
     public Weapon EquippedWeapon;
 
-    public InventoryItem[] InventoryItems;
+    public Armor EquippedArmor;
+
+    public Accessory EquippedAccessory;
+
+    public List<InventoryItem> InventoryItems = new List<InventoryItem>();
+
+    public int MaxItems = 3;
 }
