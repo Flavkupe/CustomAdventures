@@ -23,6 +23,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     public Room[] PossibleRoomTemplates;
 
     private List<Enemy> enemies = new List<Enemy>();
+    private List<Treasure> treasures = new List<Treasure>();
 
     private Queue<Action> postAnimationActionQueue = new Queue<Action>();
 
@@ -184,23 +185,20 @@ public class DungeonManager : SingletonObject<DungeonManager>
         List<Tile> tiles = roomArea.GetAreaTiles();
 
         // TODO: empty deck?
-        List<DungeonCard> cards = new List<DungeonCard>();
+        List<IDungeonCard> cards = new List<IDungeonCard>();
         cards = DeckManager.Instance.DrawDungeonCards(2);
-        TileGrid grid = DungeonManager.Instance.Grid;
-        foreach (DungeonCard card in cards)
+        TileGrid grid = Grid;
+        foreach (IDungeonCard card in cards)
         {
-            if (card.DungeonCardType == DungeonCardType.Enemy)
+            if (card.DungeonEventType == DungeonEventType.SpawnNear)
             {
                 Tile tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();
                 if (tile != null)
-                {
-                    EnemyCard enemyCard = card.GetComponent<EnemyCard>();
+                {                    
                     postAnimationActionQueue.Enqueue(() =>
                     {
-                        Enemy enemy = enemyCard.InstantiateEnemy();
-                        Destroy(card.CardMesh.gameObject);
-                        Destroy(card.gameObject);                        
-                        DungeonManager.Instance.SpawnEnemy(enemy, tile);
+                        card.ExecuteTileSpawnEvent(tile);
+                        card.DestroyCard();
                     });
                 }
             }
@@ -213,6 +211,12 @@ public class DungeonManager : SingletonObject<DungeonManager>
     {        
         this.Grid.PutObject(tile, enemy, true);
         this.enemies.Add(enemy);
+    }
+
+    public void SpawnTreasure(Treasure treasure, Tile tile)
+    {
+        this.Grid.PutObject(tile, treasure, true);
+        this.treasures.Add(treasure);
     }
 
     void Awake()

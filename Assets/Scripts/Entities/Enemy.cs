@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[RequireComponent(typeof(SpriteRenderer))]
 public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 {
     public EnemyCardData Data { get; set; }
+
+    private int HP;
 
     public virtual void MoveAfterPlayer()
     {
@@ -36,7 +38,9 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     // Use this for initialization
     void Start ()
-    {		
+    {
+        this.HP = this.Data.MaxHP;
+        this.GetComponent<SpriteRenderer>().sprite = this.Data.Sprite;
 	}
 	
 	// Update is called once per frame
@@ -46,9 +50,9 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     public void TakeDamage(int damage)
     {
-        this.Data.HP -= damage;
+        this.HP -= damage;
         this.ShowFloatyText(damage.ToString());
-        if (this.Data.HP <= 0)
+        if (this.HP <= 0)
         {
             this.Die();
         }

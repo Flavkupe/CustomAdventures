@@ -6,11 +6,14 @@ using System.Linq;
 
 public class DeckManager : SingletonObject<DeckManager>
 {
-    private DungeonCard[] allDungeonCards;
+    private DungeonCardData[] allDungeonCardData;
 
     public CardMeshes CardMeshes;
 
-    public Deck<DungeonCard> DungeonDeck = new Deck<DungeonCard>();
+    public EnemyCard EnemyCardTemplate;
+    public TreasureCard TreasureCardTemplate;
+
+    public Deck<IDungeonCard> DungeonDeck = new Deck<IDungeonCard>();
     public GameObject DungeonDeckHolder;
 
     public event EventHandler OnDrawAnimationDone;
@@ -19,42 +22,60 @@ public class DeckManager : SingletonObject<DeckManager>
     {
         float yOffset = 0.0f;
         float zOffset = -0.001f;
-        this.allDungeonCards = Resources.LoadAll<DungeonCard>("Cards/DungeonCards");
+        this.allDungeonCardData = Resources.LoadAll<DungeonCardData>("Cards/DungeonCards");
         for (int i = 0; i < 10; i++)
         {
-            DungeonCard card = Instantiate(this.allDungeonCards.GetRandom());
-            this.DungeonDeck.PushCard(card);
-            card.InitCard();
-            card.CardMesh.transform.position = this.DungeonDeckHolder.transform.position;
-            card.CardMesh.transform.parent = this.DungeonDeckHolder.transform;
-            card.CardMesh.SetFaceDown();
-            card.CardMesh.transform.position = card.CardMesh.transform.position.IncrementBy(0, yOffset, zOffset);
-            yOffset -= 0.05f;
-            zOffset -= 0.001f;
+            DungeonCardData data = this.allDungeonCardData.GetRandom();
+            IDungeonCard card = null;
+            switch (data.DungeonCardType)
+            {
+                case DungeonCardType.Treasure:
+                    card = Instantiate(TreasureCardTemplate);
+                    break;
+                case DungeonCardType.Enemy:
+                case DungeonCardType.Trap:                
+                default:
+                    card = Instantiate(EnemyCardTemplate);
+                    break;
+            }
+
+            if (card != null)
+            {
+                card.SetData(data);
+
+                this.DungeonDeck.PushCard(card);
+                card.InitCard();
+                card.CardMesh.transform.position = this.DungeonDeckHolder.transform.position;
+                card.CardMesh.transform.parent = this.DungeonDeckHolder.transform;
+                card.CardMesh.SetFaceDown();
+                card.CardMesh.transform.position = card.CardMesh.transform.position.IncrementBy(0, yOffset, zOffset);
+                yOffset -= 0.05f;
+                zOffset -= 0.001f;
+            }
         }
     }
 
-    public List<DungeonCard> DrawDungeonCards(int numDrawn)
+    public List<IDungeonCard> DrawDungeonCards(int numDrawn)
     {
-        List<DungeonCard> cards = new List<DungeonCard>();
+        List<IDungeonCard> cards = new List<IDungeonCard>();
         for (int i = 0; i < numDrawn; i++)
         {
-            DungeonCard card = DungeonDeck.DrawCard();
+            IDungeonCard card = DungeonDeck.DrawCard();
             cards.Add(card);
         }
 
         // Pause for animations
         GameManager.Instance.IsPaused = true;
 
-        StartCoroutine(AnimateCardDraws(cards.Cast<Card>().ToList()));
+        StartCoroutine(AnimateCardDraws(cards.Cast<ICard>().ToList()));
         return cards;
     }
 
-    public IEnumerator AnimateCardDraws(List<Card> cards)
+    public IEnumerator AnimateCardDraws(List<ICard> cards)
     {
         int targetX = 0;
 
-        foreach (Card card in cards)
+        foreach (ICard card in cards)
         {
             CardMesh cardMesh = card.CardMesh;                        
             targetX += 3;

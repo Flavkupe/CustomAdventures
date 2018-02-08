@@ -27,6 +27,6 @@ public class EntityPanel : MonoBehaviour
 Level: {1}
 HP: {2}
 EXP: {3}
-", data.Name, data.Level, data.HP, data.EXP);
+", data.Name, data.Level, data.MaxHP, data.EXP);
     }
 }
