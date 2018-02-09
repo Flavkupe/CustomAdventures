@@ -40,6 +40,8 @@ public enum DungeonCardType
 public enum DungeonEventType
 {
     SpawnNear,
+    SpawnOnCorner,
+    SpawnOnWideOpen,
 }
 
 public abstract class DungeonCardData : CardData

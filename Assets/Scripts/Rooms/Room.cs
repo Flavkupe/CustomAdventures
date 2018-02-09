@@ -39,8 +39,7 @@ public class Room : MonoBehaviour, IHasCoords
         else
         {
             return tiles;
-        }
-        
+        }        
     }
 
     public bool HasConnectorToDirection(Direction direction)

@@ -46,6 +46,42 @@ public class RoomArea : MonoBehaviour
         return areaTiles;
     }
 
+    /// <summary>
+    /// Gets tiles which are corners (2 free neighbors, 2 filled ones)
+    /// </summary>
+    /// <returns></returns>
+    public List<Tile> GetCornerTiles()
+    {
+        List<Tile> corners = new List<Tile>();
+        List<Tile> tiles = this.GetAreaTiles();
+        TileGrid grid = DungeonManager.Instance.Grid;
+        foreach (Tile tile in tiles)
+        {
+            if (grid.IsCorner(tile.XCoord, tile.YCoord))
+            {
+                corners.Add(tile);
+            }
+        }
+
+        return corners;
+    }
+
+    public List<Tile> GetWideOpenTiles()
+    {
+        List<Tile> freeTiles = new List<Tile>();
+        TileGrid grid = DungeonManager.Instance.Grid;
+        List<Tile> tiles = this.GetAreaTiles().Where(a => grid.CanOccupy(a)).ToList();        
+        foreach (Tile tile in tiles)
+        {
+            if (grid.GetAll8Neighbors(tile.XCoord, tile.YCoord).All(a => grid.CanOccupy(a)))
+            {
+                freeTiles.Add(tile);
+            }
+        }
+
+        return freeTiles;
+    }
+
     // Update is called once per frame
     void Update ()
     {		

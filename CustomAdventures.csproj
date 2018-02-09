@@ -320,6 +320,7 @@
     <Compile Include="Assets\Scripts\Misc\FloatyText.cs" />
     <Compile Include="Assets\Scripts\MonoBehaviourEx.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
+    <Compile Include="Assets\Scripts\Rooms\MapGen\DungeonGenerator.cs" />
     <Compile Include="Assets\Scripts\Rooms\Room.cs" />
     <Compile Include="Assets\Scripts\Rooms\RoomArea.cs" />
     <Compile Include="Assets\Scripts\Rooms\RoomGrid.cs" />

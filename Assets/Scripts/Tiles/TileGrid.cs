@@ -56,6 +56,23 @@ public class TileGrid : MonoBehaviour
         return neighbors;
     }
 
+    public List<Tile> GetCornerNeighbors(int x, int y)
+    {
+        List<Tile> neighbors = new List<Tile>();
+        if (!this.IsOffBounds(x - 1, y - 1)) { neighbors.Add(this.grid[x - 1, y - 1].Tile); }
+        if (!this.IsOffBounds(x + 1, y + 1)) { neighbors.Add(this.grid[x + 1, y + 1].Tile); }
+        if (!this.IsOffBounds(x + 1, y - 1)) { neighbors.Add(this.grid[x + 1, y - 1].Tile); }
+        if (!this.IsOffBounds(x - 1, y + 1)) { neighbors.Add(this.grid[x - 1, y + 1].Tile); }
+        return neighbors;
+    }
+
+    public List<Tile> GetAll8Neighbors(int x, int y)
+    {
+        List<Tile> neighbors = this.GetNeighbors(x, y);
+        neighbors.AddRange(this.GetCornerNeighbors(x, y));
+        return neighbors;
+    }
+
     public void ClearTile(int x, int y)
     {
         grid[x, y].TileObject = null;
@@ -106,6 +123,24 @@ public class TileGrid : MonoBehaviour
     {
         TileContents contents = this.GetAdjacent(x, y, direction);
         return this.CanOccupyContents(contents);
+    }
+
+    public bool IsCorner(int x, int y)
+    {
+        if (!this.CanOccupy(x, y)) return false;
+        bool top = this.CanOccupyAdjacent(x, y, Direction.Up);
+        bool left = this.CanOccupyAdjacent(x, y, Direction.Left);
+        bool right = this.CanOccupyAdjacent(x, y, Direction.Right);
+        bool bottom = this.CanOccupyAdjacent(x, y, Direction.Down);
+        if ((top && bottom) || (left && right)) return false;
+        if ((top && right) || (top && left)) return true;
+        if ((bottom && right) || (bottom && left)) return true;
+        return false;        
+    }
+
+    public bool CanOccupy(Tile tile)
+    {
+        return tile != null && CanOccupy(tile.XCoord, tile.YCoord);
     }
 
     public bool CanOccupy(int x, int y)
