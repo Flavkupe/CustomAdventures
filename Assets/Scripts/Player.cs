@@ -91,7 +91,7 @@ public class Player : TileEntity
     public bool Unequip(InventoryItem item)
     {
         PlayerInventory inv = this.Stats.Inventory;
-        if (this.TryMoveToInventory(item))
+        if (this.TryMoveToInventory(item, false))
         {
             if (item is Weapon)
             {
@@ -106,6 +106,7 @@ public class Player : TileEntity
                 inv.EquippedAccessory = null;
             }
 
+            UIManager.Instance.UpdateInventory();
             return true;
         }
 
@@ -137,11 +138,10 @@ public class Player : TileEntity
             inv.InventoryItems.Remove(item);
         }
 
-        this.TryMoveToInventory(temp);
-        UIManager.Instance.UpdateInventory();                
+        this.TryMoveToInventory(temp, true);
     }
 
-    public bool TryMoveToInventory(InventoryItem item)
+    public bool TryMoveToInventory(InventoryItem item, bool updateUI)
     {
         if (item == null)
         {
@@ -152,6 +152,11 @@ public class Player : TileEntity
         if (inv.InventoryItems.Count < inv.MaxItems)
         {
             inv.InventoryItems.Add(item);
+            if (updateUI)
+            {
+                UIManager.Instance.UpdateInventory();
+            }
+
             return true;
         }
 

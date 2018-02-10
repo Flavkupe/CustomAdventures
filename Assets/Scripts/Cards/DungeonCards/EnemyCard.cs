@@ -13,8 +13,6 @@ public class EnemyCard : DungeonCard<EnemyCardData>
     /// </summary>
     public Enemy EnemySpawn;
 
-    public override DungeonCardType DungeonCardType { get { return DungeonCardType.Enemy; } }
-
     public override void ExecuteTileSpawnEvent(Tile tile)
     {
         Enemy enemy = this.InstantiateEnemy();        

@@ -11,8 +11,6 @@ public class TreasureCard : DungeonCard<TreasureCardData>
     /// </summary>
     public Treasure TreasureSpawn;
 
-    public override DungeonCardType DungeonCardType { get { return DungeonCardType.Treasure; } }
-
     public override void ExecuteTileSpawnEvent(Tile tile)
     {
         Treasure treasure = this.InstantiateTreasure();        
@@ -33,6 +31,6 @@ public class TreasureCard : DungeonCard<TreasureCardData>
 	
 	// Update is called once per frame
 	void Update ()
-    {		
+    {
 	}
 }

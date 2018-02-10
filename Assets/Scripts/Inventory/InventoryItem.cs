@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class InventoryItem : MonoBehaviour
 {
-    public virtual InventoryItemType Type { get { return InventoryItemType.Misc; } } 
+    public virtual InventoryItemType Type { get { return InventoryItemType.Misc; } }
 
     public Sprite Icon;
 
@@ -29,5 +29,5 @@ public enum InventoryItemType
     Misc,
     Weapon,
     Armor,
-    Accessory,    
+    Accessory,
 }

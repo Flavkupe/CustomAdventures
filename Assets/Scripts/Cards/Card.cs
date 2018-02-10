@@ -62,8 +62,9 @@ public abstract class CardData : ScriptableObject
 public enum CardType
 {
     Dungeon,
-    LevelUp,
+    Character,
     Loot,
+    Ability,
 }
 
 public enum Rarity

@@ -20,7 +20,7 @@ public class InventoryItemButton : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update ()
-    {		
+    {
 	}
 
     public void OnButtonClicked()
@@ -35,8 +35,7 @@ public class InventoryItemButton : MonoBehaviour
                 if (Player.Instance.Unequip(this.BackingItem))
                 {
                     this.BackingItem = null;
-                    UIManager.Instance.InventoryPanel.UpdateInventory();
-                }                
+                }
             }
             else
             {
