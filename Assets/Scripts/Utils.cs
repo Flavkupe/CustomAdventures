@@ -81,7 +81,39 @@ public static class ExtensionFunctions
         }
 
         return false;
-    } 
+    }
+
+    public static IEnumerator MoveToSpotCoroutine(this MonoBehaviour obj, Vector3 target, float speed)
+    {
+        return obj.gameObject.MoveToSpotCoroutine(target, speed);
+    }
+
+    public static IEnumerator MoveToSpotCoroutine(this GameObject obj, Vector3 target, float speed)
+    {
+        return obj.MoveToSpotAndScaleCoroutine(target, speed, 0.0f);
+    }
+
+    public static IEnumerator MoveToSpotAndScaleCoroutine(this GameObject obj, Vector3 target, float speed, float targetScaleChange)
+    {
+        float targetDistance = Vector3.Distance(target, obj.transform.position);
+        float distanceTravelled = 0.0f;
+        while (distanceTravelled < targetDistance)
+        {
+            float delta = Time.deltaTime * speed;
+            float proportion = delta / targetDistance;
+            obj.transform.position = Vector3.MoveTowards(obj.transform.position, target, delta);
+
+            if (targetScaleChange != 0.0f)
+            {
+                float scaleChange = proportion * targetScaleChange;                
+                Vector3 newScale = obj.transform.localScale.IncrementBy(scaleChange, scaleChange, scaleChange);
+                obj.transform.localScale = newScale;
+            }            
+
+            distanceTravelled += delta;
+            yield return null;
+        }
+    }
 
     public static Vector3 OffsetBy(this Vector3 vector, float offset)
     {
@@ -178,7 +210,7 @@ public static class ExtensionFunctions
     public static bool IsOffBounds<T>(this T[,] grid, int x, int y)
     {
         return x < 0 || x >= grid.GetLength(0) || y < 0 || y >= grid.GetLength(1);
-    }
+    }    
 
     #endregion
 
@@ -273,7 +305,7 @@ public static class EnumUtils
 
 public class EnumFlagsAttribute : PropertyAttribute { }
 
-public class SingletonObject<T> : MonoBehaviour where T : MonoBehaviour
+public class SingletonObject<T> : MonoBehaviourEx where T : MonoBehaviour
 {
     private static T instance;
 

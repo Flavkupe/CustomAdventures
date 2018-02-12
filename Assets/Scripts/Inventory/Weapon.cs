@@ -7,7 +7,9 @@ public class Weapon : InventoryItem
 {
     public override InventoryItemType Type { get { return InventoryItemType.Weapon; } }
 
-    public WeaponData Data;
+    public override ItemCardData BaseItemData { get { return Data; } }
+
+    public WeaponCardData Data;
 
     // Use this for initialization
     void Start () {
@@ -18,11 +20,4 @@ public class Weapon : InventoryItem
 	void Update () {
 		
 	}
-}
-
-[Serializable]
-public class WeaponData
-{
-    public int Power;
-    public int Durability;
 }

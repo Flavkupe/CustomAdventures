@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,4 +11,5 @@ public class TreasureCardData : DungeonCardData
     public string Name;
     public int Level = 1;
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Treasure; } }
+    public override Type BackingCardType { get { return typeof(TreasureCard); } }
 }

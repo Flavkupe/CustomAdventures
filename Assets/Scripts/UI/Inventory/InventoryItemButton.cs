@@ -52,6 +52,7 @@ public class InventoryItemButton : MonoBehaviour
     public void ClearItem()
     {
         this.BackingItem = null;
+        this.subImage.sprite = null;
         this.subImage.gameObject.SetActive(false);
     }
 
@@ -61,11 +62,11 @@ public class InventoryItemButton : MonoBehaviour
         if (this.BackingItem != null)
         {
             this.subImage.gameObject.SetActive(true);
-            this.subImage.sprite = this.BackingItem.Icon;
+            this.subImage.sprite = this.BackingItem.BaseItemData.Sprite;
         }        
         else
         {
-            this.subImage.gameObject.SetActive(false);
+            this.ClearItem();
         }
     }
 }

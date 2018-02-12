@@ -10,7 +10,7 @@ public class PlayerPanel : MonoBehaviour
     public void UpdatePanel()
     {
         PlayerStats stats = Player.Instance.Stats;
-        string weaponName = stats.Inventory.EquippedWeapon == null ? "Fists" : stats.Inventory.EquippedWeapon.Name;
+        string weaponName = stats.Inventory.EquippedWeapon == null ? "Fists" : stats.Inventory.EquippedWeapon.BaseItemData.Name;
         string data = string.Format(
 @"Level: {0}
 HP: {1}
@@ -21,7 +21,7 @@ Weapon: {3}
     }
 
 	// Use this for initialization
-	void Start ()
+	void Awake ()
     {
         this.TextBox = this.GetComponentInChildren<Text>();
     }

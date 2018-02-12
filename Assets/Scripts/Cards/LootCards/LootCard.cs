@@ -24,8 +24,7 @@ public abstract class LootCard<T> : Card<T>, ILootCard where T : LootCardData
 
 public interface ILootCard : ICard
 {
-    LootEventType LootEventType { get; }
-
+    LootEventType LootEventType { get; }    
     void ExecuteLootGetEvent();
 }
 
@@ -33,6 +32,7 @@ public enum LootCardType
 {
     Gold,
     Item,
+    Weapon,
 }
 
 public enum LootEventType

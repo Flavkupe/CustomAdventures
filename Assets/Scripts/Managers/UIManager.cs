@@ -35,13 +35,12 @@ public class UIManager : SingletonObject<UIManager>
     // Use this for initialization
     void Start ()
     {
+        UpdateUI();
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
-        this.UpdateUI();
-
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             // Toggle inventory pane

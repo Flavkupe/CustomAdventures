@@ -89,6 +89,26 @@ public class DungeonManager : SingletonObject<DungeonManager>
         }
     }
 
+    private void PerformLootCardDrawing()
+    {
+        var lootCards = DeckManager.Instance.DrawLootCards(2);
+        foreach (ILootCard card in lootCards)
+        {
+            switch (card.LootEventType)
+            {
+                case LootEventType.GainLoot:
+                default:
+                    postAnimationActionQueue.Enqueue(() =>
+                    {
+                        card.ExecuteLootGetEvent();
+                        card.DestroyCard();
+                    });
+                    
+                    break;
+            }
+        }
+    }
+
     public void SpawnEnemy(Enemy enemy, Tile tile)
     {        
         this.Grid.PutObject(tile, enemy, true);
@@ -109,7 +129,14 @@ public class DungeonManager : SingletonObject<DungeonManager>
     // Use this for initialization
     void Start()
     {
-        DeckManager.Instance.OnDrawAnimationDone += HandleOnDrawAnimationDone;        
+        DeckManager.Instance.OnDrawAnimationDone += HandleOnDrawAnimationDone;
+
+        Invoke("StartDungeon", 0.5f);
+    }
+
+    private void StartDungeon()
+    {
+        this.PerformLootCardDrawing();
     }
 
     private void HandleOnDrawAnimationDone(object sender, EventArgs e)
@@ -129,3 +156,4 @@ public class DungeonManager : SingletonObject<DungeonManager>
 		
 	}
 }
+

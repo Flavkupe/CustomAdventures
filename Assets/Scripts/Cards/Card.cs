@@ -11,7 +11,7 @@ public interface ICard
     void DestroyCard();
 }
 
-public abstract class Card<TCardDataType> : MonoBehaviour, ICard where TCardDataType : CardData
+public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDataType : CardData
 {    
     public TCardDataType Data { get; protected set; }
     public abstract CardType CardType { get; }
@@ -27,6 +27,7 @@ public abstract class Card<TCardDataType> : MonoBehaviour, ICard where TCardData
     {
         Debug.Assert(data is TCardDataType, "Data must be of type " + typeof(TCardDataType));
         this.Data = data as TCardDataType;
+        this.InitData();
     }
 
     // Use this for initialization
@@ -35,12 +36,26 @@ public abstract class Card<TCardDataType> : MonoBehaviour, ICard where TCardData
         Debug.Assert(this.Data != null, "Must set Data!");
 	}
 
+    protected virtual void InitData()
+    {
+    }
+
+    protected virtual CardMesh GetCardMesh()
+    {
+        switch (this.CardType) {
+            case CardType.Dungeon:
+                return DeckManager.Instance.CardMeshes.DungeonBasicCardMesh;
+            default:
+                return DeckManager.Instance.CardMeshes.BasicCardMesh;
+        }
+    }
+
     public virtual void InitCard()
     {
         // TODO: card based on rarity
         if (this.CardMesh == null)
         {
-            this.CardMesh = Instantiate(DeckManager.Instance.CardMeshes.BasicCardMesh);
+            this.CardMesh = Instantiate(GetCardMesh());
             this.CardMesh.transform.parent = this.transform;
             this.CardMesh.transform.position = new Vector3(0, 0, 0);
             this.CardMesh.SetCardArt(this.Data.CardArt);
@@ -57,6 +72,8 @@ public abstract class CardData : ScriptableObject
 {
     public Rarity Rarity = Rarity.Basic;
     public Sprite CardArt;
+
+    public abstract Type BackingCardType { get; }
 }
 
 public enum CardType

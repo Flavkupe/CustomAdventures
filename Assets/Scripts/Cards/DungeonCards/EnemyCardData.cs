@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,4 +16,6 @@ public class EnemyCardData : DungeonCardData
     public int EXP = 1;
 
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Enemy; } }
+
+    public override Type BackingCardType { get { return typeof(EnemyCard); } }
 }

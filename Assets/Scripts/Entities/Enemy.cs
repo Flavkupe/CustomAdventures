@@ -41,7 +41,8 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
     {
         this.HP = this.Data.MaxHP;
         this.GetComponent<SpriteRenderer>().sprite = this.Data.Sprite;
-	}
+        this.GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
+    }
 	
 	// Update is called once per frame
 	void Update () {

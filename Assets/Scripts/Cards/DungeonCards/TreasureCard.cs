@@ -5,12 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 public class TreasureCard : DungeonCard<TreasureCardData>
-{    
-    /// <summary>
-    /// Prefab to spawn for this card
-    /// </summary>
-    public Treasure TreasureSpawn;
-
+{
     public override void ExecuteTileSpawnEvent(Tile tile)
     {
         Treasure treasure = this.InstantiateTreasure();        
@@ -19,7 +14,7 @@ public class TreasureCard : DungeonCard<TreasureCardData>
 
     private Treasure InstantiateTreasure()
     {
-        Treasure treasure = Instantiate(TreasureSpawn);
+        Treasure treasure = InstantiateOfType<Treasure>();
         treasure.Data = this.Data;
         return treasure;
     }

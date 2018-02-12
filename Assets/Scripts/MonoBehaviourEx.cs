@@ -1,22 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MonoBehaviourEx : MonoBehaviour
 {
-    public IEnumerator MoveToSpotCoroutine(Vector3 target, float speed)
-    {
-        float targetDistance = Vector3.Distance(target, this.transform.position);
-        float distanceTravelled = 0.0f;
-        while (distanceTravelled < targetDistance)
-        {
-            float delta = Time.deltaTime * speed;
-            this.transform.position = Vector3.MoveTowards(this.transform.position, target, delta);
-            distanceTravelled += delta;
-            yield return null;
-        }
-    }
-
     public IEnumerator RotateCoroutine(Vector3 axis, float angle, float speed)
     {
         float totalRot = 0;
@@ -27,6 +15,26 @@ public class MonoBehaviourEx : MonoBehaviour
             totalRot += delta;
             yield return null;
         }        
+    }
+
+    public T InstantiateOfType<T>(string name = null) where T : MonoBehaviour
+    {
+        GameObject obj = new GameObject(name ?? typeof(T).Name);
+        T newObj = obj.AddComponent<T>();
+        return newObj;
+    }
+
+    public T InstantiateOfType<T>(Type type, string name = null) where T : class
+    {
+        if (!typeof(T).IsAssignableFrom(type))
+        {
+            Debug.LogError(string.Format("Trying instantiate things of different type as specified! type: {0}, T: {1}", type.FullName, typeof(T).FullName));
+            return null;
+        }
+
+        GameObject obj = new GameObject(name ?? typeof(T).Name);
+        T newObj = obj.AddComponent(type) as T;
+        return newObj;
     }
 
     // Use this for initialization

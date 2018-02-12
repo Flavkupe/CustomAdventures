@@ -297,14 +297,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Cards\AbilityCards\AbilityCard.cs" />
     <Compile Include="Assets\Scripts\Cards\Card.cs" />
     <Compile Include="Assets\Scripts\Cards\CardMesh.cs" />
+    <Compile Include="Assets\Scripts\Cards\CharacterCards\CharacterCard.cs" />
     <Compile Include="Assets\Scripts\Cards\Deck.cs" />
     <Compile Include="Assets\Scripts\Cards\DungeonCards\DungeonCard.cs" />
     <Compile Include="Assets\Scripts\Cards\DungeonCards\EnemyCard.cs" />
     <Compile Include="Assets\Scripts\Cards\DungeonCards\EnemyCardData.cs" />
     <Compile Include="Assets\Scripts\Cards\DungeonCards\TreasureCard.cs" />
     <Compile Include="Assets\Scripts\Cards\DungeonCards\TreasureCardData.cs" />
+    <Compile Include="Assets\Scripts\Cards\LootCards\ItemCard.cs" />
+    <Compile Include="Assets\Scripts\Cards\LootCards\ItemCardData.cs" />
+    <Compile Include="Assets\Scripts\Cards\LootCards\LootCard.cs" />
+    <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCard.cs" />
+    <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCardData.cs" />
     <Compile Include="Assets\Scripts\Entities\Enemy.cs" />
     <Compile Include="Assets\Scripts\Entities\TileEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\Treasure.cs" />

@@ -107,10 +107,11 @@ public class Player : TileEntity
             }
 
             UIManager.Instance.UpdateInventory();
+            UIManager.Instance.UpdateUI();
             return true;
         }
-
-        return false;
+        
+        return false;        
     }
 
     public void Equip(InventoryItem item)
@@ -138,7 +139,9 @@ public class Player : TileEntity
             inv.InventoryItems.Remove(item);
         }
 
-        this.TryMoveToInventory(temp, true);
+        this.TryMoveToInventory(temp, false);
+        UIManager.Instance.UpdateInventory();
+        UIManager.Instance.UpdateUI();
     }
 
     public bool TryMoveToInventory(InventoryItem item, bool updateUI)
