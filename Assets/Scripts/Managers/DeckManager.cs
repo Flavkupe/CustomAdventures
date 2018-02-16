@@ -26,16 +26,21 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public event EventHandler OnDrawAnimationDone;
 
+    private List<TCardDataType> LoadCards<TCardDataType>(string path) where TCardDataType : CardData
+    {
+        return Resources.LoadAll<TCardDataType>(path).Where(a => a.IncludeCard).ToList();
+    }
+
     private void InitDecks()
     {
-        allDungeonCardData = Resources.LoadAll<DungeonCardData>("Cards/DungeonCards").ToList();
-        allLootCardData = Resources.LoadAll<LootCardData>("Cards/LootCards").ToList();
+        allDungeonCardData = LoadCards<DungeonCardData>("Cards/DungeonCards");
+        allLootCardData = LoadCards<LootCardData>("Cards/LootCards");
 
         // Make each deck
         CreateDeck(30, DungeonDeck, DungeonDeckHolder, allDungeonCardData);
         CreateDeck(30, LootDeck, LootDeckHolder, allLootCardData);
         DungeonDeckHolder.transform.localScale *= DeckSmallSize;
-        LootDeckHolder.transform.localScale *= DeckSmallSize;        
+        LootDeckHolder.transform.localScale *= DeckSmallSize;
     }
 
     private void CreateDeck<TCardType, TCardDataType>(int numCards, Deck<TCardType> deck, GameObject deckHolder, 

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemCard<T> : LootCard<T> where T : ItemCardData
+public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> where TItemCardDataType : ItemCardData
 {
     public override void ExecuteLootGetEvent()
     {
-        InventoryItem item = Instantiate(this.Data.BackingItem);
+        InventoryItem item = this.Data.BackingItem.CloneInstance();
         if (Player.Instance.TryMoveToInventory(item, true))
         {
             // TODO: message?
@@ -19,14 +19,17 @@ public class ItemCard<T> : LootCard<T> where T : ItemCardData
 
     protected override void InitData()
     {
-        base.InitData();                    
+        base.InitData();
         this.Data.BackingItem = this.CreateBackingItem();
     }
+
+    protected abstract InventoryItem<TItemCardDataType> AddBackingComponent(GameObject obj);
 
     protected virtual InventoryItem CreateBackingItem()
     {
         GameObject obj = new GameObject();
-        InventoryItem item = obj.AddComponent<InventoryItem>();
+        InventoryItem<TItemCardDataType> item = this.AddBackingComponent(obj);
+        item.SetData(this.Data);
         return item;
     }
 

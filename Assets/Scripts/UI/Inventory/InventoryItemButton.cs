@@ -62,7 +62,7 @@ public class InventoryItemButton : MonoBehaviour
         if (this.BackingItem != null)
         {
             this.subImage.gameObject.SetActive(true);
-            this.subImage.sprite = this.BackingItem.BaseItemData.Sprite;
+            this.subImage.sprite = this.BackingItem.ItemData.Sprite;
         }        
         else
         {

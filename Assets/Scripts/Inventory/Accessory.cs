@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Accessory : InventoryItem
+public class Accessory : InventoryItem<ItemCardData>
 {
     public override InventoryItemType Type { get { return InventoryItemType.Accessory; } }
 
-    public override ItemCardData BaseItemData
+    public override ItemCardData ItemData
     {
         get
         {

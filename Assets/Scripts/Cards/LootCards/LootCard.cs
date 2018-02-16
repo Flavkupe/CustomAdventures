@@ -24,7 +24,7 @@ public abstract class LootCard<T> : Card<T>, ILootCard where T : LootCardData
 
 public interface ILootCard : ICard
 {
-    LootEventType LootEventType { get; }    
+    LootEventType LootEventType { get; }
     void ExecuteLootGetEvent();
 }
 

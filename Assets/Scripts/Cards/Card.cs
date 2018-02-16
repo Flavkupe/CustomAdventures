@@ -73,6 +73,11 @@ public abstract class CardData : ScriptableObject
     public Rarity Rarity = Rarity.Basic;
     public Sprite CardArt;
 
+    /// <summary>
+    /// If this is false, this card will be excluded from all random deckbuilding
+    /// </summary>
+    public bool IncludeCard = true;
+
     public abstract Type BackingCardType { get; }
 }
 

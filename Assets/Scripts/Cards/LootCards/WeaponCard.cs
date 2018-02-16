@@ -2,7 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponCard : ItemCard<WeaponCardData> {    
+public class WeaponCard : ItemCard<WeaponCardData> {
+
+    protected override InventoryItem<WeaponCardData> AddBackingComponent(GameObject obj)
+    {
+        return obj.AddComponent<Weapon>();
+    }
+
     // Use this for initialization
     void Start () {
 		
@@ -10,14 +16,5 @@ public class WeaponCard : ItemCard<WeaponCardData> {
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
-
-    protected override InventoryItem CreateBackingItem()
-    {
-        GameObject obj = new GameObject(Data.Name);
-        Weapon weapon = obj.AddComponent<Weapon>();
-        weapon.Data = Data;
-        return weapon;
-    }
 }
