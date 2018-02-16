@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,12 +11,15 @@ public class InventoryItemButton : MonoBehaviour
 
     public InventoryItemButtonType Type;
 
+    public TextMeshProUGUI StackCount;
+
     public Image subImage;
     
 	// Use this for initialization
 	void Start ()
     {
         this.subImage.gameObject.SetActive(false);
+        this.StackCount.gameObject.SetActive(false);
     }
 	
 	// Update is called once per frame
@@ -63,6 +67,16 @@ public class InventoryItemButton : MonoBehaviour
         {
             this.subImage.gameObject.SetActive(true);
             this.subImage.sprite = this.BackingItem.ItemData.Sprite;
+
+            if (item.CurrentStackSize > 1)
+            {
+                this.StackCount.gameObject.SetActive(true);
+                this.StackCount.text = item.CurrentStackSize.ToString();
+            }
+            else
+            {
+                this.StackCount.gameObject.SetActive(false);
+            }
         }        
         else
         {

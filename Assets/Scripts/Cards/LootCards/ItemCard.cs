@@ -21,16 +21,11 @@ public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> 
     {
         base.InitData();
         this.Data.BackingItem = this.CreateBackingItem();
-    }
-
-    protected abstract InventoryItem<TItemCardDataType> AddBackingComponent(GameObject obj);
+    }    
 
     protected virtual InventoryItem CreateBackingItem()
     {
-        GameObject obj = new GameObject();
-        InventoryItem<TItemCardDataType> item = this.AddBackingComponent(obj);
-        item.SetData(this.Data);
-        return item;
+        return new InventoryItem<TItemCardDataType>(this.Data);
     }
 
     // Use this for initialization

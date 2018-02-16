@@ -93,15 +93,15 @@ public class Player : TileEntity
         PlayerInventory inv = this.Stats.Inventory;
         if (this.TryMoveToInventory(item, false))
         {
-            if (item is Weapon)
+            if (item.Type == InventoryItemType.Weapon)
             {
                 inv.EquippedWeapon = null;
             }
-            else if (item is Armor)
+            else if (item.Type == InventoryItemType.Armor)
             {
                 inv.EquippedArmor = null;
             }
-            else if (item is Accessory)
+            else if (item.Type == InventoryItemType.Accessory)
             {
                 inv.EquippedAccessory = null;
             }
@@ -118,20 +118,22 @@ public class Player : TileEntity
     {
         PlayerInventory inv = this.Stats.Inventory;
         InventoryItem temp = null;
-        if (item is Weapon)
+        if (item.Type == InventoryItemType.Weapon)
         {
             temp = inv.EquippedWeapon;
-            inv.EquippedWeapon = item as Weapon;
+            inv.EquippedWeapon = item as InventoryItem<WeaponCardData>;
         }
-        else if (item is Armor)
+        else if (item.Type == InventoryItemType.Armor)
         {
+            // TODO
             temp = inv.EquippedArmor;
-            inv.EquippedArmor = item as Armor;
+            inv.EquippedArmor = item as InventoryItem<WeaponCardData>;
         }
-        else if (item is Accessory)
+        else if (item.Type == InventoryItemType.Accessory)
         {
+            // TODO
             temp = inv.EquippedAccessory;
-            inv.EquippedAccessory = item as Accessory;
+            inv.EquippedAccessory = item as InventoryItem<WeaponCardData>; ;
         }
 
         if (inv.InventoryItems.Contains(item))
@@ -151,19 +153,37 @@ public class Player : TileEntity
             return false;
         }
 
-        PlayerInventory inv = Player.Instance.Stats.Inventory;
-        if (inv.InventoryItems.Count < inv.MaxItems)
+        bool madeChanges = false;
+        PlayerInventory inv = Stats.Inventory;
+        foreach (InventoryItem current in inv.InventoryItems)
         {
+            if (current.ItemCanStack(item))
+            {
+                current.StackItems(item);
+                madeChanges = true;
+                if (item.CurrentStackSize == 0)
+                {
+                    break;
+                }                
+            }
+        }
+
+        if (item.CurrentStackSize > 0 && inv.InventoryItems.Count < inv.MaxItems)
+        {
+            madeChanges = true;
             inv.InventoryItems.Add(item);
             if (updateUI)
             {
                 UIManager.Instance.UpdateInventory();
-            }
-
-            return true;
+            }            
         }
 
-        return false;
+        if (madeChanges && updateUI)
+        {            
+            UIManager.Instance.UpdateInventory();
+        }
+
+        return madeChanges;
     }
 }
 
@@ -181,11 +201,11 @@ public class PlayerStats
 [Serializable]
 public class PlayerInventory
 {
-    public Weapon EquippedWeapon;
+    public InventoryItem<WeaponCardData> EquippedWeapon;
 
-    public Armor EquippedArmor;
-
-    public Accessory EquippedAccessory;
+    // TODO
+    public InventoryItem<WeaponCardData> EquippedArmor;
+    public InventoryItem<WeaponCardData> EquippedAccessory;
 
     public List<InventoryItem> InventoryItems = new List<InventoryItem>();
 

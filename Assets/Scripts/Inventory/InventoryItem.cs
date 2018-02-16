@@ -3,27 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class InventoryItem : MonoBehaviour
+public abstract class InventoryItem
 {
+    public int CurrentStackSize = 1;
+
     public virtual InventoryItemType Type { get { return InventoryItemType.Misc; } }
 
     public abstract ItemCardData ItemData { get; }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	}
-
     public abstract InventoryItem CloneInstance();
+
+    public virtual bool ItemCanStack(InventoryItem other)
+    {
+        return other.ItemData.Name == this.ItemData.Name;
+    }
+
+    /// <summary>
+    /// Adds other item to stack, changing CurrentStackSize for each
+    /// </summary>
+    public virtual void StackItems(InventoryItem other)
+    {
+        int spaceLeft = this.ItemData.MaxStack - this.CurrentStackSize;
+        int newItems = Math.Min(other.CurrentStackSize, other.CurrentStackSize);
+        int leftOver = other.CurrentStackSize - newItems;
+        this.CurrentStackSize += newItems;
+        other.CurrentStackSize = leftOver;        
+    }
 }
 
-public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType: ItemCardData
+public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : ItemCardData
 {
     private TCardDataType data;
+
+    public InventoryItem(TCardDataType data) 
+    {
+        this.data = data;
+    }
 
     public void SetData(TCardDataType data)
     {
@@ -32,10 +47,10 @@ public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType: I
 
     public override InventoryItem CloneInstance()
     {
-        var clone = Instantiate(this);
-        clone.SetData(this.data);
-        return clone;
+        return new InventoryItem<TCardDataType>(this.data);
     }
+
+    public override InventoryItemType Type { get { return data == null ? InventoryItemType.Misc : data.ItemType; } }
 
     public TCardDataType Data { get { return data; } }
 

@@ -10,6 +10,8 @@ public class ItemCardData : LootCardData
     public int Value = 0;
     public int MaxStack = 1;
 
+    public InventoryItemType ItemType = InventoryItemType.Misc;
+
     public override LootCardType LootCardType { get { return LootCardType.Item; } }
 
     public override Type BackingCardType { get { return typeof(GeneralItemCard); } }
