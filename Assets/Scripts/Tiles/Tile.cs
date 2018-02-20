@@ -10,6 +10,8 @@ public class Tile : MonoBehaviour, IHasCoords
     public int YCoord { get; set; }
     
     public bool IsConnectorNeighbor = false;
+    
+    public bool IsReserved { get; set; }
 
     public Direction? ConnectsTo
     {
@@ -36,7 +38,7 @@ public class Tile : MonoBehaviour, IHasCoords
 
             return null;
         }
-    }
+    }    
 
     public Room CachedRoom = null;
     public Room GetRoom()
@@ -53,6 +55,11 @@ public class Tile : MonoBehaviour, IHasCoords
 
         CachedRoom = this.transform.GetComponentsInParent<Room>(true).FirstOrDefault();
         return CachedRoom;
+    }
+
+    public bool CanOccupy(OccupancyRule rule = OccupancyRule.MustBeEmpty)
+    {
+        return DungeonManager.Instance.Grid.CanOccupy(this, rule);
     }
 
     public bool IsConnectorTile()

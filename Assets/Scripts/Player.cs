@@ -59,13 +59,10 @@ public class Player : TileEntity
             TileEntity obj = grid.GetAdjacentObject(this.XCoord, this.YCoord, direction);
             if (obj != null)
             {
-                // Tile entity occupies spot
-                Enemy enemy = obj.GetComponent<Enemy>();
-                if (enemy != null)
+                if (obj.PlayerCanInteractWith())
                 {
-                    // Enemy occupies spot
-                    this.AttackEnemy(enemy);
-                }
+                    obj.PlayerInteractWith(this);
+                }               
             }
             else
             {
@@ -77,7 +74,7 @@ public class Player : TileEntity
         UIManager.Instance.UpdateUI();
     }
 
-    private void AttackEnemy(Enemy enemy)
+    public int GetAttackStrength()
     {
         int damage = this.Stats.BaseStrength;
         if (this.Stats.Inventory.EquippedWeapon != null)
@@ -85,7 +82,7 @@ public class Player : TileEntity
             damage += this.Stats.Inventory.EquippedWeapon.Data.Power;
         }
 
-        enemy.TakeDamage(damage);
+        return damage;
     }
 
     public bool Unequip(InventoryItem item)
@@ -192,6 +189,7 @@ public class PlayerStats
 {
     public int Level = 1;
     public int HP = 10;
+    public int MaxHP = 10;
     public int Energy = 0;
     public int BaseStrength = 1;
 

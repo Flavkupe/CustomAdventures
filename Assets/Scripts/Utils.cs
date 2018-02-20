@@ -8,6 +8,11 @@ using System.Collections;
 
 public static class Utils
 {
+    public static bool HasFlag(int enumValue, int flagValue)
+    {
+        return (enumValue & flagValue) != 0;
+    }
+
     public static void DoForXY(int dimX, int dimY, Action<int,int> action)
     {
         for (int x = 0; x < dimX; x++)
@@ -67,20 +72,6 @@ public static class ExtensionFunctions
             list[k] = list[n];
             list[n] = value;
         }
-    }
-
-    public static bool TryMove<T>(this T me, Direction direction) where T : TileEntity
-    {
-        TileGrid grid = DungeonManager.Instance.Grid;
-        if (grid.CanOccupyAdjacent(me.XCoord, me.YCoord, direction))
-        {
-            grid.MoveTo(me.XCoord, me.YCoord, direction, me);
-            Tile newTile = grid.GetTile(me.XCoord, me.YCoord);
-            me.transform.position = newTile.transform.position;
-            return true;
-        }
-
-        return false;
     }
 
     public static IEnumerator MoveToSpotCoroutine(this MonoBehaviour obj, Vector3 target, float speed)

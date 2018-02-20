@@ -52,7 +52,16 @@ public class DungeonManager : SingletonObject<DungeonManager>
             
         }
 
-        roomArea.gameObject.SetActive(false);                
+        roomArea.gameObject.SetActive(false);
+        PostGroupEventCleanup();
+    }
+
+    /// <summary>
+    /// Cleanup that happens after all events in a group happen (ie multiple cards).
+    /// </summary>
+    private void PostGroupEventCleanup()
+    {
+        Grid.UnreserveAll();
     }
 
     private void PerformSpawnEvent(RoomArea roomArea, IDungeonCard card) 
@@ -77,6 +86,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
         if (tile != null)
         {
+            tile.IsReserved = true;
             postAnimationActionQueue.Enqueue(() =>
             {
                 card.ExecuteTileSpawnEvent(tile);
@@ -89,9 +99,9 @@ public class DungeonManager : SingletonObject<DungeonManager>
         }
     }
 
-    private void PerformLootCardDrawing()
+    public void PerformLootCardDrawing(int cardNum)
     {
-        var lootCards = DeckManager.Instance.DrawLootCards(2);
+        var lootCards = DeckManager.Instance.DrawLootCards(cardNum);
         foreach (ILootCard card in lootCards)
         {
             switch (card.LootEventType)
@@ -104,6 +114,26 @@ public class DungeonManager : SingletonObject<DungeonManager>
                         card.DestroyCard();
                     });
                     
+                    break;
+            }
+        }
+    }
+
+    public void PerformCharacterCardDrawing(int cardNum)
+    {
+        var charCards = DeckManager.Instance.DrawCharacterCards(cardNum);
+        foreach (ICharacterCard card in charCards)
+        {
+            switch (card.CharacterCardType)
+            {
+                case CharacterCardType.AttributeGain:
+                default:
+                    postAnimationActionQueue.Enqueue(() =>
+                    {
+                        card.ApplyEffect();
+                        card.DestroyCard();
+                    });
+
                     break;
             }
         }
@@ -136,7 +166,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     private void StartDungeon()
     {
-        this.PerformLootCardDrawing();
+        PerformCharacterCardDrawing(2);        
     }
 
     private void HandleOnDrawAnimationDone(object sender, EventArgs e)

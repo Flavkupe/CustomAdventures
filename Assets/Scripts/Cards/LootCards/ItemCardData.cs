@@ -5,7 +5,6 @@ using UnityEngine;
 public class ItemCardData : LootCardData
 {
     public Sprite Sprite;
-    public string Name;
     public InventoryItem BackingItem { get; set; }
     public int Value = 0;
     public int MaxStack = 1;

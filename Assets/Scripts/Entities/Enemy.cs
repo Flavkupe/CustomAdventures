@@ -64,4 +64,15 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
         DungeonManager.Instance.RemoveEnemy(this);
         Destroy(this.gameObject, 0.5f);
     }
+
+    public override bool PlayerCanInteractWith()
+    {
+        return true;
+    }
+
+    public override void PlayerInteractWith(Player player)
+    {
+        int damage = player.GetAttackStrength();
+        this.TakeDamage(damage);
+    }
 }

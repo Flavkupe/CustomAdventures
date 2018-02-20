@@ -8,7 +8,6 @@ public class TreasureCardData : DungeonCardData
 {
     public Sprite Sprite;
 
-    public string Name;
     public int Level = 1;
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Treasure; } }
     public override Type BackingCardType { get { return typeof(TreasureCard); } }

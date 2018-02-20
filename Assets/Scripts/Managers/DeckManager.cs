@@ -8,17 +8,17 @@ public class DeckManager : SingletonObject<DeckManager>
 {
     private List<DungeonCardData> allDungeonCardData;
     private List<LootCardData> allLootCardData;
+    private List<CharacterCardData> allCharCardData;
 
     public CardMeshes CardMeshes;
 
-    public EnemyCard EnemyCardTemplate;
-    public TreasureCard TreasureCardTemplate;
-
     public Deck<IDungeonCard> DungeonDeck = new Deck<IDungeonCard>();
     public Deck<ILootCard> LootDeck = new Deck<ILootCard>();
+    public Deck<ICharacterCard> CharacterDeck = new Deck<ICharacterCard>();
 
     public GameObject DungeonDeckHolder;
     public GameObject LootDeckHolder;
+    public GameObject CharDeckHolder;
     public GameObject CardDrawPos;
 
     public float DeckSmallSize = 0.35f;
@@ -35,12 +35,12 @@ public class DeckManager : SingletonObject<DeckManager>
     {
         allDungeonCardData = LoadCards<DungeonCardData>("Cards/DungeonCards");
         allLootCardData = LoadCards<LootCardData>("Cards/LootCards");
+        allCharCardData = LoadCards<CharacterCardData>("Cards/CharacterCards");
 
         // Make each deck
         CreateDeck(30, DungeonDeck, DungeonDeckHolder, allDungeonCardData);
         CreateDeck(30, LootDeck, LootDeckHolder, allLootCardData);
-        DungeonDeckHolder.transform.localScale *= DeckSmallSize;
-        LootDeckHolder.transform.localScale *= DeckSmallSize;
+        CreateDeck(30, CharacterDeck, CharDeckHolder, allCharCardData);
     }
 
     private void CreateDeck<TCardType, TCardDataType>(int numCards, Deck<TCardType> deck, GameObject deckHolder, 
@@ -60,15 +60,15 @@ public class DeckManager : SingletonObject<DeckManager>
             card.CardMesh.transform.SetParent(deckHolder.transform, true);
             card.CardMesh.SetFaceDown();
             card.CardMesh.transform.position = card.CardMesh.transform.position.IncrementBy(xOffset, yOffset, zOffset);
-            yOffset -= 0.05f;
-            xOffset -= 0.02f;
+            yOffset -= 0.01f;
+            xOffset -= 0.01f;
             zOffset -= 0.02f;
         }
 
-        //deckHolder.transform.Rotate(Vector3.forward, -10.0f);
+        deckHolder.transform.localScale *= DeckSmallSize;
     }
 
-    private List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, GameObject deckHolder) where TCardType : class, ICard
+    private List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, GameObject deckHolder, float deckMoveSpeed = 10.0f) where TCardType : class, ICard
     {
         List<TCardType> cards = new List<TCardType>();
         for (int i = 0; i < numDrawn; i++)
@@ -94,16 +94,21 @@ public class DeckManager : SingletonObject<DeckManager>
         return this.DrawCards(numDrawn, LootDeck, LootDeckHolder);
     }
 
-    public IEnumerator MoveDeckToPosition(GameObject deckHolder, Vector3 target, float sizeChange)
-    {        
-        yield return StartCoroutine(deckHolder.MoveToSpotAndScaleCoroutine(target, 10.0f, sizeChange));
+    internal List<ICharacterCard> DrawCharacterCards(int numDrawn)
+    {
+        return this.DrawCards(numDrawn, CharacterDeck, CharDeckHolder, 30.0f);
     }
 
-    public IEnumerator AnimateCardDraws(List<ICard> cards, GameObject deckHolder)
+    public IEnumerator MoveDeckToPosition(GameObject deckHolder, Vector3 target, float sizeChange, float deckMoveSpeed = 10.0f)
+    {        
+        yield return StartCoroutine(deckHolder.MoveToSpotAndScaleCoroutine(target, deckMoveSpeed, sizeChange));
+    }
+
+    public IEnumerator AnimateCardDraws(List<ICard> cards, GameObject deckHolder, float deckMoveSpeed = 10.0f)
     {        
         float targetX = 0.0f;
         Vector3 initPos = deckHolder.transform.position;        
-        yield return StartCoroutine(MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize));
+        yield return StartCoroutine(MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed));
 
         foreach (ICard card in cards)
         {
@@ -112,7 +117,7 @@ public class DeckManager : SingletonObject<DeckManager>
             Vector3 target = cardMesh.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
             yield return StartCoroutine(cardMesh.MoveToSpotCoroutine(target, 15.0f));
             yield return StartCoroutine(cardMesh.RotateCoroutine(Vector3.up, 180.0f, 200.0f));
-            //cardMesh.transform.eulerAngles = new Vector3(0.0f, 0.0f);
+            cardMesh.transform.eulerAngles = new Vector3(0.0f, 0.0f);
             cardMesh.transform.SetParent(null);
         }
 
@@ -150,4 +155,5 @@ public class CardMeshes
 {
     public CardMesh BasicCardMesh;
     public CardMesh DungeonBasicCardMesh;
+    public CardMesh CharBasicCardMesh;
 }

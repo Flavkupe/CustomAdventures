@@ -8,7 +8,6 @@ public class EnemyCardData : DungeonCardData
 {
     public Sprite Sprite;
 
-    public string Name;
     public int Level = 1;
     public int MaxHP = 1;
     public int Movement = 1;

@@ -7,6 +7,8 @@ public class Treasure : TileEntity, IObjectOnTile
 {
     public TreasureCardData Data { get; set; }
 
+    private bool _canInteractWith = true;
+
     protected override void OnClicked()
     {
         //UIManager.Instance.UpdateEntityPanel(this);
@@ -23,4 +25,16 @@ public class Treasure : TileEntity, IObjectOnTile
 	// Update is called once per frame
 	void Update () {
 	}
+
+    public override bool PlayerCanInteractWith()
+    {
+        return _canInteractWith;
+    }
+
+    public override void PlayerInteractWith(Player player)
+    {
+        DungeonManager.Instance.PerformLootCardDrawing(2);
+        this._canInteractWith = false;
+        Destroy(this.gameObject, 1.0f);
+    }
 }

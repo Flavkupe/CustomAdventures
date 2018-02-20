@@ -43,6 +43,8 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
     protected virtual CardMesh GetCardMesh()
     {
         switch (this.CardType) {
+            case CardType.Character:
+                return DeckManager.Instance.CardMeshes.CharBasicCardMesh;
             case CardType.Dungeon:
                 return DeckManager.Instance.CardMeshes.DungeonBasicCardMesh;
             default:
@@ -72,6 +74,8 @@ public abstract class CardData : ScriptableObject
 {
     public Rarity Rarity = Rarity.Basic;
     public Sprite CardArt;
+
+    public string Name;
 
     /// <summary>
     /// If this is false, this card will be excluded from all random deckbuilding

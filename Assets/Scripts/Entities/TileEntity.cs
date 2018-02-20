@@ -31,4 +31,27 @@ public class TileEntity : MonoBehaviour, IObjectOnTile
     {
         this.OnClicked();
     }
+
+    public virtual bool PlayerCanInteractWith()
+    {
+        return false;
+    }
+
+    public virtual void PlayerInteractWith(Player player)
+    {        
+    }
+
+    public bool TryMove(Direction direction)
+    {
+        TileGrid grid = DungeonManager.Instance.Grid;
+        if (grid.CanOccupyAdjacent(this.XCoord, this.YCoord, direction))
+        {
+            grid.MoveTo(this.XCoord, this.YCoord, direction, this);
+            Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
+            this.transform.position = newTile.transform.position;
+            return true;
+        }
+
+        return false;
+    }
 }

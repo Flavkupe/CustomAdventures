@@ -27,7 +27,7 @@ public abstract class InventoryItem
         int newItems = Math.Min(other.CurrentStackSize, other.CurrentStackSize);
         int leftOver = other.CurrentStackSize - newItems;
         this.CurrentStackSize += newItems;
-        other.CurrentStackSize = leftOver;        
+        other.CurrentStackSize = leftOver;
     }
 }
 

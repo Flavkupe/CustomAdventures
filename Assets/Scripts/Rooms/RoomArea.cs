@@ -73,7 +73,7 @@ public class RoomArea : MonoBehaviour
         List<Tile> tiles = this.GetAreaTiles().Where(a => grid.CanOccupy(a)).ToList();        
         foreach (Tile tile in tiles)
         {
-            if (grid.GetAll8Neighbors(tile.XCoord, tile.YCoord).All(a => grid.CanOccupy(a)))
+            if (grid.GetAll8Neighbors(tile.XCoord, tile.YCoord).All(a => grid.CanOccupy(a, OccupancyRule.CanBeTemporaryEntity)))
             {
                 freeTiles.Add(tile);
             }

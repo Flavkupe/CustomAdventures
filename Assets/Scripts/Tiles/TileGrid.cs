@@ -24,6 +24,31 @@ public class TileGrid : MonoBehaviour
         return grid[x, y] == null ? null : grid[x, y].Tile;
     }
 
+    public IEnumerable<Tile> GetAllTiles()
+    {
+        List<Tile> list = new List<Tile>();
+        foreach (TileContents tile in grid)
+        {
+            if (tile != null && tile.Tile != null)
+            {
+                list.Add(tile.Tile);
+            }
+        }
+
+        return list;
+    }
+
+    public void UnreserveAll()
+    {
+        foreach (TileContents tile in grid)
+        {
+            if (tile != null && tile.Tile != null)
+            {
+                tile.Tile.IsReserved = false;
+            }
+        }
+    }
+
     public void Init(int dimX, int dimY)
     {
         grid = new TileContents[dimX, dimY];
@@ -119,31 +144,31 @@ public class TileGrid : MonoBehaviour
         this.PutObject(contents.Tile.XCoord, contents.Tile.YCoord, obj);
     }
 
-    public bool CanOccupyAdjacent(int x, int y, Direction direction)
+    public bool CanOccupyAdjacent(int x, int y, Direction direction, OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
         TileContents contents = this.GetAdjacent(x, y, direction);
-        return this.CanOccupyContents(contents);
+        return this.CanOccupyContents(contents, rule);
     }
 
-    public bool IsCorner(int x, int y)
+    public bool IsCorner(int x, int y, OccupancyRule rule = OccupancyRule.CanBeTemporaryEntity)
     {
-        if (!this.CanOccupy(x, y)) return false;
-        bool top = this.CanOccupyAdjacent(x, y, Direction.Up);
-        bool left = this.CanOccupyAdjacent(x, y, Direction.Left);
-        bool right = this.CanOccupyAdjacent(x, y, Direction.Right);
-        bool bottom = this.CanOccupyAdjacent(x, y, Direction.Down);
+        if (!this.CanOccupy(x, y, OccupancyRule.MustBeEmpty)) return false;
+        bool top = this.CanOccupyAdjacent(x, y, Direction.Up, rule);
+        bool left = this.CanOccupyAdjacent(x, y, Direction.Left, rule);
+        bool right = this.CanOccupyAdjacent(x, y, Direction.Right, rule);
+        bool bottom = this.CanOccupyAdjacent(x, y, Direction.Down, rule);
         if ((top && bottom) || (left && right)) return false;
         if ((top && right) || (top && left)) return true;
         if ((bottom && right) || (bottom && left)) return true;
         return false;        
     }
 
-    public bool CanOccupy(Tile tile)
+    public bool CanOccupy(Tile tile, OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
-        return tile != null && CanOccupy(tile.XCoord, tile.YCoord);
+        return tile != null && CanOccupy(tile.XCoord, tile.YCoord, rule);
     }
 
-    public bool CanOccupy(int x, int y)
+    public bool CanOccupy(int x, int y, OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
         if (this.IsOffBounds(x, y))
         {
@@ -151,7 +176,7 @@ public class TileGrid : MonoBehaviour
         }
 
         TileContents contents = this.grid[x, y];
-        if (!this.CanOccupyContents(contents))
+        if (!this.CanOccupyContents(contents, rule))
         {
             return false;
         }
@@ -159,9 +184,29 @@ public class TileGrid : MonoBehaviour
         return true;
     }
 
-    public bool CanOccupyContents(TileContents contents)
+    public bool CanOccupyContents(TileContents contents, OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
-        return contents != null && contents.Tile != null && contents.TileObject == null;
+        if (contents == null || contents.Tile == null)
+        {
+            return false;
+        }
+
+        if (contents.Tile.IsReserved && !FitsOccupancyRule(rule, OccupancyRule.CanBeReserved))
+        {
+            return false;
+        }
+
+        if (contents.TileObject != null)
+        {
+            if (contents.TileObject == Player.Instance && FitsOccupancyRule(rule, OccupancyRule.CanBePlayer))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     // Use this for initialization
@@ -173,6 +218,20 @@ public class TileGrid : MonoBehaviour
 	void Update () {
 		
 	}
+
+    private bool FitsOccupancyRule(OccupancyRule rule, OccupancyRule flag)
+    {
+        return Utils.HasFlag((int)rule, (int)OccupancyRule.CanBeReserved);
+    }
+}
+
+[Flags]
+public enum OccupancyRule
+{
+    MustBeEmpty = 1,
+    CanBeReserved = 2,
+    CanBePlayer = 4,
+    CanBeTemporaryEntity = 6, // For checking adjacent spots to a spawn locale
 }
 
 public interface IDungeonActor
