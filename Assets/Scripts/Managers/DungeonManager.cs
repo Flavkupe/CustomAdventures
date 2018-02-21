@@ -119,6 +119,19 @@ public class DungeonManager : SingletonObject<DungeonManager>
         }
     }
 
+    public void PerformAbilityCardDrawing(int cardNum)
+    {
+        var abilityCards = DeckManager.Instance.DrawAbilityCards(cardNum);
+        foreach (IAbilityCard card in abilityCards)
+        {
+            postAnimationActionQueue.Enqueue(() =>
+            {
+                Player.Instance.EquipAbility(card);
+                card.DestroyCard();
+            });
+        }
+    }
+
     public void PerformCharacterCardDrawing(int cardNum)
     {
         var charCards = DeckManager.Instance.DrawCharacterCards(cardNum);
@@ -166,7 +179,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     private void StartDungeon()
     {
-        PerformCharacterCardDrawing(2);        
+        PerformAbilityCardDrawing(2);        
     }
 
     private void HandleOnDrawAnimationDone(object sender, EventArgs e)

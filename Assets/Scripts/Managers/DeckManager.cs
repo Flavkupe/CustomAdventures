@@ -9,16 +9,19 @@ public class DeckManager : SingletonObject<DeckManager>
     private List<DungeonCardData> allDungeonCardData;
     private List<LootCardData> allLootCardData;
     private List<CharacterCardData> allCharCardData;
+    private List<AbilityCardData> allAbilityCardData;
 
     public CardMeshes CardMeshes;
 
     public Deck<IDungeonCard> DungeonDeck = new Deck<IDungeonCard>();
     public Deck<ILootCard> LootDeck = new Deck<ILootCard>();
     public Deck<ICharacterCard> CharacterDeck = new Deck<ICharacterCard>();
+    public Deck<IAbilityCard> AbilityDeck = new Deck<IAbilityCard>();
 
     public GameObject DungeonDeckHolder;
     public GameObject LootDeckHolder;
     public GameObject CharDeckHolder;
+    public GameObject AbilityDeckHolder;
     public GameObject CardDrawPos;
 
     public float DeckSmallSize = 0.35f;
@@ -36,11 +39,13 @@ public class DeckManager : SingletonObject<DeckManager>
         allDungeonCardData = LoadCards<DungeonCardData>("Cards/DungeonCards");
         allLootCardData = LoadCards<LootCardData>("Cards/LootCards");
         allCharCardData = LoadCards<CharacterCardData>("Cards/CharacterCards");
+        allAbilityCardData = LoadCards<AbilityCardData>("Cards/AbilityCards");
 
         // Make each deck
         CreateDeck(30, DungeonDeck, DungeonDeckHolder, allDungeonCardData);
         CreateDeck(30, LootDeck, LootDeckHolder, allLootCardData);
         CreateDeck(30, CharacterDeck, CharDeckHolder, allCharCardData);
+        CreateDeck(10, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
     }
 
     private void CreateDeck<TCardType, TCardDataType>(int numCards, Deck<TCardType> deck, GameObject deckHolder, 
@@ -94,7 +99,12 @@ public class DeckManager : SingletonObject<DeckManager>
         return this.DrawCards(numDrawn, LootDeck, LootDeckHolder);
     }
 
-    internal List<ICharacterCard> DrawCharacterCards(int numDrawn)
+    public List<IAbilityCard> DrawAbilityCards(int numDrawn)
+    {
+        return this.DrawCards(numDrawn, AbilityDeck, AbilityDeckHolder);
+    }
+
+    public List<ICharacterCard> DrawCharacterCards(int numDrawn)
     {
         return this.DrawCards(numDrawn, CharacterDeck, CharDeckHolder, 30.0f);
     }

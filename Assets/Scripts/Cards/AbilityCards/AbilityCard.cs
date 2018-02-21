@@ -1,12 +1,17 @@
 ﻿
 using System;
+using UnityEngine;
 
 public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCardData
 {
     public override CardType CardType { get { return CardType.Ability; } }
     public AbilityCardType AbilityCardType { get { return this.Data.AbilityCardType; } }
+    public AbilityActivationType ActivationType { get { return this.Data.ActivationType; } }
 
-    public AbilityEventType AbilityEventType { get { return Data.AbilityEventType; } }
+    public Sprite AbilityIcon { get { return this.Data.AbilityIcon; } }
+
+    // TODO: based on character class and card
+    public bool ForgetOnUse { get { return true; } }
 
     public virtual void ActivateAbility()
     {
@@ -34,7 +39,11 @@ public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCa
 public interface IAbilityCard : ICard
 {
     AbilityCardType AbilityCardType { get; }
-    AbilityEventType AbilityEventType { get; }
+    AbilityActivationType ActivationType { get; }
+
+    Sprite AbilityIcon { get; }
+
+    bool ForgetOnUse { get; }
 
     void ActivateAbility();
     void ActivateAbility(Tile target);
@@ -52,14 +61,9 @@ public enum AbilityCardType
     SelfBuff,
 }
 
-public enum AbilityEventType
-{
-    AttackAdjacent
-}
-
 public abstract class AbilityCardData : CardData
 {
     public abstract AbilityCardType AbilityCardType { get; }
-    public AbilityEventType AbilityEventType;
     public AbilityActivationType ActivationType;
+    public Sprite AbilityIcon;
 }

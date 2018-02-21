@@ -12,14 +12,35 @@ public class Player : TileEntity
 
     public static Player Instance { get { return instance; } private set { instance = value; } }
 
+    public List<IAbilityCard> Abilities { get { return abilities; } }
+
     public PlayerStats Stats;
 
     private List<StatusEffect> Effects = new List<StatusEffect>();
+
+    private List<IAbilityCard> abilities = new List<IAbilityCard>();
 
     // Use this for initialization
     void Awake()
     {
         Instance = this;
+    }
+
+    public void EquipAbility(IAbilityCard ability)
+    {
+        this.abilities.Add(ability);
+        AbilityPanel.Instance.AddAbility(ability);
+    }
+
+    public void UseAbility(IAbilityCard ability)
+    {
+        // TODO: targetted abilities
+        Debug.Assert(this.abilities.Contains(ability));
+        ability.ActivateAbility();
+        if (ability.ForgetOnUse)
+        {
+            this.abilities.Remove(ability);
+        }
     }
 
     public void ApplyEffect(StatusEffect effect)
