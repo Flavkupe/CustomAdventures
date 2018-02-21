@@ -181,6 +181,16 @@ public class DungeonManager : SingletonObject<DungeonManager>
         GameManager.Instance.IsPaused = false;
     }
 
+    public List<TileEntity> GetEntitiesNearPlayer(TileRangeType rangeType, int range, TileEntityType? filter = null)
+    {
+        switch (rangeType) {
+            case TileRangeType.Radial:
+                return Grid.GetRadialEntities(Player.Instance.XCoord, Player.Instance.YCoord, range, filter);
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
     // Update is called once per frame
     void Update () {
 		

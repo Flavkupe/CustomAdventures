@@ -7,6 +7,14 @@ public class Treasure : TileEntity, IObjectOnTile
 {
     public TreasureCardData Data { get; set; }
 
+    public override TileEntityType EntityType
+    {
+        get
+        {
+            return TileEntityType.Environment;
+        }
+    }
+
     private bool _canInteractWith = true;
 
     protected override void OnClicked()
@@ -31,10 +39,11 @@ public class Treasure : TileEntity, IObjectOnTile
         return _canInteractWith;
     }
 
-    public override void PlayerInteractWith(Player player)
+    public override PlayerInteraction PlayerInteractWith(Player player)
     {
         DungeonManager.Instance.PerformLootCardDrawing(2);
         this._canInteractWith = false;
         Destroy(this.gameObject, 1.0f);
+        return PlayerInteraction.InteractWithObject;
     }
 }

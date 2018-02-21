@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class TileGrid : MonoBehaviour
 {
@@ -133,7 +134,7 @@ public class TileGrid : MonoBehaviour
 
     public bool IsOffBounds(int x, int y)
     {
-        return this.grid.IsOffBounds(x, y);        
+        return this.grid.IsOffBounds(x, y);
     }    
 
     public void MoveTo<T>(int x, int y, Direction direction, T obj) where T : TileEntity
@@ -166,6 +167,43 @@ public class TileGrid : MonoBehaviour
     public bool CanOccupy(Tile tile, OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
         return tile != null && CanOccupy(tile.XCoord, tile.YCoord, rule);
+    }
+
+    /// <summary>
+    /// Get all entities of type filter (or all for null) within radius "range" of center point x,y.
+    /// </summary>
+    public List<TileEntity> GetRadialEntities(int x, int y, int range, TileEntityType? filter = null)
+    {
+        List<TileEntity> entities = new List<TileEntity>();
+        List<TileContents> contents = this.GetRadialTileContents(x, y, range);
+        entities = contents.Where(a => a.TileObject != null).Select(b => b.TileObject).ToList();
+        if (filter != null)
+        {
+            entities = entities.Where(a => Utils.HasFlag((int)a.EntityType, (int)filter)).ToList();
+        }
+
+        return entities;
+    }
+
+    public List<TileContents> GetRadialTileContents(int x, int y, int range)
+    {
+        List<TileContents> tilesInArea = new List<TileContents>();
+        Utils.DoFromXYToXY(x - range, y - range, x + range, y + range, (currX, currY) =>
+        {
+            if (!IsOffBounds(currX, currY))
+            {
+                if (Vector2.Distance(new Vector2(x, y), new Vector2(currX, currY)) <= (float)range)
+                {
+                    TileContents contents = Get(currX, currY);
+                    if (contents != null)
+                    {
+                        tilesInArea.Add(contents);
+                    }
+                }
+            }
+        });
+
+        return tilesInArea;
     }
 
     public bool CanOccupy(int x, int y, OccupancyRule rule = OccupancyRule.MustBeEmpty)
@@ -252,4 +290,12 @@ public interface IHasCoords
 public enum Direction
 {
     Up, Down, Left, Right
+}
+
+public enum TileRangeType
+{
+    Radial,
+    Square,
+    Sides,
+    Diagonals,
 }

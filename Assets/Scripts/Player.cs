@@ -2,24 +2,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Player : TileEntity
 {
     private static Player instance;
 
+    public override TileEntityType EntityType { get { return TileEntityType.Player; } }
+
     public static Player Instance { get { return instance; } private set { instance = value; } }
 
     public PlayerStats Stats;
 
+    private List<StatusEffect> Effects = new List<StatusEffect>();
+
     // Use this for initialization
     void Awake()
     {
-        Instance = this;        
+        Instance = this;
+    }
+
+    public void ApplyEffect(StatusEffect effect)
+    {
+        effect.Apply(this);
+        Effects.Add(effect);
+    }
+
+    public void EffectExpire(StatusEffect effect)
+    {
+        effect.Expire(this);
+        Effects.Remove(effect);
     }
 
     void Start()
     {
-    }    
+    }
 	
 	// Update is called once per frame
 	void Update ()
@@ -47,12 +64,40 @@ public class Player : TileEntity
         }
     }
 
+    private void ProcessEffects(EffectDurationType actionTaken)
+    {
+        foreach (StatusEffect effect in this.Effects.ToList())
+        {
+            if (effect.DurationType == actionTaken)
+            {
+                effect.Duration--;
+                if (effect.Duration <= 0)
+                {
+                    this.EffectExpire(effect);
+                }
+            }
+        }
+    }
+
+    private void OnAfterPlayerMove()
+    {
+        ProcessEffects(EffectDurationType.Steps);
+    }
+
+    private void OnAfterPlayerAttack()
+    {
+        ProcessEffects(EffectDurationType.Attacks);
+    }
+
     public void PlayerMoveCommand(Direction direction)
     {
         TileGrid grid = DungeonManager.Instance.Grid;
         if (grid.CanOccupyAdjacent(this.XCoord, this.YCoord, direction))
         {
-            this.TryMove(direction);
+            if (this.TryMove(direction))
+            {
+                this.OnAfterPlayerMove();
+            }
         }
         else
         {
@@ -61,13 +106,20 @@ public class Player : TileEntity
             {
                 if (obj.PlayerCanInteractWith())
                 {
-                    obj.PlayerInteractWith(this);
-                }               
+                    switch(obj.PlayerInteractWith(this))
+                    {
+                        case PlayerInteraction.Attack:
+                            this.OnAfterPlayerAttack();
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
             else
             {
                 // Boundry
-            }            
+            }
         }
 
         DungeonManager.Instance.AfterPlayerMove();
@@ -208,4 +260,12 @@ public class PlayerInventory
     public List<InventoryItem> InventoryItems = new List<InventoryItem>();
 
     public int MaxItems = 3;
+}
+
+public enum PlayerInteraction
+{
+    None,
+    Move,
+    InteractWithObject,
+    Attack
 }

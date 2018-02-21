@@ -1,12 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class TileEntity : MonoBehaviour, IObjectOnTile
+public abstract class TileEntity : MonoBehaviour, IObjectOnTile
 {
     public int XCoord { get; set; }
     public int YCoord { get; set; }
+
+    public abstract TileEntityType EntityType { get; }
 
     public void ShowFloatyText(string text)
     {
@@ -37,8 +40,13 @@ public class TileEntity : MonoBehaviour, IObjectOnTile
         return false;
     }
 
-    public virtual void PlayerInteractWith(Player player)
-    {        
+    public virtual void DoDamage(int damage)
+    {
+    }
+
+    public virtual PlayerInteraction PlayerInteractWith(Player player)
+    {
+        return PlayerInteraction.None;
     }
 
     public bool TryMove(Direction direction)
@@ -54,4 +62,12 @@ public class TileEntity : MonoBehaviour, IObjectOnTile
 
         return false;
     }
+}
+
+[Flags]
+public enum TileEntityType
+{
+    Player = 1,
+    Enemy = 2,
+    Environment = 4,
 }

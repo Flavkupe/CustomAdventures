@@ -7,6 +7,8 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 {
     public EnemyCardData Data { get; set; }
 
+    public override TileEntityType EntityType { get { return TileEntityType.Enemy; } }
+
     private int HP;
 
     public virtual void MoveAfterPlayer()
@@ -30,6 +32,11 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
         }
     }
 
+    public override void DoDamage(int damage)
+    {
+        this.TakeDamage(damage);
+    }
+
     protected override void OnClicked()
     {
         UIManager.Instance.UpdateEntityPanel(this);
@@ -51,11 +58,14 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     public void TakeDamage(int damage)
     {
-        this.HP -= damage;
-        this.ShowFloatyText(damage.ToString());
-        if (this.HP <= 0)
+        if (this.HP > 0)
         {
-            this.Die();
+            this.HP -= damage;
+            this.ShowFloatyText(damage.ToString());
+            if (this.HP <= 0)
+            {
+                this.Die();
+            }
         }
     }
 
@@ -70,9 +80,10 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
         return true;
     }
 
-    public override void PlayerInteractWith(Player player)
+    public override PlayerInteraction PlayerInteractWith(Player player)
     {
         int damage = player.GetAttackStrength();
         this.TakeDamage(damage);
+        return PlayerInteraction.Attack;
     }
 }

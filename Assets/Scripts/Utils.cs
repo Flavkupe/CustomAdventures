@@ -24,6 +24,17 @@ public static class Utils
         }
     }
 
+    public static void DoFromXYToXY(int startX, int startY, int endX, int endY, Action<int, int> action)
+    {
+        for (int x = startX; x < endX; x++)
+        {
+            for (int y = startX; y < endY; y++)
+            {
+                action(x, y);
+            }
+        }
+    }
+
     public static System.Random Rand = new System.Random();
 
     public static Direction GetOppositeDirection(Direction direction)
