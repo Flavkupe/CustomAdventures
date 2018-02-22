@@ -67,21 +67,24 @@ public class Player : TileEntity
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (GameManager.Instance.State != GameState.CharacterMoving)
         {
-            this.PlayerMoveCommand(Direction.Up);
-        }
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            this.PlayerMoveCommand(Direction.Down);
-        }
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            this.PlayerMoveCommand(Direction.Left);
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            this.PlayerMoveCommand(Direction.Right);
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                this.PlayerMoveCommand(Direction.Up);
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                this.PlayerMoveCommand(Direction.Down);
+            }
+            else if (Input.GetKeyDown(KeyCode.A))
+            {
+                this.PlayerMoveCommand(Direction.Left);
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                this.PlayerMoveCommand(Direction.Right);
+            }
         }
     }
 

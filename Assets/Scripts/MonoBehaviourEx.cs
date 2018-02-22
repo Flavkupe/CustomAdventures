@@ -10,7 +10,8 @@ public class MonoBehaviourEx : MonoBehaviour
         float totalRot = 0;
         while (totalRot < angle)
         {
-            float delta = Time.deltaTime * speed;
+            float speedMultiplier = GameManager.Instance.GetMouseDownSpeedMultiplier();
+            float delta = Time.deltaTime * speed * speedMultiplier;
             this.transform.Rotate(axis, delta);
             totalRot += delta;
             yield return null;

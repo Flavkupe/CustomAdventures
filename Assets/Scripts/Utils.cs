@@ -85,23 +85,24 @@ public static class ExtensionFunctions
         }
     }
 
-    public static IEnumerator MoveToSpotCoroutine(this MonoBehaviour obj, Vector3 target, float speed)
+    public static IEnumerator MoveToSpotCoroutine(this MonoBehaviour obj, Vector3 target, float speed, bool allowMouseSpeedup = true, Action onAfterDone = null)
     {
-        return obj.gameObject.MoveToSpotCoroutine(target, speed);
+        return obj.gameObject.MoveToSpotCoroutine(target, speed, allowMouseSpeedup, onAfterDone);
     }
 
-    public static IEnumerator MoveToSpotCoroutine(this GameObject obj, Vector3 target, float speed)
+    public static IEnumerator MoveToSpotCoroutine(this GameObject obj, Vector3 target, float speed, bool allowMouseSpeedup = true, Action onAfterDone = null)
     {
-        return obj.MoveToSpotAndScaleCoroutine(target, speed, 0.0f);
+        return obj.MoveToSpotAndScaleCoroutine(target, speed, 0.0f, allowMouseSpeedup, onAfterDone);
     }
 
-    public static IEnumerator MoveToSpotAndScaleCoroutine(this GameObject obj, Vector3 target, float speed, float targetScaleChange)
+    public static IEnumerator MoveToSpotAndScaleCoroutine(this GameObject obj, Vector3 target, float speed, float targetScaleChange, bool allowMouseSpeedup = true, Action onAfterDone = null)
     {
         float targetDistance = Vector3.Distance(target, obj.transform.position);
         float distanceTravelled = 0.0f;
         while (distanceTravelled < targetDistance)
         {
-            float delta = Time.deltaTime * speed;
+            float speedMultiplier = allowMouseSpeedup ? GameManager.Instance.GetMouseDownSpeedMultiplier() : 1.0f;
+            float delta = Time.deltaTime * speed * speedMultiplier;
             float proportion = delta / targetDistance;
             obj.transform.position = Vector3.MoveTowards(obj.transform.position, target, delta);
 
@@ -114,6 +115,11 @@ public static class ExtensionFunctions
 
             distanceTravelled += delta;
             yield return null;
+        }
+
+        if (onAfterDone != null)
+        {
+            onAfterDone();
         }
     }
 

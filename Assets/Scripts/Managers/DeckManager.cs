@@ -27,6 +27,8 @@ public class DeckManager : SingletonObject<DeckManager>
     public float DeckSmallSize = 0.35f;
     public float DeckBigSize = 1.00f;
 
+    public float CardMoveSpeed = 15.0f;
+
     public event EventHandler OnDrawAnimationDone;
 
     private List<TCardDataType> LoadCards<TCardDataType>(string path) where TCardDataType : CardData
@@ -115,7 +117,9 @@ public class DeckManager : SingletonObject<DeckManager>
     }
 
     public IEnumerator AnimateCardDraws(List<ICard> cards, GameObject deckHolder, float deckMoveSpeed = 10.0f)
-    {        
+    {
+        float speedMultiplier = GameManager.Instance.GetMouseDownSpeedMultiplier();
+        deckMoveSpeed = deckMoveSpeed *= speedMultiplier;
         float targetX = 0.0f;
         Vector3 initPos = deckHolder.transform.position;        
         yield return StartCoroutine(MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed));
@@ -125,17 +129,17 @@ public class DeckManager : SingletonObject<DeckManager>
             CardMesh cardMesh = card.CardMesh;
             targetX += 3.0f;
             Vector3 target = cardMesh.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
-            yield return StartCoroutine(cardMesh.MoveToSpotCoroutine(target, 15.0f));
+            yield return StartCoroutine(cardMesh.MoveToSpotCoroutine(target, this.CardMoveSpeed));
             yield return StartCoroutine(cardMesh.RotateCoroutine(Vector3.up, 180.0f, 200.0f));
             cardMesh.transform.eulerAngles = new Vector3(0.0f, 0.0f);
             cardMesh.transform.SetParent(null);
-        }
+        }        
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(1.0f / speedMultiplier);
 
         yield return StartCoroutine(MoveDeckToPosition(deckHolder, initPos, DeckSmallSize - DeckBigSize));
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f / speedMultiplier);
 
         if (OnDrawAnimationDone != null)
         {
@@ -157,6 +161,7 @@ public class DeckManager : SingletonObject<DeckManager>
 	// Update is called once per frame
 	void Update ()
     {
+               
 	}
 }
 

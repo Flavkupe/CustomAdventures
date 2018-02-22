@@ -6,6 +6,8 @@ using UnityEngine;
 
 public abstract class TileEntity : MonoBehaviour, IObjectOnTile
 {
+    public float TileSlideSpeed = 10.0f;
+
     public int XCoord { get; set; }
     public int YCoord { get; set; }
 
@@ -56,7 +58,12 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
         {
             grid.MoveTo(this.XCoord, this.YCoord, direction, this);
             Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
-            this.transform.position = newTile.transform.position;
+            GameManager.Instance.State = GameState.CharacterMoving;           
+            StartCoroutine(this.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false, () =>
+            {
+                this.transform.position = newTile.transform.position;
+                GameManager.Instance.State = GameState.Neutral;                
+            }));
             return true;
         }
 
