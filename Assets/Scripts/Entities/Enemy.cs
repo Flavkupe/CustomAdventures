@@ -11,24 +11,24 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     private int HP;
 
-    public virtual void MoveAfterPlayer()
+    public IEnumerator ProcessCharacterTurn()
     {
         // Basic move
         if (Player.Instance.XCoord > this.XCoord)
         {
-            this.TryMove(Direction.Right);
+            yield return StartCoroutine(TryMove(Direction.Right));
         }
         else if (Player.Instance.XCoord < this.XCoord)
         {
-            this.TryMove(Direction.Left);
+            yield return StartCoroutine(TryMove(Direction.Left));
         }
         else if (Player.Instance.YCoord > this.YCoord)
         {
-            this.TryMove(Direction.Up);
+            yield return StartCoroutine(TryMove(Direction.Up));
         }
         else if (Player.Instance.YCoord < this.YCoord)
         {
-            this.TryMove(Direction.Down);
+            yield return StartCoroutine(TryMove(Direction.Down));
         }
     }
 
@@ -52,8 +52,7 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
     }
 	
 	// Update is called once per frame
-	void Update () {
-		
+	void Update () {		
 	}
 
     public void TakeDamage(int damage)

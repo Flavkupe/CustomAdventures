@@ -84,10 +84,15 @@ public class DeckManager : SingletonObject<DeckManager>
             cards.Add(card);
         }
 
+        // TODO: replace w/ state system
         // Pause for animations
         GameManager.Instance.IsPaused = true;
 
-        StartCoroutine(AnimateCardDraws(cards.Cast<ICard>().ToList(), deckHolder));
+        GameManager.Instance.EnqueueAfterStateAction(GameState.CharacterMoving, () =>
+        {
+            StartCoroutine(AnimateCardDraws(cards.Cast<ICard>().ToList(), deckHolder));
+        });
+
         return cards;
     }
 

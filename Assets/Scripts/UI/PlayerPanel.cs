@@ -16,7 +16,8 @@ public class PlayerPanel : MonoBehaviour
 HP: {1}
 Energy: {2}
 Weapon: {3}
-", stats.Level, stats.HP, stats.Energy, weaponName);
+GameState: {4}
+", stats.Level, stats.HP, stats.Energy, weaponName, GameManager.Instance.State.ToString());
         this.TextBox.text = data;
     }
 

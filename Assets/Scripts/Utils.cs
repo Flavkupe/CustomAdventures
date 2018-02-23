@@ -85,18 +85,19 @@ public static class ExtensionFunctions
         }
     }
 
-    public static IEnumerator MoveToSpotCoroutine(this MonoBehaviour obj, Vector3 target, float speed, bool allowMouseSpeedup = true, Action onAfterDone = null)
+    public static IEnumerator MoveToSpotCoroutine(this MonoBehaviour obj, Vector3 target, float speed, bool allowMouseSpeedup = true)
     {
-        return obj.gameObject.MoveToSpotCoroutine(target, speed, allowMouseSpeedup, onAfterDone);
+        return obj.gameObject.MoveToSpotCoroutine(target, speed, allowMouseSpeedup);
     }
 
-    public static IEnumerator MoveToSpotCoroutine(this GameObject obj, Vector3 target, float speed, bool allowMouseSpeedup = true, Action onAfterDone = null)
+    public static IEnumerator MoveToSpotCoroutine(this GameObject obj, Vector3 target, float speed, bool allowMouseSpeedup = true)
     {
-        return obj.MoveToSpotAndScaleCoroutine(target, speed, 0.0f, allowMouseSpeedup, onAfterDone);
+        return obj.MoveToSpotAndScaleCoroutine(target, speed, 0.0f, allowMouseSpeedup);
     }
 
-    public static IEnumerator MoveToSpotAndScaleCoroutine(this GameObject obj, Vector3 target, float speed, float targetScaleChange, bool allowMouseSpeedup = true, Action onAfterDone = null)
+    public static IEnumerator MoveToSpotAndScaleCoroutine(this GameObject obj, Vector3 target, float speed, float targetScaleChange, bool allowMouseSpeedup = true)
     {
+        Vector3 targetScale = obj.transform.localScale.IncrementBy(targetScaleChange, targetScaleChange, targetScaleChange);
         float targetDistance = Vector3.Distance(target, obj.transform.position);
         float distanceTravelled = 0.0f;
         while (distanceTravelled < targetDistance)
@@ -117,10 +118,7 @@ public static class ExtensionFunctions
             yield return null;
         }
 
-        if (onAfterDone != null)
-        {
-            onAfterDone();
-        }
+        obj.transform.localScale = targetScale;
     }
 
     public static Vector3 OffsetBy(this Vector3 vector, float offset)

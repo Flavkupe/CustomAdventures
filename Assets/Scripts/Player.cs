@@ -67,7 +67,7 @@ public class Player : TileEntity
             return;
         }
 
-        if (GameManager.Instance.State != GameState.CharacterMoving)
+        if (GameManager.Instance.State == GameState.AwaitingCommand)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -111,17 +111,22 @@ public class Player : TileEntity
     private void OnAfterPlayerAttack()
     {
         ProcessEffects(EffectDurationType.Attacks);
+        DungeonManager.Instance.AfterPlayerTurn();
+    }
+
+    private IEnumerator TryPlayerMove(Direction direction)
+    {
+        yield return StartCoroutine(this.TryMove(direction));
+        OnAfterPlayerMove();
+        DungeonManager.Instance.AfterPlayerTurn();
     }
 
     public void PlayerMoveCommand(Direction direction)
     {
         TileGrid grid = DungeonManager.Instance.Grid;
-        if (grid.CanOccupyAdjacent(this.XCoord, this.YCoord, direction))
-        {
-            if (this.TryMove(direction))
-            {
-                this.OnAfterPlayerMove();
-            }
+        if (this.CanMove(direction))
+        {            
+            StartCoroutine(this.TryPlayerMove(direction));
         }
         else
         {
@@ -145,8 +150,7 @@ public class Player : TileEntity
                 // Boundry
             }
         }
-
-        DungeonManager.Instance.AfterPlayerMove();
+        
         UIManager.Instance.UpdateUI();
     }
 

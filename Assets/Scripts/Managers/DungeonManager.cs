@@ -23,12 +23,27 @@ public class DungeonManager : SingletonObject<DungeonManager>
         this.Grid.ClearTile(enemy.XCoord, enemy.YCoord);
     }
 
-    public void AfterPlayerMove()
+    public void AfterPlayerTurn()
+    {
+        if (this.enemies.Count > 0)
+        {
+            GameManager.Instance.SetState(GameState.EnemyTurn);
+            StartCoroutine(RunEnemyTurnsCoroutine());
+        }
+        else
+        {
+            GameManager.Instance.SetState(GameState.AwaitingCommand);
+        }      
+    }
+
+    private IEnumerator RunEnemyTurnsCoroutine()
     {
         foreach (Enemy enemy in this.enemies)
         {
-            enemy.MoveAfterPlayer();
+            yield return StartCoroutine(enemy.ProcessCharacterTurn());
         }
+
+        GameManager.Instance.SetState(GameState.AwaitingCommand);
     }
 
     public void PerformDungeonEvents(RoomArea roomArea)
@@ -179,7 +194,8 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     private void StartDungeon()
     {
-        PerformAbilityCardDrawing(2);
+        GameManager.Instance.SetState(GameState.AwaitingCommand);
+        //PerformAbilityCardDrawing(2);
     }
 
     private void HandleOnDrawAnimationDone(object sender, EventArgs e)

@@ -274,7 +274,7 @@ public enum OccupancyRule
 
 public interface IDungeonActor
 {
-    void MoveAfterPlayer();
+    IEnumerator ProcessCharacterTurn();
 }
 
 public interface IObjectOnTile : IHasCoords

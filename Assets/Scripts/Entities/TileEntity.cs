@@ -51,23 +51,25 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
         return PlayerInteraction.None;
     }
 
-    public bool TryMove(Direction direction)
+    public bool CanMove(Direction direction)
     {
         TileGrid grid = DungeonManager.Instance.Grid;
-        if (grid.CanOccupyAdjacent(this.XCoord, this.YCoord, direction))
+        return grid.CanOccupyAdjacent(this.XCoord, this.YCoord, direction);
+    }
+
+    public IEnumerator TryMove(Direction direction)
+    {        
+        if (!CanMove(direction))
         {
-            grid.MoveTo(this.XCoord, this.YCoord, direction, this);
-            Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
-            GameManager.Instance.State = GameState.CharacterMoving;           
-            StartCoroutine(this.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false, () =>
-            {
-                this.transform.position = newTile.transform.position;
-                GameManager.Instance.State = GameState.Neutral;                
-            }));
-            return true;
+            yield break;
         }
 
-        return false;
+        GameManager.Instance.SetState(GameState.CharacterMoving);
+        TileGrid grid = DungeonManager.Instance.Grid;        
+        grid.MoveTo(this.XCoord, this.YCoord, direction, this);
+        Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
+        yield return StartCoroutine(this.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false));
+        GameManager.Instance.RevertState();
     }
 }
 
