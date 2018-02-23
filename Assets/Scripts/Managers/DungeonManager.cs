@@ -35,7 +35,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     {      
         // TODO: empty deck?
         List<IDungeonCard> cards = new List<IDungeonCard>();
-        cards = DeckManager.Instance.DrawDungeonCards(2);        
+        cards = DeckManager.Instance.DrawDungeonCards(2);
         foreach (IDungeonCard card in cards)
         {
             switch (card.DungeonEventType)
@@ -179,13 +179,13 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     private void StartDungeon()
     {
-        PerformAbilityCardDrawing(2);        
+        PerformAbilityCardDrawing(2);
     }
 
     private void HandleOnDrawAnimationDone(object sender, EventArgs e)
     {
         Action action = null;
-        while (postAnimationActionQueue.Count > 0)            
+        while (postAnimationActionQueue.Count > 0)
         {
             action = postAnimationActionQueue.Dequeue();
             action.Invoke();
@@ -206,7 +206,6 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     // Update is called once per frame
     void Update () {
-		
 	}
 }
 

@@ -108,10 +108,10 @@ public static class ExtensionFunctions
 
             if (targetScaleChange != 0.0f)
             {
-                float scaleChange = proportion * targetScaleChange;                
+                float scaleChange = proportion * targetScaleChange;
                 Vector3 newScale = obj.transform.localScale.IncrementBy(scaleChange, scaleChange, scaleChange);
                 obj.transform.localScale = newScale;
-            }            
+            }
 
             distanceTravelled += delta;
             yield return null;

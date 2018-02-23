@@ -24,7 +24,7 @@ public abstract class InventoryItem
     public virtual void StackItems(InventoryItem other)
     {
         int spaceLeft = this.ItemData.MaxStack - this.CurrentStackSize;
-        int newItems = Math.Min(other.CurrentStackSize, other.CurrentStackSize);
+        int newItems = Math.Min(spaceLeft, other.CurrentStackSize);
         int leftOver = other.CurrentStackSize - newItems;
         this.CurrentStackSize += newItems;
         other.CurrentStackSize = leftOver;

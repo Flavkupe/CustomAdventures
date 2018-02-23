@@ -6,7 +6,7 @@ using System.Linq;
 public class DungeonGenerator: SingletonObject<DungeonGenerator>
 {
     public int NumRooms = 4;
-    public int RoomDims = 9;
+    public int RoomDims = 16;
     public int Dims { get { return this.RoomDims * NumRooms; } }
     public Tile GenericTileTemplate;
     public Room[] PossibleRoomTemplates;

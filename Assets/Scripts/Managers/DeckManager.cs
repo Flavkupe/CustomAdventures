@@ -112,16 +112,15 @@ public class DeckManager : SingletonObject<DeckManager>
     }
 
     public IEnumerator MoveDeckToPosition(GameObject deckHolder, Vector3 target, float sizeChange, float deckMoveSpeed = 10.0f)
-    {        
+    {
         yield return StartCoroutine(deckHolder.MoveToSpotAndScaleCoroutine(target, deckMoveSpeed, sizeChange));
     }
 
     public IEnumerator AnimateCardDraws(List<ICard> cards, GameObject deckHolder, float deckMoveSpeed = 10.0f)
     {
         float speedMultiplier = GameManager.Instance.GetMouseDownSpeedMultiplier();
-        deckMoveSpeed = deckMoveSpeed *= speedMultiplier;
         float targetX = 0.0f;
-        Vector3 initPos = deckHolder.transform.position;        
+        Vector3 initPos = deckHolder.transform.position;
         yield return StartCoroutine(MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed));
 
         foreach (ICard card in cards)
@@ -154,14 +153,13 @@ public class DeckManager : SingletonObject<DeckManager>
 
     // Use this for initialization
     void Start ()
-    {        
+    {
         InitDecks();
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
-               
 	}
 }
 
