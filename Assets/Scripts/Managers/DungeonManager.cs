@@ -28,22 +28,18 @@ public class DungeonManager : SingletonObject<DungeonManager>
         if (this.enemies.Count > 0)
         {
             GameManager.Instance.SetState(GameState.EnemyTurn);
-            StartCoroutine(RunEnemyTurnsCoroutine());
+            RoutineChain enemyTurns = new RoutineChain(enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
+            enemyTurns.Then(() =>
+            {
+                GameManager.Instance.SetState(GameState.AwaitingCommand);
+            });
+
+            StartCoroutine(enemyTurns);
         }
         else
         {
             GameManager.Instance.SetState(GameState.AwaitingCommand);
-        }      
-    }
-
-    private IEnumerator RunEnemyTurnsCoroutine()
-    {
-        foreach (Enemy enemy in this.enemies)
-        {
-            yield return StartCoroutine(enemy.ProcessCharacterTurn());
         }
-
-        GameManager.Instance.SetState(GameState.AwaitingCommand);
     }
 
     public void PerformDungeonEvents(RoomArea roomArea)
