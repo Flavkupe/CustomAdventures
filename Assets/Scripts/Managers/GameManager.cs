@@ -9,37 +9,63 @@ public class GameManager : SingletonObject<GameManager>
 
     public float MousedownSpeedMultiplier = 3.0f;
 
-    public Dictionary<GameState, Queue<Action>> onStateChangeFromQueues = new Dictionary<GameState, Queue<Action>>();
-    public Dictionary<GameState, Queue<Action>> onStateChangeToQueues = new Dictionary<GameState, Queue<Action>>();
-    public Dictionary<GameState, Queue<Func<IEnumerator>>> onStateChangeFromCoroutineQueues = new Dictionary<GameState, Queue<Func<IEnumerator>>>();
-    public Dictionary<GameState, Queue<Func<IEnumerator>>> onStateChangeToCoroutineQueues = new Dictionary<GameState, Queue<Func<IEnumerator>>>();
+    private Dictionary<GameState, Queue<Action>> onStateChangeFromQueues = new Dictionary<GameState, Queue<Action>>();
+    private Dictionary<GameState, Queue<Action>> onStateChangeToQueues = new Dictionary<GameState, Queue<Action>>();
+    private Dictionary<GameState, Queue<Func<IEnumerator>>> onStateChangeFromCoroutineQueues = new Dictionary<GameState, Queue<Func<IEnumerator>>>();
+    private Dictionary<GameState, Queue<Func<IEnumerator>>> onStateChangeToCoroutineQueues = new Dictionary<GameState, Queue<Func<IEnumerator>>>();
 
-    public Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>> onTriggeredEventCoroutineQueues = new Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>>();
-    public Dictionary<TriggeredEvent, Queue<Action>> onTriggeredEventActionQueues = new Dictionary<TriggeredEvent, Queue<Action>>();
+    private Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>> onTriggeredEventCoroutineQueues = new Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>>();
+    private Dictionary<TriggeredEvent, Queue<Action>> onTriggeredEventActionQueues = new Dictionary<TriggeredEvent, Queue<Action>>();
 
-    private void EnqueueActionForQueue<R, T>(R state, T action, Dictionary<R, Queue<T>> dict)
-    {        
-        dict[state].Enqueue(action);
+    private Queue<Func<IEnumerator>> coroutineQueue = new Queue<Func<IEnumerator>>();
+
+    private bool processingCoroutine = false;
+
+    private void EnqueueThingOnQueue<R, T>(R state, T thing, Dictionary<R, Queue<T>> dict)
+    {
+        dict[state].Enqueue(thing);
     }
 
-    public void EnqueueAfterStateCoroutine(GameState afterStateChangedFrom, Func<IEnumerator> action)
-    {        
-        EnqueueActionForQueue(afterStateChangedFrom, action, onStateChangeFromCoroutineQueues);
+    public void EnqueueCoroutine(Func<IEnumerator> action)
+    {
+        this.coroutineQueue.Enqueue(action);
+    }
+
+    public void EnqueueIfNotStateCoroutine(GameState afterStateChangedFrom, Func<IEnumerator> action)
+    {
+        if (afterStateChangedFrom == this.State)
+        {
+            EnqueueThingOnQueue(afterStateChangedFrom, action, onStateChangeFromCoroutineQueues);
+        }
+        else
+        {
+            // State has already different; enqueue action to happen asap
+            EnqueueCoroutine(action);
+        }
     }
 
     public void EnqueueOnNewStateCoroutine(GameState afterStateChangedTo, Func<IEnumerator> action)
     {
-        EnqueueActionForQueue(afterStateChangedTo, action, onStateChangeToCoroutineQueues);
-    }
-
-    public void EnqueueAfterStateAction(GameState afterStateChangedFrom, Action action)
-    {
-        if (afterStateChangedFrom == this.State)
+        if (afterStateChangedTo != this.State)
         {
-            EnqueueActionForQueue(afterStateChangedFrom, action, onStateChangeFromQueues);
+            EnqueueThingOnQueue(afterStateChangedTo, action, onStateChangeToCoroutineQueues);
         }
         else
         {
+            // State already at required state; enqueue action to happen asap
+            EnqueueCoroutine(action);
+        }
+    }
+
+    public void EnqueueIfNotStateAction(GameState afterStateChangedFrom, Action action)
+    {
+        if (afterStateChangedFrom == this.State)
+        {
+            EnqueueThingOnQueue(afterStateChangedFrom, action, onStateChangeFromQueues);
+        }
+        else
+        {
+            // State has already different; perform action now
             action();
         }
     }
@@ -49,22 +75,23 @@ public class GameManager : SingletonObject<GameManager>
         // TODO: make this case conditional on params...?
         if (afterStateChangedTo != this.State)
         {
-            EnqueueActionForQueue(afterStateChangedTo, action, onStateChangeToQueues);
+            EnqueueThingOnQueue(afterStateChangedTo, action, onStateChangeToQueues);
         }
         else
         {
+            // State already at required state; perform action now
             action();
         }
     }
 
     public void EnqueueTriggeredEventAction(TriggeredEvent trigger, Action action)
     {
-        EnqueueActionForQueue(trigger, action, onTriggeredEventActionQueues);
+        EnqueueThingOnQueue(trigger, action, onTriggeredEventActionQueues);
     }
 
     public void EnqueueTriggeredEventCoroutine(TriggeredEvent trigger, Func<IEnumerator> action)
     {
-        EnqueueActionForQueue(trigger, action, onTriggeredEventCoroutineQueues);
+        EnqueueThingOnQueue(trigger, action, onTriggeredEventCoroutineQueues);
     }
 
     private GameState _state;
@@ -91,23 +118,43 @@ public class GameManager : SingletonObject<GameManager>
     public void TriggerEvent(TriggeredEvent triggeredEvent)
     {
         ProcessQueuedActions(onTriggeredEventActionQueues[triggeredEvent]);
-        StartCoroutine(ProcessQueuedCoroutines(onTriggeredEventCoroutineQueues[triggeredEvent]));
+        MoveCoroutinesToInvokeQueue(onTriggeredEventCoroutineQueues[triggeredEvent]);
     }
 
     private void OnStateChanged(GameState oldState, GameState newState)
-    {        
+    {
         ProcessQueuedActions(onStateChangeToQueues[newState]);
-        StartCoroutine(ProcessQueuedCoroutines(onStateChangeToCoroutineQueues[newState]));
         ProcessQueuedActions(onStateChangeFromQueues[oldState]);
-        StartCoroutine(ProcessQueuedCoroutines(onStateChangeFromCoroutineQueues[oldState]));
+        MoveCoroutinesToInvokeQueue(onStateChangeToCoroutineQueues[newState]);
+        MoveCoroutinesToInvokeQueue(onStateChangeFromCoroutineQueues[oldState]);
     }
 
-    private IEnumerator ProcessQueuedCoroutines(Queue<Func<IEnumerator>> queue)
+    /// <summary>
+    /// Transfers coroutines from special queue to main coroutine queue, which
+    /// will actually be invoking each of the coroutines in sequence when the
+    /// time is right to do so.
+    /// </summary>
+    private void MoveCoroutinesToInvokeQueue(Queue<Func<IEnumerator>> queue)
     {
         while (queue.Count > 0)
         {
             Func<IEnumerator> action = queue.Dequeue();
+            EnqueueCoroutine(action);
+        }
+    }
+
+    /// <summary>
+    /// Processes next queued routine if any are in the queue
+    /// </summary>
+    private IEnumerator InvokeNextQueuedCoroutine()
+    {
+        if (coroutineQueue.Count > 0)
+        {
+            // TODO: How to handle thrown exceptions from action?
+            Func<IEnumerator> action = coroutineQueue.Dequeue();
+            processingCoroutine = true;
             yield return StartCoroutine(action());
+            processingCoroutine = false;
         }
     }
 
@@ -123,11 +170,11 @@ public class GameManager : SingletonObject<GameManager>
     // Use this for initialization
     void Awake()
     {
-        Instance = this;        
+        Instance = this;
         foreach (GameState state in Enum.GetValues(typeof(GameState)))
         {
             onStateChangeFromQueues[state] = new Queue<Action>();
-            onStateChangeToQueues[state] = new Queue<Action>();            
+            onStateChangeToQueues[state] = new Queue<Action>();
             onStateChangeFromCoroutineQueues[state] = new Queue<Func<IEnumerator>>();
             onStateChangeToCoroutineQueues[state] = new Queue<Func<IEnumerator>>();
         }
@@ -140,7 +187,12 @@ public class GameManager : SingletonObject<GameManager>
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update ()
+    {
+        if (!processingCoroutine && coroutineQueue.Count > 0)
+        {
+            StartCoroutine(InvokeNextQueuedCoroutine());
+        }
 	}
 
     public float GetMouseDownSpeedMultiplier()
@@ -152,6 +204,7 @@ public class GameManager : SingletonObject<GameManager>
 public enum TriggeredEvent
 {
     EntityTurnDone,
+    CardDrawDone,
 }
 
 public enum GameState

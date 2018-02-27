@@ -29,8 +29,6 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public float CardMoveSpeed = 15.0f;
 
-    public event EventHandler OnDrawAnimationDone;
-
     private List<TCardDataType> LoadCards<TCardDataType>(string path) where TCardDataType : CardData
     {
         return Resources.LoadAll<TCardDataType>(path).Where(a => a.IncludeCard).ToList();
@@ -84,15 +82,14 @@ public class DeckManager : SingletonObject<DeckManager>
             cards.Add(card);
         }
 
-        // TODO: replace w/ state system
-        // Pause for animations
         GameManager.Instance.IsPaused = true;
 
-        GameManager.Instance.EnqueueAfterStateAction(GameState.CharacterMoving, () =>
+        Routine drawRoutine = Routine.Create(AnimateCardDraws, cards.Cast<ICard>().ToList(), deckHolder, 10.0f).Then(() =>
         {
-            StartCoroutine(AnimateCardDraws(cards.Cast<ICard>().ToList(), deckHolder));
+            GameManager.Instance.IsPaused = false;
         });
 
+        GameManager.Instance.EnqueueIfNotStateCoroutine(GameState.CharacterMoving, () => drawRoutine);
         return cards;
     }
 
@@ -145,10 +142,7 @@ public class DeckManager : SingletonObject<DeckManager>
 
         yield return new WaitForSeconds(0.5f / speedMultiplier);
 
-        if (OnDrawAnimationDone != null)
-        {
-            OnDrawAnimationDone.Invoke(this, new EventArgs());
-        }
+        GameManager.Instance.TriggerEvent(TriggeredEvent.CardDrawDone);
     }
 
     void Awake()

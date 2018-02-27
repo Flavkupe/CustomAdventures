@@ -15,8 +15,6 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     public Room[] PossibleRoomTemplates;
 
-    private Queue<Action> postAnimationActionQueue = new Queue<Action>();
-   
     public void RemoveEnemy(Enemy enemy)
     {
         this.enemies.Remove(enemy);
@@ -98,7 +96,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
         if (tile != null)
         {
             tile.IsReserved = true;
-            postAnimationActionQueue.Enqueue(() =>
+            DoAfterCardDraw(() =>
             {
                 card.ExecuteTileSpawnEvent(tile);
                 card.DestroyCard();
@@ -119,7 +117,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
             {
                 case LootEventType.GainLoot:
                 default:
-                    postAnimationActionQueue.Enqueue(() =>
+                    DoAfterCardDraw(() =>
                     {
                         card.ExecuteLootGetEvent();
                         card.DestroyCard();
@@ -135,7 +133,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
         var abilityCards = DeckManager.Instance.DrawAbilityCards(cardNum);
         foreach (IAbilityCard card in abilityCards)
         {
-            postAnimationActionQueue.Enqueue(() =>
+            DoAfterCardDraw(() =>
             {
                 Player.Instance.EquipAbility(card);
                 card.DestroyCard();
@@ -152,7 +150,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
             {
                 case CharacterCardType.AttributeGain:
                 default:
-                    postAnimationActionQueue.Enqueue(() =>
+                    DoAfterCardDraw(() => 
                     {
                         card.ApplyEffect();
                         card.DestroyCard();
@@ -183,8 +181,6 @@ public class DungeonManager : SingletonObject<DungeonManager>
     // Use this for initialization
     void Start()
     {
-        DeckManager.Instance.OnDrawAnimationDone += HandleOnDrawAnimationDone;
-
         Invoke("StartDungeon", 0.5f);
     }
 
@@ -194,16 +190,9 @@ public class DungeonManager : SingletonObject<DungeonManager>
         //PerformAbilityCardDrawing(2);
     }
 
-    private void HandleOnDrawAnimationDone(object sender, EventArgs e)
+    private void DoAfterCardDraw(Action action)
     {
-        Action action = null;
-        while (postAnimationActionQueue.Count > 0)
-        {
-            action = postAnimationActionQueue.Dequeue();
-            action.Invoke();
-        }
-
-        GameManager.Instance.IsPaused = false;
+        GameManager.Instance.EnqueueTriggeredEventAction(TriggeredEvent.CardDrawDone, action);
     }
 
     public List<TileEntity> GetEntitiesNearPlayer(TileRangeType rangeType, int range, TileEntityType? filter = null)

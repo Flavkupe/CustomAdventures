@@ -10,6 +10,8 @@ public class Routine : IEnumerator
     private Action _thenAction = null;
     private IEnumerator _current = null;
 
+    public event EventHandler Completed;
+
     private bool _executed = false;
 
     protected Routine()
@@ -58,6 +60,11 @@ public class Routine : IEnumerator
             return _next.MoveNext();
         }
 
+        if (Completed != null)
+        {
+            this.Completed(this, null);
+        }
+
         return false;
     }
 
@@ -104,6 +111,11 @@ public class Routine : IEnumerator
     {
         return new Routine<T1, T2>(func, arg1, arg2);
     }
+
+    public static Routine<T1, T2, T3> Create<T1, T2, T3>(Func<T1, T2, T3, IEnumerator> func, T1 arg1, T2 arg2, T3 arg3)
+    {
+        return new Routine<T1, T2, T3>(func, arg1, arg2, arg3);
+    }
 }
 
 public class Routine<T> : Routine
@@ -139,6 +151,27 @@ public class Routine<T1, T2> : Routine
     public override IEnumerator Execute()
     {
         return _func(_arg1, _arg2);
+    }
+}
+
+public class Routine<T1, T2, T3> : Routine
+{
+    private Func<T1, T2, T3, IEnumerator> _func;
+    private T1 _arg1;
+    private T2 _arg2;
+    private T3 _arg3;
+
+    public Routine(Func<T1, T2, T3, IEnumerator> func, T1 arg1, T2 arg2, T3 arg3)
+    {
+        _func = func;
+        _arg1 = arg1;
+        _arg2 = arg2;
+        _arg3 = arg3;
+    }
+
+    public override IEnumerator Execute()
+    {
+        return _func(_arg1, _arg2, _arg3);
     }
 }
 
