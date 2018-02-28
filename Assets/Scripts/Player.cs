@@ -62,12 +62,12 @@ public class Player : TileEntity
 	// Update is called once per frame
 	void Update ()
     {
-        if (GameManager.Instance.IsPaused)
+        if (StateManager.Instance.IsPaused)
         {
             return;
         }
 
-        if (GameManager.Instance.State == GameState.AwaitingCommand)
+        if (StateManager.Instance.State == GameState.AwaitingCommand)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -86,6 +86,28 @@ public class Player : TileEntity
                 this.PlayerMoveCommand(Direction.Right);
             }
         }
+    }
+
+    public void GainXP(int exp)
+    {
+        this.ShowFloatyText(exp.ToString() + " XP");
+        this.Stats.EXP += exp;
+
+        if ((this.Stats.EXP / 10) + 1 > this.Stats.Level)
+        {
+            this.LevelUp();
+        }
+        
+    }
+
+    public void LevelUp()
+    {
+        this.Stats.Level++;
+        Routine routine = Routine.Create(() => Routine.WaitForSeconds(0.5f));
+        routine.Then(() => this.ShowFloatyText("LEVEL UP!"))
+               .Then(() => Game.Dungeon.PerformCharacterCardDrawing(2))
+               .Then(() => Game.UI.UpdateUI());
+        Game.States.EnqueueIfNotState(GameState.CharacterMoving, routine);
     }
 
     private void ProcessEffects(EffectDurationType actionTaken)
@@ -272,6 +294,8 @@ public class PlayerStats
     public int MaxHP = 10;
     public int Energy = 0;
     public int BaseStrength = 1;
+
+    public int EXP = 0;
 
     public PlayerInventory Inventory;
 }

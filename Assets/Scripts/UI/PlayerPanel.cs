@@ -17,7 +17,7 @@ HP: {1}
 Energy: {2}
 Weapon: {3}
 GameState: {4}
-", stats.Level, stats.HP, stats.Energy, weaponName, GameManager.Instance.State.ToString());
+", stats.Level, stats.HP, stats.Energy, weaponName, StateManager.Instance.State.ToString());
         this.TextBox.text = data;
     }
 

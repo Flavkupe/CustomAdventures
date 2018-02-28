@@ -64,12 +64,12 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
             yield break;
         }
 
-        GameManager.Instance.SetState(GameState.CharacterMoving);
+        StateManager.Instance.SetState(GameState.CharacterMoving);
         TileGrid grid = DungeonManager.Instance.Grid;        
         grid.MoveTo(this.XCoord, this.YCoord, direction, this);
         Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
         yield return StartCoroutine(this.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false));
-        GameManager.Instance.RevertState();
+        StateManager.Instance.RevertState();
     }
 }
 

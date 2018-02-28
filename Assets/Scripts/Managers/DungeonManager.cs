@@ -25,44 +25,19 @@ public class DungeonManager : SingletonObject<DungeonManager>
     {
         if (this.enemies.Count > 0)
         {
-            GameManager.Instance.SetState(GameState.EnemyTurn);
+            StateManager.Instance.SetState(GameState.EnemyTurn);
             RoutineChain enemyTurns = new RoutineChain(enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
             enemyTurns.Then(() =>
             {
-                GameManager.Instance.SetState(GameState.AwaitingCommand);
+                StateManager.Instance.SetState(GameState.AwaitingCommand);
             });
 
             StartCoroutine(enemyTurns);
         }
         else
         {
-            GameManager.Instance.SetState(GameState.AwaitingCommand);
+            StateManager.Instance.SetState(GameState.AwaitingCommand);
         }
-    }
-
-    public void PerformDungeonEvents(RoomArea roomArea)
-    {      
-        // TODO: empty deck?
-        List<IDungeonCard> cards = new List<IDungeonCard>();
-        cards = DeckManager.Instance.DrawDungeonCards(2);
-        foreach (IDungeonCard card in cards)
-        {
-            switch (card.DungeonEventType)
-            {
-                case DungeonEventType.SpawnNear:
-                case DungeonEventType.SpawnOnCorner:
-                case DungeonEventType.SpawnOnWideOpen:
-                    PerformSpawnEvent(roomArea, card);
-                    break;
-                default:
-                    Debug.LogError("No behavior set for DungeonEventType!");
-                    break;
-            }
-            
-        }
-
-        roomArea.gameObject.SetActive(false);
-        PostGroupEventCleanup();
     }
 
     /// <summary>
@@ -108,9 +83,36 @@ public class DungeonManager : SingletonObject<DungeonManager>
         }
     }
 
-    public void PerformLootCardDrawing(int cardNum)
+    public Routine PerformDungeonEvents(RoomArea roomArea)
     {
-        var lootCards = DeckManager.Instance.DrawLootCards(cardNum);
+        // TODO: empty deck?
+        List<IDungeonCard> cards = new List<IDungeonCard>();
+        cards = DeckManager.Instance.DrawDungeonCards(2);
+        foreach (IDungeonCard card in cards)
+        {
+            switch (card.DungeonEventType)
+            {
+                case DungeonEventType.SpawnNear:
+                case DungeonEventType.SpawnOnCorner:
+                case DungeonEventType.SpawnOnWideOpen:
+                    PerformSpawnEvent(roomArea, card);
+                    break;
+                default:
+                    Debug.LogError("No behavior set for DungeonEventType!");
+                    break;
+            }
+
+        }
+
+        roomArea.gameObject.SetActive(false);
+        PostGroupEventCleanup();
+
+        return DoCardDraw(cards.Cast<ICard>().ToList(), Game.Decks.DungeonDeckHolder);
+    }
+
+    public Routine PerformLootCardDrawing(int cardNum)
+    {
+        var lootCards = DeckManager.Instance.DrawLootCards(cardNum);        
         foreach (ILootCard card in lootCards)
         {
             switch (card.LootEventType)
@@ -126,11 +128,13 @@ public class DungeonManager : SingletonObject<DungeonManager>
                     break;
             }
         }
+
+        return DoCardDraw(lootCards.Cast<ICard>().ToList(), Game.Decks.LootDeckHolder);
     }
 
-    public void PerformAbilityCardDrawing(int cardNum)
+    public Routine PerformAbilityCardDrawing(int cardNum)
     {
-        var abilityCards = DeckManager.Instance.DrawAbilityCards(cardNum);
+        var abilityCards = DeckManager.Instance.DrawAbilityCards(cardNum);        
         foreach (IAbilityCard card in abilityCards)
         {
             DoAfterCardDraw(() =>
@@ -139,11 +143,13 @@ public class DungeonManager : SingletonObject<DungeonManager>
                 card.DestroyCard();
             });
         }
+
+        return DoCardDraw(abilityCards.Cast<ICard>().ToList(), Game.Decks.AbilityDeckHolder);
     }
 
-    public void PerformCharacterCardDrawing(int cardNum)
+    public Routine PerformCharacterCardDrawing(int cardNum)
     {
-        var charCards = DeckManager.Instance.DrawCharacterCards(cardNum);
+        var charCards = DeckManager.Instance.DrawCharacterCards(cardNum);        
         foreach (ICharacterCard card in charCards)
         {
             switch (card.CharacterCardType)
@@ -159,6 +165,22 @@ public class DungeonManager : SingletonObject<DungeonManager>
                     break;
             }
         }
+
+        return DoCardDraw(charCards.Cast<ICard>().ToList(), Game.Decks.CharDeckHolder);
+    }
+
+    private Routine DoCardDraw(List<ICard> cards, GameObject deckHolder)
+    {
+        StateManager.Instance.IsPaused = true;
+
+        Routine drawRoutine = Routine.Create(Game.Decks.AnimateCardDraws, cards, deckHolder, 10.0f);
+        drawRoutine.Then(() =>
+        {
+            StateManager.Instance.IsPaused = false;
+        });
+
+        StateManager.Instance.EnqueueIfNotState(GameState.CharacterMoving, () => drawRoutine);
+        return drawRoutine;
     }
 
     public void SpawnEnemy(Enemy enemy, Tile tile)
@@ -186,13 +208,14 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     private void StartDungeon()
     {
-        GameManager.Instance.SetState(GameState.AwaitingCommand);
+        StateManager.Instance.SetState(GameState.AwaitingCommand);
         //PerformAbilityCardDrawing(2);
+        //PerformCharacterCardDrawing(2);
     }
 
     private void DoAfterCardDraw(Action action)
     {
-        GameManager.Instance.EnqueueTriggeredEventAction(TriggeredEvent.CardDrawDone, action);
+        StateManager.Instance.EnqueueTriggeredEventAction(TriggeredEvent.CardDrawDone, action);
     }
 
     public List<TileEntity> GetEntitiesNearPlayer(TileRangeType rangeType, int range, TileEntityType? filter = null)

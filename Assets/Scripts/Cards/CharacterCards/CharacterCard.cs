@@ -25,7 +25,8 @@ public interface ICharacterCard : ICard
 
 public enum CharacterCardType
 {
-    AttributeGain
+    AttributeGain,
+    AbilityGain
 }
 
 public abstract class CharacterCardData : CardData

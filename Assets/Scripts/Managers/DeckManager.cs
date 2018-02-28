@@ -45,32 +45,29 @@ public class DeckManager : SingletonObject<DeckManager>
         CreateDeck(30, DungeonDeck, DungeonDeckHolder, allDungeonCardData);
         CreateDeck(30, LootDeck, LootDeckHolder, allLootCardData);
         CreateDeck(30, CharacterDeck, CharDeckHolder, allCharCardData);
-        CreateDeck(10, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
+        CreateDeck(0, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
     }
 
     private void CreateDeck<TCardType, TCardDataType>(int numCards, Deck<TCardType> deck, GameObject deckHolder, 
-        List<TCardDataType> cardData, Func<TCardDataType, TCardType> createCardFunc = null) where TCardType : class, ICard where TCardDataType : CardData
+        List<TCardDataType> cardData) where TCardType : class, ICard where TCardDataType : CardData
     {
-        float yOffset = 0.0f;
-        float xOffset = 0.0f;
-        float zOffset = -0.001f;
+        deck.DeckHolder = deckHolder;
         for (int i = 0; i < numCards; i++)
         {
             TCardDataType data = cardData.GetRandom();
-            TCardType card = createCardFunc != null ? createCardFunc(data) : InstantiateOfType<TCardType>(data.BackingCardType);            
-            card.SetData(data);
+            TCardType card = CreateCardFromData<TCardType, TCardDataType>(data);
             deck.PushCard(card);
-            card.InitCard();
-            card.CardMesh.transform.position = deckHolder.transform.position;
-            card.CardMesh.transform.SetParent(deckHolder.transform, true);
-            card.CardMesh.SetFaceDown();
-            card.CardMesh.transform.position = card.CardMesh.transform.position.IncrementBy(xOffset, yOffset, zOffset);
-            yOffset -= 0.01f;
-            xOffset -= 0.01f;
-            zOffset -= 0.02f;
         }
 
-        deckHolder.transform.localScale *= DeckSmallSize;
+        deck.ScaleDeck(DeckSmallSize);
+    }
+
+    public TCardType CreateCardFromData<TCardType, TCardDataType>(TCardDataType data) where TCardType : class, ICard where TCardDataType : CardData
+    {
+        TCardType card = InstantiateOfType<TCardType>(data.BackingCardType);
+        card.SetData(data);
+        card.InitCard();
+        return card;
     }
 
     private List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, GameObject deckHolder, float deckMoveSpeed = 10.0f) where TCardType : class, ICard
@@ -82,14 +79,6 @@ public class DeckManager : SingletonObject<DeckManager>
             cards.Add(card);
         }
 
-        GameManager.Instance.IsPaused = true;
-
-        Routine drawRoutine = Routine.Create(AnimateCardDraws, cards.Cast<ICard>().ToList(), deckHolder, 10.0f).Then(() =>
-        {
-            GameManager.Instance.IsPaused = false;
-        });
-
-        GameManager.Instance.EnqueueIfNotStateCoroutine(GameState.CharacterMoving, () => drawRoutine);
         return cards;
     }
 
@@ -120,7 +109,7 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public IEnumerator AnimateCardDraws(List<ICard> cards, GameObject deckHolder, float deckMoveSpeed = 10.0f)
     {
-        float speedMultiplier = GameManager.Instance.GetMouseDownSpeedMultiplier();
+        float speedMultiplier = StateManager.Instance.GetMouseDownSpeedMultiplier();
         float targetX = 0.0f;
         Vector3 initPos = deckHolder.transform.position;
         yield return StartCoroutine(MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed));
@@ -136,13 +125,13 @@ public class DeckManager : SingletonObject<DeckManager>
             cardMesh.transform.SetParent(null);
         }        
 
-        yield return new WaitForSeconds(1.0f / speedMultiplier);
+        yield return new WaitForSecondsSpeedable(1.0f);
 
         yield return StartCoroutine(MoveDeckToPosition(deckHolder, initPos, DeckSmallSize - DeckBigSize));
 
-        yield return new WaitForSeconds(0.5f / speedMultiplier);
+        yield return new WaitForSecondsSpeedable(0.5f);
 
-        GameManager.Instance.TriggerEvent(TriggeredEvent.CardDrawDone);
+        StateManager.Instance.TriggerEvent(TriggeredEvent.CardDrawDone);
     }
 
     void Awake()
@@ -168,4 +157,5 @@ public class CardMeshes
     public CardMesh BasicCardMesh;
     public CardMesh DungeonBasicCardMesh;
     public CardMesh CharBasicCardMesh;
+    public CardMesh AbilityBasicCardMesh;
 }

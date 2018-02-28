@@ -72,6 +72,7 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
     {
         DungeonManager.Instance.RemoveEnemy(this);
         Destroy(this.gameObject, 0.5f);
+        Game.Player.GainXP(this.Data.EXP);
     }
 
     public override bool PlayerCanInteractWith()

@@ -6,6 +6,12 @@ using System;
 
 public class Deck<T> where T : class, ICard
 {
+    private float yOffset = 0.0f;
+    private float xOffset = 0.0f;
+    private float zOffset = -0.001f;
+
+    public GameObject DeckHolder;
+
     Stack<T> deck = new Stack<T>();
 
     public void Init(IList<T> cards)
@@ -19,6 +25,7 @@ public class Deck<T> where T : class, ICard
 
     public void Shuffle()
     {
+        // TODO: change mesh order
         List<T> cards = new List<T>(deck);
         cards.Shuffle();
         deck.Clear();
@@ -27,6 +34,7 @@ public class Deck<T> where T : class, ICard
 
     public void ShuffleCardInto(T card)
     {
+        // TODO: change mesh order
         List<T> cards = new List<T>(deck);
         cards.Add(card);
         cards.Shuffle();
@@ -41,6 +49,7 @@ public class Deck<T> where T : class, ICard
             return null;
         }
 
+        IncrementOffset();
         return deck.Pop();
     }
 
@@ -53,6 +62,7 @@ public class Deck<T> where T : class, ICard
 
     public void RemoveCard(T card)
     {
+        // TODO: change mesh order
         if (card != null)
         {
             Stack<T> newDeck = new Stack<T>();
@@ -73,8 +83,34 @@ public class Deck<T> where T : class, ICard
         }
     }
 
+    private void IncrementOffset()
+    {
+        yOffset += 0.01f;
+        xOffset += 0.01f;
+        zOffset += 0.02f;
+    }
+
+    private void DecrementOffset()
+    {
+        yOffset -= 0.01f;
+        xOffset -= 0.01f;
+        zOffset -= 0.02f;
+    }
+
     public void PushCard(T card)
     {
         this.deck.Push(card);
+        card.CardMesh.transform.position = DeckHolder.transform.position;
+        card.CardMesh.transform.SetParent(DeckHolder.transform, true);
+        card.CardMesh.transform.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        card.CardMesh.SetFaceDown();
+        card.CardMesh.transform.position = card.CardMesh.transform.position.IncrementBy(xOffset, yOffset, zOffset);
+        
+        DecrementOffset();
+    }
+
+    public void ScaleDeck(float scaleMultiplier)
+    {
+        DeckHolder.transform.localScale *= scaleMultiplier;
     }
 }

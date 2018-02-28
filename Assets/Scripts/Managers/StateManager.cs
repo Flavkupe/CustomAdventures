@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : SingletonObject<GameManager>
+public class StateManager : SingletonObject<StateManager>
 {
     public bool IsPaused = false;
 
@@ -31,7 +31,12 @@ public class GameManager : SingletonObject<GameManager>
         this.coroutineQueue.Enqueue(action);
     }
 
-    public void EnqueueIfNotStateCoroutine(GameState afterStateChangedFrom, Func<IEnumerator> action)
+    public void EnqueueIfNotState(GameState afterStateChangedFrom, Routine routine)
+    {
+        EnqueueIfNotState(afterStateChangedFrom, () => routine);
+    }
+
+    public void EnqueueIfNotState(GameState afterStateChangedFrom, Func<IEnumerator> action)
     {
         if (afterStateChangedFrom == this.State)
         {
@@ -44,7 +49,7 @@ public class GameManager : SingletonObject<GameManager>
         }
     }
 
-    public void EnqueueOnNewStateCoroutine(GameState afterStateChangedTo, Func<IEnumerator> action)
+    public void EnqueueOnNewState(GameState afterStateChangedTo, Func<IEnumerator> action)
     {
         if (afterStateChangedTo != this.State)
         {
@@ -57,7 +62,7 @@ public class GameManager : SingletonObject<GameManager>
         }
     }
 
-    public void EnqueueIfNotStateAction(GameState afterStateChangedFrom, Action action)
+    public void EnqueueIfNotState(GameState afterStateChangedFrom, Action action)
     {
         if (afterStateChangedFrom == this.State)
         {
@@ -70,7 +75,7 @@ public class GameManager : SingletonObject<GameManager>
         }
     }
 
-    public void EnqueueOnNewStateAction(GameState afterStateChangedTo, Action action)
+    public void EnqueueOnNewState(GameState afterStateChangedTo, Action action)
     {
         // TODO: make this case conditional on params...?
         if (afterStateChangedTo != this.State)
@@ -82,6 +87,11 @@ public class GameManager : SingletonObject<GameManager>
             // State already at required state; perform action now
             action();
         }
+    }
+
+    public void EnqueueOnNewState(GameState afterStateChangedTo, Routine routine)
+    {
+        EnqueueOnNewState(afterStateChangedTo, () => routine);
     }
 
     public void EnqueueTriggeredEventAction(TriggeredEvent trigger, Action action)

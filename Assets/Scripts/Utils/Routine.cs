@@ -2,12 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Routine : IEnumerator
 {
     private Func<IEnumerator> _func;
     private Routine _next = null;
-    private Action _thenAction = null;
     private IEnumerator _current = null;
 
     public event EventHandler Completed;
@@ -49,12 +49,6 @@ public class Routine : IEnumerator
             _current = null;
         }
 
-        if (_thenAction != null)
-        {
-            _thenAction();
-            _thenAction = null;
-        }
-
         if (_next != null)
         {
             return _next.MoveNext();
@@ -80,10 +74,16 @@ public class Routine : IEnumerator
     /// </summary>
     public Routine Then(Action action)
     {
-        _thenAction = action;
-        return this;
+        _next = Routine.Create(() => DoActionQuick(action));
+        return _next;
     }
 
+    private IEnumerator DoActionQuick(Action action)
+    {
+        action();
+        yield break;
+    }
+        
     /// <summary>
     /// Queues a Routine to happen after this Routine completes. Only one of these
     /// can be set per Routine, but they can be chained by calling this function on the returned
@@ -95,6 +95,11 @@ public class Routine : IEnumerator
     {
         _next = next;
         return _next;
+    }
+
+    public Routine Then(Func<IEnumerator> func)
+    {
+        return Then(Routine.Create(func));
     }
 
     public static Routine Create(Func<IEnumerator> func)
@@ -115,6 +120,11 @@ public class Routine : IEnumerator
     public static Routine<T1, T2, T3> Create<T1, T2, T3>(Func<T1, T2, T3, IEnumerator> func, T1 arg1, T2 arg2, T3 arg3)
     {
         return new Routine<T1, T2, T3>(func, arg1, arg2, arg3);
+    }
+
+    public static IEnumerator WaitForSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
     }
 }
 

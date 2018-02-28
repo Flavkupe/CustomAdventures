@@ -44,11 +44,13 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
     {
         switch (this.CardType) {
             case CardType.Character:
-                return DeckManager.Instance.CardMeshes.CharBasicCardMesh;
+                return Game.Decks.CardMeshes.CharBasicCardMesh;
             case CardType.Dungeon:
-                return DeckManager.Instance.CardMeshes.DungeonBasicCardMesh;
+                return Game.Decks.CardMeshes.DungeonBasicCardMesh;
+            case CardType.Ability:
+                return Game.Decks.CardMeshes.AbilityBasicCardMesh;
             default:
-                return DeckManager.Instance.CardMeshes.BasicCardMesh;
+                return Game.Decks.CardMeshes.BasicCardMesh;
         }
     }
 
