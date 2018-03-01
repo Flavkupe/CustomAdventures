@@ -45,7 +45,7 @@ public class DeckManager : SingletonObject<DeckManager>
         CreateDeck(30, DungeonDeck, DungeonDeckHolder, allDungeonCardData);
         CreateDeck(30, LootDeck, LootDeckHolder, allLootCardData);
         CreateDeck(30, CharacterDeck, CharDeckHolder, allCharCardData);
-        CreateDeck(0, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
+        CreateDeck(5, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
     }
 
     private void CreateDeck<TCardType, TCardDataType>(int numCards, Deck<TCardType> deck, GameObject deckHolder, 
@@ -109,7 +109,6 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public IEnumerator AnimateCardDraws(List<ICard> cards, GameObject deckHolder, float deckMoveSpeed = 10.0f)
     {
-        float speedMultiplier = StateManager.Instance.GetMouseDownSpeedMultiplier();
         float targetX = 0.0f;
         Vector3 initPos = deckHolder.transform.position;
         yield return StartCoroutine(MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed));
@@ -123,7 +122,7 @@ public class DeckManager : SingletonObject<DeckManager>
             yield return StartCoroutine(cardMesh.RotateCoroutine(Vector3.up, 180.0f, 200.0f));
             cardMesh.transform.eulerAngles = new Vector3(0.0f, 0.0f);
             cardMesh.transform.SetParent(null);
-        }        
+        }
 
         yield return new WaitForSecondsSpeedable(1.0f);
 

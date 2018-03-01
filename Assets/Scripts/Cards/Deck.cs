@@ -14,6 +14,8 @@ public class Deck<T> where T : class, ICard
 
     Stack<T> deck = new Stack<T>();
 
+    public int CardCount { get { return this.deck.Count; } }
+
     public void Init(IList<T> cards)
     {
         cards.Shuffle();

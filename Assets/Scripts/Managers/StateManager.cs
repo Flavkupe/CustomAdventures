@@ -26,6 +26,11 @@ public class StateManager : SingletonObject<StateManager>
         dict[state].Enqueue(thing);
     }
 
+    public void EnqueueRoutine(Routine routine)
+    {
+        this.coroutineQueue.Enqueue(() => routine);
+    }
+
     public void EnqueueCoroutine(Func<IEnumerator> action)
     {
         this.coroutineQueue.Enqueue(action);
@@ -224,4 +229,5 @@ public enum GameState
     AwaitingCommand,
     CharacterMoving,
     EnemyTurn,
+    AwaitingSelection,
 }

@@ -77,6 +77,17 @@ public class Tile : MonoBehaviour, IHasCoords
         return false;
     }
 
+    public void Show(bool show)
+    {
+        if (this.GetComponent<SpriteRenderer>() == null)
+        {
+            Debug.Assert(false, "Trying to show tile with no sprite renderer");
+            return;
+        }
+        
+        this.GetComponent<SpriteRenderer>().enabled = show;        
+    }
+
     // Use this for initialization
     void Start ()
     {	

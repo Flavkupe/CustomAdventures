@@ -10,12 +10,22 @@ public class Routine : IEnumerator
     private Routine _next = null;
     private IEnumerator _current = null;
 
+    private Action _reject = null;
+    protected bool _rejected = false;
+
+    private Action _finally = null;
+
     public event EventHandler Completed;
 
-    private bool _executed = false;
+    private bool _executed = false;    
 
     protected Routine()
     {
+    }
+
+    public Action CancellationCallback
+    {
+        get { return () => _rejected = true; }
     }
 
     public Routine(Func<IEnumerator> func)
@@ -25,7 +35,10 @@ public class Routine : IEnumerator
 
     public object Current
     {
-        get { return _current ?? (_next != null ? _next.Current : null); }
+        get
+        {
+            return _current ?? (_next != null ? _next.Current : null);
+        }
     }
 
     public virtual IEnumerator Execute()
@@ -35,6 +48,20 @@ public class Routine : IEnumerator
 
     public bool MoveNext()
     {
+        if (_rejected)
+        {
+            if (_reject != null)
+            {
+                _reject();
+            }
+            if (_finally != null)
+            {
+                _finally();
+            }
+
+            return false;
+        }
+
         if (!_executed)
         {
             _executed = true;
@@ -51,12 +78,20 @@ public class Routine : IEnumerator
 
         if (_next != null)
         {
-            return _next.MoveNext();
+            if (_next.MoveNext())
+            {
+                return true;
+            }
         }
 
         if (Completed != null)
         {
             this.Completed(this, null);
+        }
+
+        if (_finally != null)
+        {
+            _finally();
         }
 
         return false;
@@ -65,6 +100,11 @@ public class Routine : IEnumerator
     public void Reset()
     {
         // TODO
+    }
+
+    public void OnReject(Action action)
+    {
+        _reject = action;
     }
 
     /// <summary>
@@ -76,6 +116,15 @@ public class Routine : IEnumerator
     {
         _next = Routine.Create(() => DoActionQuick(action));
         return _next;
+    }
+
+    /// <summary>
+    /// Runs at the end, no matter what (even if rejected)
+    /// </summary>
+    /// <param name="action"></param>
+    public void Finally(Action action)
+    {
+        _finally = action;
     }
 
     private IEnumerator DoActionQuick(Action action)
@@ -122,16 +171,31 @@ public class Routine : IEnumerator
         return new Routine<T1, T2, T3>(func, arg1, arg2, arg3);
     }
 
+    public static CancellableRoutine CreateCancellable(Func<Action, IEnumerator> func)
+    {
+        return new CancellableRoutine(func);
+    }
+
+    public static CancellableRoutine<T> CreateCancellable<T>(Func<Action, T, IEnumerator> func, T arg1)
+    {
+        return new CancellableRoutine<T>(func, arg1);
+    }
+
+    public static CancellableRoutine<T1, T2> CreateCancellable<T1, T2>(Func<Action, T1, T2, IEnumerator> func, T1 arg1, T2 arg2)
+    {
+        return new CancellableRoutine<T1, T2>(func, arg1, arg2);
+    }
+
     public static IEnumerator WaitForSeconds(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-    }
+    }    
 }
 
 public class Routine<T> : Routine
 {
     private Func<T, IEnumerator> _func;
-    private T _arg1;
+    protected T _arg1;
 
     public Routine(Func<T, IEnumerator> func, T arg1)
     {
@@ -148,8 +212,8 @@ public class Routine<T> : Routine
 public class Routine<T1, T2> : Routine
 {
     private Func<T1, T2, IEnumerator> _func;
-    private T1 _arg1;
-    private T2 _arg2;
+    protected T1 _arg1;
+    protected T2 _arg2;
 
     public Routine(Func<T1, T2, IEnumerator> func, T1 arg1, T2 arg2)
     {
@@ -167,9 +231,9 @@ public class Routine<T1, T2> : Routine
 public class Routine<T1, T2, T3> : Routine
 {
     private Func<T1, T2, T3, IEnumerator> _func;
-    private T1 _arg1;
-    private T2 _arg2;
-    private T3 _arg3;
+    protected T1 _arg1;
+    protected T2 _arg2;
+    protected T3 _arg3;
 
     public Routine(Func<T1, T2, T3, IEnumerator> func, T1 arg1, T2 arg2, T3 arg3)
     {
@@ -184,6 +248,34 @@ public class Routine<T1, T2, T3> : Routine
         return _func(_arg1, _arg2, _arg3);
     }
 }
+
+public class CancellableRoutine : Routine<Action>
+{
+    public CancellableRoutine(Func<Action, IEnumerator> func)
+        : base(func, null)
+    {
+        this._arg1 = CancellationCallback;
+    }
+}
+
+public class CancellableRoutine<T> : Routine<Action, T>
+{
+    public CancellableRoutine(Func<Action, T, IEnumerator> func, T arg1)
+        : base(func, null, arg1)
+    {
+        this._arg1 = CancellationCallback;
+    }
+}
+
+public class CancellableRoutine<T1, T2> : Routine<Action, T1, T2>
+{
+    public CancellableRoutine(Func<Action, T1, T2, IEnumerator> func, T1 arg1, T2 arg2)
+        : base(func, null, arg1, arg2)
+    {
+        this._arg1 = CancellationCallback;
+    }
+}
+
 
 public class RoutineChain : IEnumerator
 {

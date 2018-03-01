@@ -11,6 +11,8 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
     public int XCoord { get; set; }
     public int YCoord { get; set; }
 
+    public bool Selected { get; set; }
+
     public abstract TileEntityType EntityType { get; }
 
     public void ShowFloatyText(string text)
@@ -70,6 +72,15 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
         Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
         yield return StartCoroutine(this.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false));
         StateManager.Instance.RevertState();
+    }
+
+    private void OnMouseUp()
+    {
+        if (Game.States.State == GameState.AwaitingSelection)
+        {
+            this.Selected = !this.Selected;
+            Game.Dungeon.AfterToggledSelection(this);
+        }
     }
 }
 

@@ -40,6 +40,59 @@ public class DungeonManager : SingletonObject<DungeonManager>
         }
     }
 
+    private List<TileEntity> validSelectionTargets = null;
+    private List<TileEntity> selectedTargets = new List<TileEntity>();
+    public List<TileEntity> SelectedTargets { get { return selectedTargets; } }
+    public IEnumerator AwaitTargetSelection(Action cancellationCallback, List<TileEntity> entities, int numToSelect)
+    {        
+        this.selectedTargets.Clear();
+        this.validSelectionTargets = entities;
+        //numToSelect = Math.Min(this.validSelectionTargets.Count, numToSelect);
+        //if (numToSelect == 0)
+        //{
+        //    // Nothing available to select!
+        //    cancellationCallback();
+        //    yield break;
+        //}
+
+        Game.States.SetState(GameState.AwaitingSelection);
+
+        while (this.selectedTargets.Count < numToSelect)
+        {
+            if (Input.GetMouseButtonUp(1))
+            {
+                cancellationCallback();
+                yield break;
+            }
+
+            yield return null;
+        }
+
+        foreach (TileEntity target in this.selectedTargets)
+        {
+            // Reset selected state after all found
+            target.Selected = false;
+        }
+    }
+
+    public void AfterToggledSelection(TileEntity tileEntity)
+    {
+        if (Game.States.State != GameState.AwaitingSelection || !this.validSelectionTargets.Contains(tileEntity))
+        {
+            tileEntity.Selected = false;
+            return;
+        }
+
+        if (!tileEntity.Selected && this.selectedTargets.Contains(tileEntity))
+        {
+            this.selectedTargets.Remove(tileEntity);
+        }
+        else if (tileEntity.Selected && !this.selectedTargets.Contains(tileEntity))
+        {
+            this.selectedTargets.Add(tileEntity);
+        }
+    }
+
     /// <summary>
     /// Cleanup that happens after all events in a group happen (ie multiple cards).
     /// </summary>
@@ -134,7 +187,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     public Routine PerformAbilityCardDrawing(int cardNum)
     {
-        var abilityCards = DeckManager.Instance.DrawAbilityCards(cardNum);        
+        var abilityCards = DeckManager.Instance.DrawAbilityCards(cardNum);
         foreach (IAbilityCard card in abilityCards)
         {
             DoAfterCardDraw(() =>
@@ -209,13 +262,23 @@ public class DungeonManager : SingletonObject<DungeonManager>
     private void StartDungeon()
     {
         StateManager.Instance.SetState(GameState.AwaitingCommand);
-        //PerformAbilityCardDrawing(2);
-        //PerformCharacterCardDrawing(2);
+        Game.States.EnqueueRoutine(Routine.Create(PerformCharacterCardDrawing, 2));
     }
 
     private void DoAfterCardDraw(Action action)
     {
         StateManager.Instance.EnqueueTriggeredEventAction(TriggeredEvent.CardDrawDone, action);
+    }
+
+    public List<Tile> GetTilesNearPlayer(TileRangeType rangeType, int range)
+    {
+        switch (rangeType)
+        {
+            case TileRangeType.Radial:
+                return Grid.GetRadialTileContents(Player.Instance.XCoord, Player.Instance.YCoord, range).Select(a => a.Tile).ToList();
+            default:
+                throw new NotImplementedException();
+        }
     }
 
     public List<TileEntity> GetEntitiesNearPlayer(TileRangeType rangeType, int range, TileEntityType? filter = null)

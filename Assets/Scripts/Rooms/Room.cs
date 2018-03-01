@@ -69,6 +69,10 @@ public class Room : MonoBehaviour, IHasCoords
         foreach (Tile tile in this.GetTiles())
         {
             tile.CachedRoom = this;
+            if (tile.GetComponent<SpriteRenderer>() != null)
+            {
+                tile.GetComponent<SpriteRenderer>().enabled = false;
+            }
         }
     }
 

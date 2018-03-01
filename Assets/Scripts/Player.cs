@@ -8,6 +8,8 @@ public class Player : TileEntity
 {
     private static Player instance;
 
+    public int AbilityThreshold = 3;
+
     public override TileEntityType EntityType { get { return TileEntityType.Player; } }
 
     public static Player Instance { get { return instance; } private set { instance = value; } }
@@ -29,18 +31,21 @@ public class Player : TileEntity
     public void EquipAbility(IAbilityCard ability)
     {
         this.abilities.Add(ability);
-        AbilityPanel.Instance.AddAbility(ability);
+        AbilityPanel.Instance.SyncSlotsWithPlayer();
+    }
+
+    public void ForgetAbility(IAbilityCard ability)
+    {
+        Debug.Assert(this.abilities.Contains(ability));        
+        this.abilities.Remove(ability);
+        AbilityPanel.Instance.SyncSlotsWithPlayer();
     }
 
     public void UseAbility(IAbilityCard ability)
     {
         // TODO: targetted abilities
         Debug.Assert(this.abilities.Contains(ability));
-        ability.ActivateAbility();
-        if (ability.ForgetOnUse)
-        {
-            this.abilities.Remove(ability);
-        }
+        ability.ActivateAbility();        
     }
 
     public void ApplyEffect(StatusEffect effect)
@@ -85,6 +90,21 @@ public class Player : TileEntity
             {
                 this.PlayerMoveCommand(Direction.Right);
             }
+        }
+
+        if (this.Abilities.Count < this.AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
+        {
+            int numToDraw = this.AbilityThreshold - this.Abilities.Count;
+            numToDraw = Mathf.Min(Game.Decks.AbilityDeck.CardCount, numToDraw);
+            this.DrawAbilities(numToDraw);
+        }
+    }
+
+    private void DrawAbilities(int num)
+    {
+        if (num > 0)
+        {
+            Game.Dungeon.PerformAbilityCardDrawing(num);
         }
     }
 

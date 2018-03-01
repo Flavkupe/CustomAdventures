@@ -27,6 +27,31 @@ public class AbilityPanel : SingletonObject<AbilityPanel>
         Debug.Assert(false, "Cannot add ability if slot is empty!");
     }
 
+    public void SyncSlotsWithPlayer()
+    {
+        foreach (var slot in slots)
+        {
+            slot.Clear();
+        }
+
+        int i = 0;        
+
+        if (slots.Count < Game.Player.Abilities.Count)
+        {
+            Debug.Assert(false, "More abilities than slots!!");
+        }
+
+        foreach (var ability in Game.Player.Abilities)
+        {
+            slots[i].SetAbility(ability);
+            i++;
+            if (i >= slots.Count)
+            {
+                return;
+            }
+        }
+    }
+
     private void Awake()
     {
         Instance = this;

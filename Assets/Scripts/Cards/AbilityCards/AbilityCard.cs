@@ -19,10 +19,12 @@ public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCa
         throw new NotImplementedException();
     }
 
-    public virtual void ActivateAbility(Tile target)
+    protected void AfterCardUsed()
     {
-        // Must implement to use!
-        throw new NotImplementedException();
+        if (this.ForgetOnUse)
+        {
+            Game.Player.ForgetAbility(this);
+        }
     }
 
     // Use this for initialization
@@ -46,13 +48,12 @@ public interface IAbilityCard : ICard
     bool ForgetOnUse { get; }
 
     void ActivateAbility();
-    void ActivateAbility(Tile target);
 }
 
 public enum AbilityActivationType
 {
     Instant,
-    TargetTile,
+    TargetEntity,
 }
 
 public enum AbilityCardType

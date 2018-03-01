@@ -195,7 +195,7 @@ public class TileGrid : MonoBehaviour
                 if (Vector2.Distance(new Vector2(x, y), new Vector2(currX, currY)) <= (float)range)
                 {
                     TileContents contents = Get(currX, currY);
-                    if (contents != null)
+                    if (contents != null && contents.Tile != null)
                     {
                         tilesInArea.Add(contents);
                     }

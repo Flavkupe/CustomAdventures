@@ -21,6 +21,11 @@ public class EntityPanel : MonoBehaviour
 
     public void ShowEnemyData(Enemy enemy)
     {
+        if (enemy == null)
+        {
+            return;
+        }
+
         EnemyCardData data = enemy.Data;
         this.TextBox.text = string.Format(
 @"Name: {0}

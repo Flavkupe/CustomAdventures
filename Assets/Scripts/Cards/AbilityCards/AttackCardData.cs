@@ -12,6 +12,7 @@ public class AttackCardData : AbilityCardData
     public TileEntityType AffectedTargetType = TileEntityType.Enemy;
 
     public int Damage = 1;
+    public int Range = 1;
 
     public override Type BackingCardType { get { return typeof(AttackCard); } }
 }

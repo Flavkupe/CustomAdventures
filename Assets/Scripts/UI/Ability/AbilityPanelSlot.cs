@@ -19,7 +19,7 @@ public class AbilityPanelSlot : MonoBehaviour
         this.IconImage.gameObject.SetActive(true);
     }
 
-    public void RemoveAbility()
+    public void Clear()
     {
         this.ability = null;
         this.IconImage.sprite = null;
@@ -31,10 +31,6 @@ public class AbilityPanelSlot : MonoBehaviour
         if (this.ability != null)
         {
             Player.Instance.UseAbility(this.ability);
-            if (this.ability.ForgetOnUse)
-            {
-                this.RemoveAbility();
-            }
         }
     }
 
