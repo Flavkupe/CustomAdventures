@@ -15,7 +15,7 @@ public class Routine : IEnumerator
 
     private Action _finally = null;
 
-    public event EventHandler Completed;
+    private Action _completed = null;
 
     private bool _executed = false;    
 
@@ -84,9 +84,9 @@ public class Routine : IEnumerator
             }
         }
 
-        if (Completed != null)
+        if (_completed != null)
         {
-            this.Completed(this, null);
+            _completed();
         }
 
         if (_finally != null)
@@ -107,6 +107,11 @@ public class Routine : IEnumerator
         _reject = action;
     }
 
+    public void OnCompleted(Action action)
+    {
+        _completed = action;
+    }
+
     /// <summary>
     /// Queues an Action callback to happen after the Routine completes.
     /// If a Routine is also hooked via Then, this Action will happen first.
@@ -114,8 +119,33 @@ public class Routine : IEnumerator
     /// </summary>
     public Routine Then(Action action)
     {
-        _next = Routine.Create(() => DoActionQuick(action));
-        return _next;
+        return Then(Routine.Create(action));
+    }
+
+    public Routine Then(Func<IEnumerator> func)
+    {
+        return Then(Routine.Create(func));
+    }
+
+    /// <summary>
+    /// Queues a Routine to happen after this Routine completes. Only one of these
+    /// can be set per Routine, but they can be chained by calling this function on the returned
+    /// Routine reference. If a "Then" has already been set for this Routine, the next routine
+    /// with be appended to the end of the Routine chain.
+    /// </summary>
+    /// <param name="next">Which Routine to run after this Routine completes.</param>
+    /// <returns>A reference to the provided parameter, to ease chaining.</returns>
+    public Routine Then(Routine next)
+    {
+        if (_next == null)
+        {
+            _next = next;
+            return _next;
+        }
+        else
+        {
+            return _next.Then(next);
+        }
     }
 
     /// <summary>
@@ -127,28 +157,15 @@ public class Routine : IEnumerator
         _finally = action;
     }
 
-    private IEnumerator DoActionQuick(Action action)
+    private static IEnumerator DoActionQuick(Action action)
     {
         action();
         yield break;
     }
-        
-    /// <summary>
-    /// Queues a Routine to happen after this Routine completes. Only one of these
-    /// can be set per Routine, but they can be chained by calling this function on the returned
-    /// Routine reference.
-    /// </summary>
-    /// <param name="next">Which Routine to run after this Routine completes.</param>
-    /// <returns>A reference to the provided parameter, to ease chaining.</returns>
-    public Routine Then(Routine next)
-    {
-        _next = next;
-        return _next;
-    }
 
-    public Routine Then(Func<IEnumerator> func)
+    public static Routine Create(Action action)
     {
-        return Then(Routine.Create(func));
+        return Routine.Create(() => DoActionQuick(action));
     }
 
     public static Routine Create(Func<IEnumerator> func)
@@ -295,6 +312,11 @@ public class RoutineChain : IEnumerator
         {
             _queue.Enqueue(routine);
         }
+    }
+
+    public void Enqueue(Action action)
+    {
+        _queue.Enqueue(Routine.Create(routine);
     }
 
     public void Enqueue(Routine routine)

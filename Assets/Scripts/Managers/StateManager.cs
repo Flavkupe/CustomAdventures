@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class StateManager : SingletonObject<StateManager>
@@ -29,6 +30,11 @@ public class StateManager : SingletonObject<StateManager>
     public void EnqueueRoutine(Routine routine)
     {
         this.coroutineQueue.Enqueue(() => routine);
+    }
+
+    public void EnqueueCoroutine(IEnumerator enumerator)
+    {
+        this.EnqueueCoroutine(() => enumerator);
     }
 
     public void EnqueueCoroutine(Func<IEnumerator> action)
@@ -213,6 +219,16 @@ public class StateManager : SingletonObject<StateManager>
     public float GetMouseDownSpeedMultiplier()
     {
         return Input.GetMouseButton(0) ? this.MousedownSpeedMultiplier : 1.0f;
+    }
+
+    public static class Checks
+    {
+        private static bool IsState(params GameState[] states)
+        {
+            return states.Contains(Instance.State);
+        }
+
+        public static bool CanPlayerWalk { get { return IsState(GameState.AwaitingCommand); } }
     }
 }
 

@@ -53,7 +53,7 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
     }
 	
 	// Update is called once per frame
-	void Update () {		
+	void Update () {
 	}
 
     public void TakeDamage(int damage)
