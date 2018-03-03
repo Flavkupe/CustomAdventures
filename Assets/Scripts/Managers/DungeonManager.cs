@@ -96,12 +96,12 @@ public class DungeonManager : SingletonObject<DungeonManager>
     /// <summary>
     /// Cleanup that happens after all events in a group happen (ie multiple cards).
     /// </summary>
-    private void PostGroupEventCleanup()
+    public void PostGroupEventCleanup()
     {
         Grid.UnreserveAll();
     }
 
-    private void PerformSpawnEvent(RoomArea roomArea, IDungeonCard card) 
+    public void PerformSpawnEvent(RoomArea roomArea, IDungeonCard card) 
     {
         TileGrid grid = Grid;
         Tile tile = null;
@@ -133,118 +133,6 @@ public class DungeonManager : SingletonObject<DungeonManager>
         }
     }
 
-    public Routine PerformDungeonEvents(RoomArea roomArea)
-    {
-        // TODO: empty deck?
-        List<IDungeonCard> cards = new List<IDungeonCard>();
-        cards = DeckManager.Instance.DrawDungeonCards(2);
-        var routineChain = new RoutineChain();
-        foreach (IDungeonCard card in cards)
-        {
-            switch (card.DungeonEventType)
-            {
-                case DungeonEventType.SpawnNear:
-                case DungeonEventType.SpawnOnCorner:
-                case DungeonEventType.SpawnOnWideOpen:
-                    routineChain.Enqueue(() =>
-                    {
-                        PerformSpawnEvent(roomArea, card);
-                    });
-                    break;
-                default:
-                    Debug.LogError("No behavior set for DungeonEventType!");
-                    break;
-            }
-
-        }
-
-        roomArea.gameObject.SetActive(false);
-        PostGroupEventCleanup();
-
-        return DoCardDraw(cards.Cast<ICard>().ToList(), Game.Decks.DungeonDeckHolder, routineChain);
-    }
-
-    public Routine PerformLootCardDrawing(int cardNum)
-    {
-        var lootCards = DeckManager.Instance.DrawLootCards(cardNum);
-        var routineChain = new RoutineChain();
-        foreach (ILootCard card in lootCards)
-        {
-            switch (card.LootEventType)
-            {
-                case LootEventType.GainLoot:
-                default:
-                    routineChain.Enqueue(Routine.Create(() =>
-                    {
-                        card.ExecuteLootGetEvent();
-                        card.DestroyCard();
-                    }));
-
-                    break;
-            }
-        }
-
-        return DoCardDraw(lootCards.Cast<ICard>().ToList(), Game.Decks.LootDeckHolder, routineChain);
-    }
-
-    public Routine PerformAbilityCardDrawing(int cardNum)
-    {
-        var abilityCards = DeckManager.Instance.DrawAbilityCards(cardNum);
-        var routineChain = new RoutineChain();
-        foreach (IAbilityCard card in abilityCards)
-        {
-            routineChain.Enqueue(Routine.Create(() =>
-            {
-                Player.Instance.EquipAbility(card);
-                card.DestroyCard();
-            }));
-        }
-
-        return DoCardDraw(abilityCards.Cast<ICard>().ToList(), Game.Decks.AbilityDeckHolder, routineChain);
-    }
-
-    public Routine PerformCharacterCardDrawing(int cardNum)
-    {
-        var charCards = DeckManager.Instance.DrawCharacterCards(cardNum);
-        var routineChain = new RoutineChain();
-        foreach (ICharacterCard card in charCards)
-        {
-            switch (card.CharacterCardType)
-            {
-                case CharacterCardType.AttributeGain:
-                default:
-                    routineChain.Enqueue(Routine.Create(() =>
-                    {
-                        card.ApplyEffect();
-                        card.DestroyCard();
-                    }));
-
-                    break;
-            }
-        }
-
-        return DoCardDraw(charCards.Cast<ICard>().ToList(), Game.Decks.CharDeckHolder, routineChain);
-    }
-
-    private Routine DoCardDraw(List<ICard> cards, GameObject deckHolder, Routine afterDone = null)
-    {
-        StateManager.Instance.IsPaused = true;
-
-        Routine drawRoutine = Routine.Create(Game.Decks.AnimateCardDraws, cards, deckHolder, 10.0f);
-        drawRoutine.Then(() =>
-        {
-            StateManager.Instance.IsPaused = false;
-        });
-
-        StateManager.Instance.EnqueueIfNotState(GameState.CharacterMoving, () => drawRoutine);
-        if (afterDone != null)
-        {
-            drawRoutine.Then(afterDone);
-        }
-
-        return drawRoutine;
-    }
-
     public void SpawnEnemy(Enemy enemy, Tile tile)
     {        
         this.Grid.PutObject(tile, enemy, true);
@@ -271,7 +159,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     private void StartDungeon()
     {
         StateManager.Instance.SetState(GameState.AwaitingCommand);
-        Game.States.EnqueueRoutine(Routine.Create(PerformCharacterCardDrawing, 2));
+        Game.States.EnqueueRoutine(Routine.Create(Game.CardDraw.PerformCharacterCardDrawing, 2));
     }
 
     public List<Tile> GetTilesNearPlayer(TileRangeType rangeType, int range)

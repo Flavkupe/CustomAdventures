@@ -306,6 +306,11 @@ public class RoutineChain : IEnumerator
     {
     }
 
+    public Routine AsRoutine()
+    {
+        return Routine.Create(() => this);
+    }
+
     public RoutineChain(params Routine[] routines)
     {
         foreach (Routine routine in routines)
@@ -316,7 +321,7 @@ public class RoutineChain : IEnumerator
 
     public void Enqueue(Action action)
     {
-        _queue.Enqueue(Routine.Create(routine);
+        _queue.Enqueue(Routine.Create(action));
     }
 
     public void Enqueue(Routine routine)

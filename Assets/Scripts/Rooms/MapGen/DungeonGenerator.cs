@@ -120,6 +120,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
                 {
                     tile.XCoord = roomOffsetX + (int)tile.transform.localPosition.x;
                     tile.YCoord = roomOffsetY + (int)tile.transform.localPosition.y;
+                    tile.name = string.Format("Tile_{0}_{1}", tile.XCoord, tile.YCoord);
                     this.grid.PutTile(tile);
                 }
             }

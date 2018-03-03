@@ -29,7 +29,7 @@ public class RoomArea : MonoBehaviour
         {
             if (this.OnPlayerEnter == OnPlayerEnterEvents.DungeonEvents)
             {
-                DungeonManager.Instance.PerformDungeonEvents(this);
+                Game.CardDraw.PerformDungeonEvents(this);
             }
         }
     }

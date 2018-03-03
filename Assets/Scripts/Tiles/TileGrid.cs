@@ -102,6 +102,7 @@ public class TileGrid : MonoBehaviour
     public void ClearTile(int x, int y)
     {
         grid[x, y].TileObject = null;
+        grid[x, y].Tile.IsReserved = false;
     }
 
     public void PutObject<T>(Tile tile, T obj, bool moveObj = false) where T : TileEntity
@@ -118,6 +119,7 @@ public class TileGrid : MonoBehaviour
         {
             Tile tile = grid[x, y].Tile;
             obj.transform.position = tile.transform.position;
+            tile.IsReserved = false;
         }
     }
 

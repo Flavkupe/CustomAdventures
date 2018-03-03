@@ -92,7 +92,7 @@ public class Player : TileEntity
             }
         }
 
-        if (this.Abilities.Count < this.AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
+        if (!drawingAbilities && this.Abilities.Count < this.AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
         {
             int numToDraw = this.AbilityThreshold - this.Abilities.Count;
             numToDraw = Mathf.Min(Game.Decks.AbilityDeck.CardCount, numToDraw);
@@ -100,11 +100,13 @@ public class Player : TileEntity
         }
     }
 
+    private bool drawingAbilities = false;
     private void DrawAbilities(int num)
     {
         if (num > 0)
         {
-            Game.Dungeon.PerformAbilityCardDrawing(num);
+            drawingAbilities = true;
+            Game.CardDraw.PerformAbilityCardDrawing(num).Finally(() => drawingAbilities = false);
         }
     }
 
@@ -125,7 +127,7 @@ public class Player : TileEntity
         this.Stats.Level++;
         Routine routine = Routine.Create(() => Routine.WaitForSeconds(0.5f));
         routine.Then(() => this.ShowFloatyText("LEVEL UP!"))
-               .Then(() => Game.Dungeon.PerformCharacterCardDrawing(2))
+               .Then(() => Game.CardDraw.PerformCharacterCardDrawing(2))
                .Then(() => Game.UI.UpdateUI());
         Game.States.EnqueueIfNotState(GameState.CharacterMoving, routine);
     }

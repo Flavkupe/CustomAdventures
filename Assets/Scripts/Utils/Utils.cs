@@ -28,7 +28,7 @@ public static class Utils
     {
         for (int x = startX; x < endX; x++)
         {
-            for (int y = startX; y < endY; y++)
+            for (int y = startY; y < endY; y++)
             {
                 action(x, y);
             }

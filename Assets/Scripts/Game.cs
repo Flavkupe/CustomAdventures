@@ -11,5 +11,7 @@ public static class Game
     public static StateManager States { get { return StateManager.Instance; } }
 
     public static UIManager UI { get { return UIManager.Instance; } }
+
+    public static CardDrawManager CardDraw { get { return CardDrawManager.Instance; } }
 }
 

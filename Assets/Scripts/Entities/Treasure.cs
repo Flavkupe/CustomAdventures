@@ -41,7 +41,7 @@ public class Treasure : TileEntity, IObjectOnTile
 
     public override PlayerInteraction PlayerInteractWith(Player player)
     {
-        DungeonManager.Instance.PerformLootCardDrawing(2);
+        Game.CardDraw.PerformLootCardDrawing(2);
         this._canInteractWith = false;
         Destroy(this.gameObject, 1.0f);
         return PlayerInteraction.InteractWithObject;
