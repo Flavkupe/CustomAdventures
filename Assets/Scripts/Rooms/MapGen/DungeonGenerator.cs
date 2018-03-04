@@ -157,7 +157,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
 
         int x = tile.XCoord;
         int y = tile.YCoord;
-        Destroy(tile.gameObject);
+        tile.RemoveConnector();        
         foreach (Tile neighbor in this.grid.GetNeighbors(x, y))
         {
             if (neighbor != null && (neighbor.IsConnectorTile() || neighbor.IsConnectorNeighbor))

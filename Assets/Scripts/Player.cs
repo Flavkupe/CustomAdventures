@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class Player : TileEntity
 {
@@ -52,6 +53,22 @@ public class Player : TileEntity
     {
         effect.Apply(this);
         Effects.Add(effect);
+    }
+
+    public void TakeDamage(int attack)
+    {
+        this.Stats.HP -= attack;
+        this.ShowFloatyText("-" + attack);
+        if (this.Stats.HP <= 0)
+        {
+            this.Die();
+        }        
+    }
+
+    private void Die()
+    {
+        // TODO
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void EffectExpire(StatusEffect effect)
@@ -316,6 +333,8 @@ public class PlayerStats
     public int MaxHP = 10;
     public int Energy = 0;
     public int BaseStrength = 1;
+
+    public int Mulligans = 2;
 
     public int EXP = 0;
 

@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Tilemaps;
 
 public class Tile : MonoBehaviour, IHasCoords
 {
     public int XCoord { get; set; }
     public int YCoord { get; set; }
-    
+
+    public Tilemap[] UnhideOnDisable;   
+       
     public bool IsConnectorNeighbor = false;
     
     public bool IsReserved { get; set; }
@@ -88,6 +91,12 @@ public class Tile : MonoBehaviour, IHasCoords
         this.GetComponent<SpriteRenderer>().enabled = show;        
     }
 
+    public TileEntity GetTileEntity()
+    {
+        var contents = Game.Dungeon.Grid.Get(this.XCoord, this.YCoord);
+        return contents.TileObject;
+    }
+
     // Use this for initialization
     void Start ()
     {	
@@ -97,4 +106,16 @@ public class Tile : MonoBehaviour, IHasCoords
 	void Update ()
     {		
 	}
+
+    public void RemoveConnector()
+    {
+        if (UnhideOnDisable != null) {
+            foreach (var tilemap in UnhideOnDisable)
+            {
+                tilemap.gameObject.SetActive(true);
+            }                
+        }
+
+        Destroy(this.gameObject);
+    }
 }

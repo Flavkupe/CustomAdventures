@@ -163,9 +163,20 @@ public class Routine : IEnumerator
         yield break;
     }
 
+    private static IEnumerator DoActionQuick<T>(Action<T> action, T arg1)
+    {
+        action(arg1);
+        yield break;
+    }
+
     public static Routine Create(Action action)
     {
         return Routine.Create(() => DoActionQuick(action));
+    }
+
+    public static Routine Create<T>(Action<T> action, T arg1)
+    {
+        return Routine.Create(() => DoActionQuick(action, arg1));
     }
 
     public static Routine Create(Func<IEnumerator> func)
@@ -188,6 +199,11 @@ public class Routine : IEnumerator
         return new Routine<T1, T2, T3>(func, arg1, arg2, arg3);
     }
 
+    public static Routine<T1, T2, T3, T4> Create<T1, T2, T3, T4>(Func<T1, T2, T3, T4, IEnumerator> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+    {
+        return new Routine<T1, T2, T3, T4>(func, arg1, arg2, arg3, arg4);
+    }
+
     public static CancellableRoutine CreateCancellable(Func<Action, IEnumerator> func)
     {
         return new CancellableRoutine(func);
@@ -206,7 +222,7 @@ public class Routine : IEnumerator
     public static IEnumerator WaitForSeconds(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-    }    
+    }
 }
 
 public class Routine<T> : Routine
@@ -263,6 +279,29 @@ public class Routine<T1, T2, T3> : Routine
     public override IEnumerator Execute()
     {
         return _func(_arg1, _arg2, _arg3);
+    }
+}
+
+public class Routine<T1, T2, T3, T4> : Routine
+{
+    private Func<T1, T2, T3, T4, IEnumerator> _func;
+    protected T1 _arg1;
+    protected T2 _arg2;
+    protected T3 _arg3;
+    protected T4 _arg4;
+
+    public Routine(Func<T1, T2, T3, T4, IEnumerator> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+    {
+        _func = func;
+        _arg1 = arg1;
+        _arg2 = arg2;
+        _arg3 = arg3;
+        _arg4 = arg4;
+    }
+
+    public override IEnumerator Execute()
+    {
+        return _func(_arg1, _arg2, _arg3, _arg4);
     }
 }
 

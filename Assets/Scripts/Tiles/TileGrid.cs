@@ -11,6 +11,9 @@ public class TileGrid : MonoBehaviour
     {
         public Tile Tile;
         public TileEntity TileObject;
+
+        public bool HasTile { get { return this.Tile != null; } }
+        public bool IsEmpty { get { return this.HasTile && this.TileObject == null; } }
     }
 
     public TileContents[,] grid;
@@ -194,9 +197,9 @@ public class TileGrid : MonoBehaviour
         {
             if (!IsOffBounds(currX, currY))
             {
-                if (Vector2.Distance(new Vector2(x, y), new Vector2(currX, currY)) <= (float)range)
-                {
-                    TileContents contents = Get(currX, currY);
+                TileContents contents = Get(currX, currY);
+                if (contents.HasTile && Vector2.Distance(new Vector2(x, y), new Vector2(currX, currY)) <= (float)range)
+                {                   
                     if (contents != null && contents.Tile != null)
                     {
                         tilesInArea.Add(contents);

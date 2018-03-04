@@ -14,10 +14,10 @@ public class PlayerPanel : MonoBehaviour
         string data = string.Format(
 @"Level: {0}
 HP: {1}
-Energy: {2}
+Mulligans: {2}
 Weapon: {3}
 GameState: {4}
-", stats.Level, stats.HP, stats.Energy, weaponName, StateManager.Instance.State.ToString());
+", stats.Level, stats.HP, stats.Mulligans, weaponName, StateManager.Instance.State.ToString());
         this.TextBox.text = data;
     }
 

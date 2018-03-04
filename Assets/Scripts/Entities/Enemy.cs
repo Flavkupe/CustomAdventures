@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
 public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
@@ -14,6 +16,13 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     public IEnumerator ProcessCharacterTurn()
     {
+        if (Game.Dungeon.Grid.GetNeighbors(this.XCoord, this.YCoord).Where(t => t != null && t.GetTileEntity() != null)
+                                                                    .Select(a => a.GetTileEntity()).Any(b => b == Player.Instance))
+        {
+            yield return StartCoroutine(AttackPlayer());
+            yield break;
+        }
+
         // Basic move
         if (Player.Instance.XCoord > this.XCoord)
         {
@@ -31,6 +40,13 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
         {
             yield return StartCoroutine(TryMove(Direction.Down));
         }
+    }
+
+    private IEnumerator AttackPlayer()
+    {
+        yield return new WaitForSecondsSpeedable(1.0f);
+        Game.Player.TakeDamage(this.Data.Attack);
+        yield return null;
     }
 
     public override void DoDamage(int damage)

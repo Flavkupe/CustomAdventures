@@ -236,6 +236,7 @@ public enum TriggeredEvent
 {
     EntityTurnDone,
     CardDrawDone,
+    CardDrawConfirmed,
 }
 
 public enum GameState

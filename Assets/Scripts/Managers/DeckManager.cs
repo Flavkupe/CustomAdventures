@@ -45,7 +45,7 @@ public class DeckManager : SingletonObject<DeckManager>
         CreateDeck(30, DungeonDeck, DungeonDeckHolder, allDungeonCardData);
         CreateDeck(30, LootDeck, LootDeckHolder, allLootCardData);
         CreateDeck(30, CharacterDeck, CharDeckHolder, allCharCardData);
-        CreateDeck(5, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
+        CreateDeck(0, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
     }
 
     private void CreateDeck<TCardType, TCardDataType>(int numCards, Deck<TCardType> deck, GameObject deckHolder, 

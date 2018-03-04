@@ -26,9 +26,9 @@ public static class Utils
 
     public static void DoFromXYToXY(int startX, int startY, int endX, int endY, Action<int, int> action)
     {
-        for (int x = startX; x < endX; x++)
+        for (int x = startX; x <= endX; x++)
         {
-            for (int y = startY; y < endY; y++)
+            for (int y = startY; y <= endY; y++)
             {
                 action(x, y);
             }
