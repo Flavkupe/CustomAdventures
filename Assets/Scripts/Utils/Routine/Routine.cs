@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Routine : IEnumerator
@@ -41,7 +40,7 @@ public class Routine : IEnumerator
         }
     }
 
-    public virtual IEnumerator Execute()
+    protected virtual IEnumerator Execute()
     {
         return _func();
     }
@@ -236,7 +235,7 @@ public class Routine<T> : Routine
         _arg1 = arg1;
     }
 
-    public override IEnumerator Execute()
+    protected override IEnumerator Execute()
     {
         return _func(_arg1);
     }
@@ -255,7 +254,7 @@ public class Routine<T1, T2> : Routine
         _arg2 = arg2;
     }
 
-    public override IEnumerator Execute()
+    protected override IEnumerator Execute()
     {
         return _func(_arg1, _arg2);
     }
@@ -276,7 +275,7 @@ public class Routine<T1, T2, T3> : Routine
         _arg3 = arg3;
     }
 
-    public override IEnumerator Execute()
+    protected override IEnumerator Execute()
     {
         return _func(_arg1, _arg2, _arg3);
     }
@@ -299,7 +298,7 @@ public class Routine<T1, T2, T3, T4> : Routine
         _arg4 = arg4;
     }
 
-    public override IEnumerator Execute()
+    protected override IEnumerator Execute()
     {
         return _func(_arg1, _arg2, _arg3, _arg4);
     }
@@ -329,70 +328,5 @@ public class CancellableRoutine<T1, T2> : Routine<Action, T1, T2>
         : base(func, null, arg1, arg2)
     {
         this._arg1 = CancellationCallback;
-    }
-}
-
-
-public class RoutineChain : IEnumerator
-{
-    private Queue<Routine> _queue = new Queue<Routine>();
-
-    private Action _then = null;
-
-    private Routine _current = null;
-
-    public RoutineChain()
-    {
-    }
-
-    public Routine AsRoutine()
-    {
-        return Routine.Create(() => this);
-    }
-
-    public RoutineChain(params Routine[] routines)
-    {
-        foreach (Routine routine in routines)
-        {
-            _queue.Enqueue(routine);
-        }
-    }
-
-    public void Enqueue(Action action)
-    {
-        _queue.Enqueue(Routine.Create(action));
-    }
-
-    public void Enqueue(Routine routine)
-    {
-        _queue.Enqueue(routine);
-    }
-
-    public void Then(Action action)
-    {
-        _then = action;
-    }
-
-    public object Current { get { return _current; } }
-
-    public bool MoveNext()
-    {
-        if (_queue.Count == 0)
-        {
-            _current = null;
-            if (_then != null)
-            {
-                _then();
-            }
-
-            return false;
-        }
-
-        _current = _queue.Dequeue();
-        return true;
-    }
-
-    public void Reset()
-    {
     }
 }
