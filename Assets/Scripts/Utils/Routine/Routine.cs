@@ -3,6 +3,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 
+public interface IRoutineConvertable
+{
+    Routine AsRoutine();
+}
+
 public class Routine : IEnumerator
 {
     private Func<IEnumerator> _func;

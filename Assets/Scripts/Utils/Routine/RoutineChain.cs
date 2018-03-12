@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class RoutineChain : IEnumerator
+public class RoutineChain : IEnumerator, IRoutineConvertable
 {
     private Queue<Routine> _queue = new Queue<Routine>();
 

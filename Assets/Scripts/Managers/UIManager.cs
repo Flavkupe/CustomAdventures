@@ -11,6 +11,10 @@ public class UIManager : SingletonObject<UIManager>
 
     public InventoryPanel InventoryPanel;
 
+    public MulliganPanel MulliganPanel;
+
+    private UIEvent? _currentUIEvent; 
+
     void Awake()
     {
         Instance = this;
@@ -30,6 +34,12 @@ public class UIManager : SingletonObject<UIManager>
             this.InventoryPanel = GameObject.FindObjectOfType<InventoryPanel>();
             this.InventoryPanel.gameObject.SetActive(false);
         }
+
+        if (this.MulliganPanel == null)
+        {
+            this.MulliganPanel = FindObjectOfType<MulliganPanel>();
+            this.MulliganPanel.gameObject.SetActive(false);
+        }
     }
 
     // Use this for initialization
@@ -37,10 +47,15 @@ public class UIManager : SingletonObject<UIManager>
     {
         UpdateUI();
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    private void LateUpdate()
     {
+        _currentUIEvent = null;
+    }
+
+    // Update is called once per frame
+    void Update ()
+    {       
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             // Toggle inventory pane
@@ -82,6 +97,11 @@ public class UIManager : SingletonObject<UIManager>
         this.EntityPanel.gameObject.SetActive(show);
     }
 
+    public void ToggleMulliganPanel(bool show)
+    {
+        this.MulliganPanel.gameObject.SetActive(show);
+    }
+
     public void UpdateInventory()
     {
         if (this.InventoryPanel.gameObject.activeSelf)
@@ -89,4 +109,20 @@ public class UIManager : SingletonObject<UIManager>
             this.InventoryPanel.UpdateInventory();
         }
     }
+
+    public UIEvent? GetCurrentUIEvent()
+    {
+        return _currentUIEvent;
+    }
+
+    public void SetCurrentUIEvent(UIEvent? uiEvent)
+    {
+        _currentUIEvent = uiEvent;
+    }
+}
+
+public enum UIEvent
+{
+    MulliganPressed,
+    TakePressed,
 }

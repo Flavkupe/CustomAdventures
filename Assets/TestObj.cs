@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class TestObj : MonoBehaviour {
 
+    public float Speed = 0.2f;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -18,7 +20,16 @@ public class TestObj : MonoBehaviour {
     {
         while (this.transform.position.y < 3.0f)
         {
-            this.transform.position = this.transform.position.IncrementBy(0, 0.2f, 0);
+            this.transform.position = this.transform.position.IncrementBy(0, Speed, 0);
+            yield return null;
+        }
+    }
+
+    public IEnumerator MoveDown()
+    {
+        while (this.transform.position.y > -4.0f)
+        {
+            this.transform.position = this.transform.position.IncrementBy(0, -Speed, 0);
             yield return null;
         }
     }

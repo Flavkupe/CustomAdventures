@@ -8,6 +8,9 @@ using System.Collections;
 
 public class CardDrawManager : SingletonObject<CardDrawManager>
 {
+    public string TakeKey = " ";
+    public string MulliganKey = "q";
+
     void Awake()
     {
         Instance = this;
@@ -36,7 +39,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         roomArea.gameObject.SetActive(false);
         Game.Dungeon.PostGroupEventCleanup();
 
-        return DoCardDraw(Game.Decks.DrawDungeonCards, 2, Game.Decks.DungeonDeckHolder, func);
+        return DoCardDraw(Game.Decks.DrawDungeonCards, 2, Game.Decks.DungeonDeck, func);
     }
 
     public Routine PerformLootCardDrawing(int cardNum)
@@ -55,7 +58,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             }
         };      
 
-        return DoCardDraw(Game.Decks.DrawLootCards, cardNum, Game.Decks.LootDeckHolder, func);
+        return DoCardDraw(Game.Decks.DrawLootCards, cardNum, Game.Decks.LootDeck, func);
     }
 
     public Routine PerformAbilityCardDrawing(int cardNum)
@@ -69,7 +72,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             });
         };
 
-        return DoCardDraw(Game.Decks.DrawAbilityCards, cardNum, Game.Decks.AbilityDeckHolder, func);
+        return DoCardDraw(Game.Decks.DrawAbilityCards, cardNum, Game.Decks.AbilityDeck, func);
     }
 
     public Routine PerformCharacterCardDrawing(int cardNum)
@@ -88,44 +91,47 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             }
         };
 
-        return DoCardDraw(Game.Decks.DrawCharacterCards, cardNum, Game.Decks.CharDeckHolder, func);
+        return DoCardDraw(Game.Decks.DrawCharacterCards, cardNum, Game.Decks.CharacterDeck, func);
     }
 
-    private Routine DoCardDraw<TCardType>(Func<int, List<TCardType>> cardDrawFunc, int numDraws, GameObject deckHolder, Func<TCardType, Routine> cardRoutine) where TCardType : ICard
+    private Routine DoCardDraw<TCardType>(Func<int, List<TCardType>> cardDrawFunc, int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine) where TCardType : class, ICard
     {
         Game.States.IsPaused = true;
 
-        Routine drawRoutine = Routine.Create(InternalDrawCoroutine, cardDrawFunc, numDraws, deckHolder, cardRoutine);        
+        Routine drawRoutine = Routine.Create(InternalDrawCoroutine, cardDrawFunc, numDraws, deck, cardRoutine);        
         Game.States.EnqueueIfNotState(GameState.CharacterMoving, () => drawRoutine);        
         return drawRoutine;
     }
 
-    private IEnumerator InternalDrawCoroutine<TCardType>(Func<int, List<TCardType>> cardDrawFunc, int numDraws, GameObject deckHolder, Func<TCardType, Routine> cardRoutine) where TCardType : ICard
+    private IEnumerator InternalDrawCoroutine<TCardType>(Func<int, List<TCardType>> cardDrawFunc, int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine) where TCardType : class, ICard
     {
         List<TCardType> cards = null;
         while (true)
         {
             cards = cardDrawFunc(numDraws).ToList();
-            yield return StartCoroutine(Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), deckHolder, 10.0f));
+            yield return StartCoroutine(Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), deck.DeckHolder, 10.0f));
             if (Game.Player.Stats.Mulligans > 0)
             {
-                AwaitKeyPress pressEvent = new AwaitKeyPress();
-                yield return StartCoroutine(pressEvent);
-                if (pressEvent.KeyPressed != "q")
+                Game.UI.ToggleMulliganPanel(true);
+                var pressEvent = new AwaitKeyPress(MulliganKey, TakeKey);
+                var triggerEvent = new AwaitTriggerEvent<UIEvent>(Game.UI.GetCurrentUIEvent, UIEvent.MulliganPressed, UIEvent.TakePressed);
+                var awaits = new CompositeAwaitEvent(pressEvent, triggerEvent);
+                yield return StartCoroutine(awaits);
+                if ((pressEvent.Activated && pressEvent.KeyPressed == TakeKey) || 
+                    (triggerEvent.Activated && triggerEvent.EventValue == UIEvent.TakePressed))
                 {
                     break;
                 }
-                else
+                else if ((pressEvent.Activated && pressEvent.KeyPressed == MulliganKey) ||
+                         (triggerEvent.Activated && triggerEvent.EventValue == UIEvent.MulliganPressed))
                 {
                     Game.Player.Stats.Mulligans--;
                     Game.UI.UpdateUI();
 
-                    // TODO: shuffle back in; don't destroy!
-                    foreach (var card in cards)
-                    {
-                        card.DestroyCard();
-                    }
+                    deck.PushToBottom(cards);
                 }
+
+                Game.UI.ToggleMulliganPanel(false);
             }
             else
             {
@@ -133,6 +139,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             }
         }
 
+        Game.UI.ToggleMulliganPanel(false);
         Debug.Assert(cards != null, "Card are null!");
 
         if (cards != null && cards.Count > 0)
@@ -152,25 +159,5 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         }
 
         yield return StartCoroutine(routineChain.AsRoutine());
-    }
-
-    
-    private class AwaitKeyPress : CustomYieldInstruction
-    {
-        public string KeyPressed { get; set; }
-        public override bool keepWaiting
-        {
-            get
-            {
-                
-                if (Input.anyKeyDown && !string.IsNullOrEmpty(Input.inputString))
-                {
-                    this.KeyPressed = Input.inputString;
-                    return false;
-                }
-
-                return true;
-            }
-        }
     }
 }

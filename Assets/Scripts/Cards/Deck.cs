@@ -19,29 +19,22 @@ public class Deck<T> where T : class, ICard
     public void Init(IList<T> cards)
     {
         cards.Shuffle();
-        foreach (T card in cards)
-        {
-            deck.Push(card);
-        }
-    }    
+        RestackDeck(cards);
+    }
 
     public void Shuffle()
     {
-        // TODO: change mesh order
         List<T> cards = new List<T>(deck);
         cards.Shuffle();
-        deck.Clear();
-        cards.ForEach(a => deck.Push(a));
+        RestackDeck(cards);        
     }
 
     public void ShuffleCardInto(T card)
-    {
-        // TODO: change mesh order
+    {       
         List<T> cards = new List<T>(deck);
         cards.Add(card);
         cards.Shuffle();
-        deck.Clear();
-        cards.ForEach(a => deck.Push(a));
+        RestackDeck(cards);
     }
 
     public T DrawCard()
@@ -76,13 +69,16 @@ public class Deck<T> where T : class, ICard
                 }
             }
 
-            deck.Clear();
-            foreach (T item in newDeck)
-            {
-                // Put items back in right order
-                deck.Push(item);
-            }
+            // Put items back in right order
+            RestackDeck(newDeck.ToList());
         }
+    }
+
+    private void ResetOffset()
+    {
+        yOffset = 0.0f;
+        xOffset = 0.0f;
+        zOffset = 0.0f;
     }
 
     private void IncrementOffset()
@@ -99,6 +95,31 @@ public class Deck<T> where T : class, ICard
         zOffset -= 0.02f;
     }
 
+    private void RestackDeck(IList<T> cards)
+    {
+        deck.Clear();
+        ResetOffset();
+        PushCards(cards);
+    }
+
+    public void PushToBottom(IList<T> cards)
+    {
+        List<T> current = this.deck.ToList();
+        current.AddRange(cards);
+        RestackDeck(current);
+    }
+
+    public void PushCards(IList<T> cards)
+    {
+        // Push cards in the "correct" order (ie starting from back
+        // of list to preserve list order)
+        for(int i = cards.Count - 1; i >= 0; --i)
+        {
+            T card = cards[i];
+            PushCard(card);
+        }
+    }
+
     public void PushCard(T card)
     {
         this.deck.Push(card);
@@ -106,7 +127,7 @@ public class Deck<T> where T : class, ICard
         card.CardMesh.transform.SetParent(DeckHolder.transform, true);
         card.CardMesh.transform.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
         card.CardMesh.SetFaceDown();
-        card.CardMesh.transform.position = card.CardMesh.transform.position.IncrementBy(xOffset, yOffset, zOffset);
+        card.CardMesh.transform.localPosition = card.CardMesh.transform.localPosition.IncrementBy(xOffset, yOffset, zOffset);
         
         DecrementOffset();
     }

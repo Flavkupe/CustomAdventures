@@ -2,26 +2,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
-public class ParallelRoutineSet : IEnumerator
+public class ParallelRoutineSet : IEnumerator, IRoutineConvertable
 {
     private HashSet<Routine> _routines = new HashSet<Routine>();
     private IEnumerator _func = null;
-    private Func<IEnumerator, IEnumerator> _startCoroutineFunc;
+    private Func<IEnumerator, Coroutine> _startCoroutineFunc;
     private int _running = 0;
 
-    public ParallelRoutineSet(Func<IEnumerator, IEnumerator> startCoroutineFunc, params Routine[] routines)
+    public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc, params Routine[] routines)
     {
         _startCoroutineFunc = startCoroutineFunc;
         _routines.UnionWith(routines);
     }
 
-    public ParallelRoutineSet(Func<IEnumerator, IEnumerator> startCoroutineFunc, params Func<IEnumerator>[] routines)
+    public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc, params Func<IEnumerator>[] routines)
     {
         _startCoroutineFunc = startCoroutineFunc;
         _routines.UnionWith(routines.Select(a => Routine.Create(a)));
+    }
+
+    public Routine AsRoutine()
+    {
+        return Routine.Create(() => this);
     }
 
     public object Current
