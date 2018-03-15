@@ -9,6 +9,10 @@ public interface ICard
     CardMesh CardMesh { get; set; }
     void SetData(CardData data);
     void DestroyCard();
+    MonoBehaviourEx Object { get; }
+
+    void SetFaceUp();
+    void SetFaceDown();
 }
 
 public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDataType : CardData
@@ -16,6 +20,8 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
     public TCardDataType Data { get; protected set; }
     public abstract CardType CardType { get; }
     public CardMesh CardMesh { get; set; }
+
+    public MonoBehaviourEx Object { get { return this; } }
 
     public void DestroyCard()
     {
@@ -67,9 +73,19 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
             this.CardMesh.SetCardArt(this.Data.CardArt);
         }
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    public void SetFaceUp()
+    {
+        this.transform.eulerAngles = new Vector3(0, 0, 0);
+    }
+
+    public void SetFaceDown()
+    {
+        this.transform.eulerAngles = new Vector3(0, 180, 0);
+    }
+
+    // Update is called once per frame
+    void Update ()
     {
     }
 }

@@ -123,11 +123,12 @@ public class Deck<T> where T : class, ICard
     public void PushCard(T card)
     {
         this.deck.Push(card);
-        card.CardMesh.transform.position = DeckHolder.transform.position;
-        card.CardMesh.transform.SetParent(DeckHolder.transform, true);
-        card.CardMesh.transform.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-        card.CardMesh.SetFaceDown();
-        card.CardMesh.transform.localPosition = card.CardMesh.transform.localPosition.IncrementBy(xOffset, yOffset, zOffset);
+        var cardTransform = card.Object.transform;
+        cardTransform.position = DeckHolder.transform.position;
+        cardTransform.SetParent(DeckHolder.transform, true);
+        cardTransform.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        card.SetFaceDown();
+        cardTransform.localPosition = cardTransform.transform.localPosition.IncrementBy(xOffset, yOffset, zOffset);
         
         DecrementOffset();
     }

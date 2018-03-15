@@ -19,16 +19,6 @@ public class CardMesh : MonoBehaviourEx
         this.CardText.text = text;
     }
 
-    public void SetFaceUp()
-    {
-        this.transform.eulerAngles = new Vector3(0, 0, 0);
-    }
-
-    public void SetFaceDown()
-    {
-        this.transform.eulerAngles = new Vector3(0, 180, 0);
-    }
-
     // Use this for initialization
     void Start () {
 	}

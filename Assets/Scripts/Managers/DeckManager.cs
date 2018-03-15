@@ -64,7 +64,7 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public TCardType CreateCardFromData<TCardType, TCardDataType>(TCardDataType data) where TCardType : class, ICard where TCardDataType : CardData
     {
-        TCardType card = InstantiateOfType<TCardType>(data.BackingCardType);
+        TCardType card = InstantiateOfType<TCardType>(data.BackingCardType, data.Name);
         card.SetData(data);
         card.InitCard();
         return card;
@@ -104,7 +104,16 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public IEnumerator MoveDeckToPosition(GameObject deckHolder, Vector3 target, float sizeChange, float deckMoveSpeed = 10.0f)
     {
-        yield return StartCoroutine(deckHolder.MoveToSpotAndScaleCoroutine(target, deckMoveSpeed, sizeChange));
+        yield return StartCoroutine(deckHolder.transform.MoveToSpotAndScaleCoroutine(target, deckMoveSpeed, sizeChange));
+    }
+
+    public IEnumerator AnimateShuffleIntoDeck(ICard card, GameObject deckHolder, float deckMoveSpeed = 10.0f)
+    {
+        MonoBehaviourEx obj = card.Object;
+        yield return StartCoroutine(obj.transform.MoveToSpotAndScaleCoroutine(deckHolder.transform.position, this.CardMoveSpeed, DeckSmallSize - DeckBigSize));
+        yield return StartCoroutine(obj.RotateCoroutine(Vector3.up, 0.0f, 200.0f));
+        obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
+        obj.transform.SetParent(deckHolder.transform);        
     }
 
     public IEnumerator AnimateCardDraws(List<ICard> cards, GameObject deckHolder, float deckMoveSpeed = 10.0f)
@@ -115,13 +124,13 @@ public class DeckManager : SingletonObject<DeckManager>
 
         foreach (ICard card in cards)
         {
-            CardMesh cardMesh = card.CardMesh;
+            MonoBehaviourEx obj = card.Object;
             targetX += 3.0f;
-            Vector3 target = cardMesh.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
-            yield return StartCoroutine(cardMesh.MoveToSpotCoroutine(target, this.CardMoveSpeed));
-            yield return StartCoroutine(cardMesh.RotateCoroutine(Vector3.up, 180.0f, 200.0f));
-            cardMesh.transform.eulerAngles = new Vector3(0.0f, 0.0f);
-            cardMesh.transform.SetParent(null);
+            Vector3 target = obj.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
+            yield return StartCoroutine(obj.transform.MoveToSpotCoroutine(target, this.CardMoveSpeed));
+            yield return StartCoroutine(obj.RotateCoroutine(Vector3.up, 180.0f, 200.0f));
+            obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
+            obj.transform.SetParent(null);
         }
 
         yield return new WaitForSecondsSpeedable(1.0f);

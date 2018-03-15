@@ -11,21 +11,31 @@ public class ParallelRoutineSet : IEnumerator, IRoutineConvertable
     private Func<IEnumerator, Coroutine> _startCoroutineFunc;
     private int _running = 0;
 
-    public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc, params Routine[] routines)
+    public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc)
     {
-        _startCoroutineFunc = startCoroutineFunc;
+        _startCoroutineFunc = startCoroutineFunc;        
+    }
+
+    public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc, params Routine[] routines)
+        : this(startCoroutineFunc)
+    {        
         _routines.UnionWith(routines);
     }
 
     public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc, params Func<IEnumerator>[] routines)
-    {
-        _startCoroutineFunc = startCoroutineFunc;
+        : this(startCoroutineFunc)
+    {     
         _routines.UnionWith(routines.Select(a => Routine.Create(a)));
     }
 
     public Routine AsRoutine()
     {
         return Routine.Create(() => this);
+    }
+
+    public void AddRoutine(Routine routine)
+    {
+        this._routines.Add(routine);
     }
 
     public object Current

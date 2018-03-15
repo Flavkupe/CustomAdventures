@@ -85,40 +85,35 @@ public static class ExtensionFunctions
         }
     }
 
-    public static IEnumerator MoveToSpotCoroutine(this MonoBehaviour obj, Vector3 target, float speed, bool allowMouseSpeedup = true)
-    {
-        return obj.gameObject.MoveToSpotCoroutine(target, speed, allowMouseSpeedup);
-    }
-
-    public static IEnumerator MoveToSpotCoroutine(this GameObject obj, Vector3 target, float speed, bool allowMouseSpeedup = true)
+    public static IEnumerator MoveToSpotCoroutine(this Transform obj, Vector3 target, float speed, bool allowMouseSpeedup = true)
     {
         return obj.MoveToSpotAndScaleCoroutine(target, speed, 0.0f, allowMouseSpeedup);
     }
 
-    public static IEnumerator MoveToSpotAndScaleCoroutine(this GameObject obj, Vector3 target, float speed, float targetScaleChange, bool allowMouseSpeedup = true)
+    public static IEnumerator MoveToSpotAndScaleCoroutine(this Transform obj, Vector3 target, float speed, float targetScaleChange, bool allowMouseSpeedup = true)
     {
-        Vector3 targetScale = obj.transform.localScale.IncrementBy(targetScaleChange, targetScaleChange, targetScaleChange);
-        float targetDistance = Vector3.Distance(target, obj.transform.position);
+        Vector3 targetScale = obj.localScale.IncrementBy(targetScaleChange, targetScaleChange, targetScaleChange);
+        float targetDistance = Vector3.Distance(target, obj.position);
         float distanceTravelled = 0.0f;
         while (distanceTravelled < targetDistance)
         {
             float speedMultiplier = allowMouseSpeedup ? StateManager.Instance.GetMouseDownSpeedMultiplier() : 1.0f;
             float delta = Time.deltaTime * speed * speedMultiplier;
             float proportion = delta / targetDistance;
-            obj.transform.position = Vector3.MoveTowards(obj.transform.position, target, delta);
+            obj.position = Vector3.MoveTowards(obj.position, target, delta);
 
             if (targetScaleChange != 0.0f)
             {
                 float scaleChange = proportion * targetScaleChange;
-                Vector3 newScale = obj.transform.localScale.IncrementBy(scaleChange, scaleChange, scaleChange);
-                obj.transform.localScale = newScale;
+                Vector3 newScale = obj.localScale.IncrementBy(scaleChange, scaleChange, scaleChange);
+                obj.localScale = newScale;
             }
 
             distanceTravelled += delta;
             yield return null;
         }
 
-        obj.transform.localScale = targetScale;
+        obj.localScale = targetScale;
     }
 
     public static Vector3 OffsetBy(this Vector3 vector, float offset)

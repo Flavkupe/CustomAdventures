@@ -39,6 +39,7 @@ public class Player : TileEntity
     {
         Debug.Assert(this.abilities.Contains(ability));        
         this.abilities.Remove(ability);
+        ability.DestroyCard();
         AbilityPanel.Instance.SyncSlotsWithPlayer();
     }
 
