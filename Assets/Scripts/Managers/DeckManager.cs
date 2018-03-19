@@ -45,7 +45,7 @@ public class DeckManager : SingletonObject<DeckManager>
         CreateDeck(30, DungeonDeck, DungeonDeckHolder, allDungeonCardData);
         CreateDeck(30, LootDeck, LootDeckHolder, allLootCardData);
         CreateDeck(30, CharacterDeck, CharDeckHolder, allCharCardData);
-        CreateDeck(0, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
+        CreateDeck(10, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
     }
 
     private void CreateDeck<TCardType, TCardDataType>(int numCards, Deck<TCardType> deck, GameObject deckHolder, 
@@ -104,14 +104,14 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public IEnumerator MoveDeckToPosition(GameObject deckHolder, Vector3 target, float sizeChange, float deckMoveSpeed = 10.0f)
     {
-        yield return StartCoroutine(deckHolder.transform.MoveToSpotAndScaleCoroutine(target, deckMoveSpeed, sizeChange));
+        yield return deckHolder.transform.MoveToSpotAndScaleCoroutine(target, deckMoveSpeed, sizeChange);
     }
 
     public IEnumerator AnimateShuffleIntoDeck(ICard card, GameObject deckHolder, float deckMoveSpeed = 10.0f)
     {
         MonoBehaviourEx obj = card.Object;
-        yield return StartCoroutine(obj.transform.MoveToSpotAndScaleCoroutine(deckHolder.transform.position, this.CardMoveSpeed, DeckSmallSize - DeckBigSize));
-        yield return StartCoroutine(obj.RotateCoroutine(Vector3.up, 0.0f, 200.0f));
+        yield return obj.transform.MoveToSpotAndScaleCoroutine(deckHolder.transform.position, this.CardMoveSpeed, DeckSmallSize - DeckBigSize);
+        yield return obj.RotateCoroutine(Vector3.up, 0.0f, 200.0f);
         obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
         obj.transform.SetParent(deckHolder.transform);        
     }
@@ -120,22 +120,22 @@ public class DeckManager : SingletonObject<DeckManager>
     {
         float targetX = 0.0f;
         Vector3 initPos = deckHolder.transform.position;
-        yield return StartCoroutine(MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed));
+        yield return MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed);
 
         foreach (ICard card in cards)
         {
             MonoBehaviourEx obj = card.Object;
             targetX += 3.0f;
             Vector3 target = obj.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
-            yield return StartCoroutine(obj.transform.MoveToSpotCoroutine(target, this.CardMoveSpeed));
-            yield return StartCoroutine(obj.RotateCoroutine(Vector3.up, 180.0f, 200.0f));
+            yield return obj.transform.MoveToSpotCoroutine(target, this.CardMoveSpeed);
+            yield return obj.RotateCoroutine(Vector3.up, 180.0f, 200.0f);
             obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
             obj.transform.SetParent(null);
         }
 
         yield return new WaitForSecondsSpeedable(1.0f);
 
-        yield return StartCoroutine(MoveDeckToPosition(deckHolder, initPos, DeckSmallSize - DeckBigSize));
+        yield return MoveDeckToPosition(deckHolder, initPos, DeckSmallSize - DeckBigSize);
 
         yield return new WaitForSecondsSpeedable(0.5f);
 

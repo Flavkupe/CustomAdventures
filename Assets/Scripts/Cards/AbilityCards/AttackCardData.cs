@@ -14,6 +14,8 @@ public class AttackCardData : AbilityCardData
     public int Damage = 1;
     public int Range = 1;
 
+    public TargetedAnimationEffectData AnimationEffect;
+
     public override Type BackingCardType { get { return typeof(AttackCard); } }
 }
 

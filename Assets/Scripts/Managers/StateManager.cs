@@ -20,6 +20,13 @@ public class StateManager : SingletonObject<StateManager>
 
     private Queue<Func<IEnumerator>> coroutineQueue = new Queue<Func<IEnumerator>>();
 
+    public HashSet<Routine> CoroutineTraces = new HashSet<Routine>();
+
+    private string Traces
+    {
+        get { return string.Join("\n\n\n", CoroutineTraces.Select(a => a.Trace).ToArray()); }
+    }
+
     private bool processingCoroutine = false;
 
     private void EnqueueThingOnQueue<R, T>(R state, T thing, Dictionary<R, Queue<T>> dict)
@@ -120,6 +127,8 @@ public class StateManager : SingletonObject<StateManager>
 
     public GameState State { get { return _state; } }
 
+    public bool DebugEnabled = false;
+
     public void SetState(GameState state)
     {
         if (state != _state)
@@ -172,9 +181,9 @@ public class StateManager : SingletonObject<StateManager>
         if (coroutineQueue.Count > 0)
         {
             // TODO: How to handle thrown exceptions from action?
-            Func<IEnumerator> action = coroutineQueue.Dequeue();
+            Func<IEnumerator> action = coroutineQueue.Dequeue();                       
             processingCoroutine = true;
-            yield return StartCoroutine(action());
+            yield return action();
             processingCoroutine = false;
         }
     }

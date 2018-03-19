@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class AttackCard : AbilityCard<AttackCardData>
@@ -22,23 +23,62 @@ public class AttackCard : AbilityCard<AttackCardData>
         List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(this.Data.RangeType, this.Data.Range, this.Data.AffectedTargetType);
         List<Tile> tiles = Game.Dungeon.GetTilesNearPlayer(this.Data.RangeType, this.Data.Range);
         tiles.ForEach(a => a.Show(true));
-
-        Routine routine = Routine.CreateCancellable(Game.Dungeon.AwaitTargetSelection, entities, 1);
-        routine.Then(() => DamageTargets(Game.Dungeon.SelectedTargets)).Then(() => {
+       
+        Routine cardUseRoutine = Routine.CreateCancellable(Game.Dungeon.AwaitTargetSelection, entities, 1);
+        Routine damageRoutine = Routine.Create(DoAnimationOnAllSelected);
+        damageRoutine.Then(() => DamageTargets(Game.Dungeon.SelectedTargets));
+        cardUseRoutine.Then(damageRoutine);        
+        cardUseRoutine.Then(() => 
+        {            
             this.AfterCardUsed();
-            Game.Dungeon.AfterPlayerTurn();            
+            Game.Dungeon.AfterPlayerTurn();
         });
-        routine.Finally(() => tiles.ForEach(a => a.Show(false)));
 
-        routine.OnReject(() => Game.States.SetState(GameState.AwaitingCommand));
-        Game.States.EnqueueRoutine(routine);
+        cardUseRoutine.Finally(() => 
+        {
+            tiles.ForEach(a => a.Show(false));
+            Game.Dungeon.SelectedTargets.Clear();
+        });
+
+        cardUseRoutine.OnReject(() => Game.States.SetState(GameState.AwaitingCommand));
+        Game.States.EnqueueCoroutine(cardUseRoutine);
     }
 
     private void ActivateInstant()
     {
         List<TileEntity> entities = DungeonManager.Instance.GetEntitiesNearPlayer(this.Data.RangeType, this.Data.Range, this.Data.AffectedTargetType);
-        DamageTargets(entities);
-        this.AfterCardUsed();
+        ParallelRoutineSet routines = new ParallelRoutineSet();
+        foreach (var target in entities)
+        {
+            routines.AddRoutine(Routine.Create(DoAnimationOnTarget, target));
+        }
+
+        Routine animationsRoutine = routines.AsRoutine();
+        animationsRoutine.Then(() => 
+        {
+            DamageTargets(entities);
+            this.AfterCardUsed();
+        });
+
+        Game.States.EnqueueCoroutine(animationsRoutine);
+    }
+
+    private IEnumerator DoAnimationOnTarget(TileEntity entity)
+    {
+        if (this.Data.AnimationEffect != null)
+        {
+            var effect = Game.Effects.CreateTargetedAnimationEffect(this.Data.AnimationEffect, entity.transform.position);
+            yield return effect.CreateRoutine();
+        }
+    }
+
+    private IEnumerator DoAnimationOnAllSelected()
+    {
+        List<TileEntity> entities = Game.Dungeon.SelectedTargets;
+        foreach (var entity in entities)
+        {
+            yield return DoAnimationOnTarget(entity);
+        }
     }
 
     private void DamageTargets(List<TileEntity> entities)

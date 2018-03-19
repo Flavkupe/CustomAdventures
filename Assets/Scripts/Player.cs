@@ -178,7 +178,7 @@ public class Player : TileEntity
 
     private IEnumerator TryPlayerMove(Direction direction)
     {
-        yield return StartCoroutine(this.TryMove(direction));
+        yield return this.TryMove(direction);
         OnAfterPlayerMove();
         DungeonManager.Instance.AfterPlayerTurn();
     }
@@ -188,7 +188,7 @@ public class Player : TileEntity
         TileGrid grid = DungeonManager.Instance.Grid;
         if (this.CanMove(direction))
         {            
-            StartCoroutine(this.TryPlayerMove(direction));
+            Game.States.EnqueueCoroutine(() => this.TryPlayerMove(direction));
         }
         else
         {

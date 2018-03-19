@@ -70,7 +70,7 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
         TileGrid grid = DungeonManager.Instance.Grid;
         grid.MoveTo(this.XCoord, this.YCoord, direction, this);
         Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
-        yield return StartCoroutine(this.transform.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false));
+        yield return this.transform.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false);
         StateManager.Instance.RevertState();
     }
 

@@ -159,7 +159,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     private void StartDungeon()
     {
         StateManager.Instance.SetState(GameState.AwaitingCommand);
-        Game.States.EnqueueRoutine(Routine.Create(Game.CardDraw.PerformCharacterCardDrawing, 2));
+        //Game.States.EnqueueRoutine(Routine.Create(Game.CardDraw.PerformCharacterCardDrawing, 2));
     }
 
     public List<Tile> GetTilesNearPlayer(TileRangeType rangeType, int range)

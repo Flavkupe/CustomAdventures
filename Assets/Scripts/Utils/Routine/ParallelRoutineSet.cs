@@ -8,29 +8,25 @@ public class ParallelRoutineSet : IEnumerator, IRoutineConvertable
 {
     private HashSet<Routine> _routines = new HashSet<Routine>();
     private IEnumerator _func = null;
-    private Func<IEnumerator, Coroutine> _startCoroutineFunc;
     private int _running = 0;
 
-    public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc)
+    public ParallelRoutineSet()
     {
-        _startCoroutineFunc = startCoroutineFunc;        
     }
 
-    public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc, params Routine[] routines)
-        : this(startCoroutineFunc)
+    public ParallelRoutineSet(params Routine[] routines)
     {        
         _routines.UnionWith(routines);
     }
 
-    public ParallelRoutineSet(Func<IEnumerator, Coroutine> startCoroutineFunc, params Func<IEnumerator>[] routines)
-        : this(startCoroutineFunc)
+    public ParallelRoutineSet(params Func<IEnumerator>[] routines)
     {     
         _routines.UnionWith(routines.Select(a => Routine.Create(a)));
     }
 
     public Routine AsRoutine()
     {
-        return Routine.Create(() => this);
+        return Routine.Create(() => { return this; });
     }
 
     public void AddRoutine(Routine routine)
@@ -63,8 +59,12 @@ public class ParallelRoutineSet : IEnumerator, IRoutineConvertable
         _running = _routines.Count;
         foreach (var routine in _routines)
         {
-            routine.Finally(() => _running--);
-            _startCoroutineFunc(routine);
+            // TODO: this replaces the current finally!!
+            routine.Finally(() => {
+                _running--;
+            });
+
+            Game.States.StartCoroutine(routine);
         }
 
         while (_running > 0)

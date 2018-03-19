@@ -17,7 +17,7 @@ public class TestThing : MonoBehaviour {
         var routine1 = Routine.Create(objects[0].MoveUp);
         var routine2 = Routine.Create(objects[1].MoveUp);
         var routine3 = Routine.Create(objects[2].MoveUp);
-        var set = new ParallelRoutineSet(StartCoroutine, routine1, routine2, routine3);
+        var set = new ParallelRoutineSet(routine1, routine2, routine3);
         var setRoutine = set.AsRoutine();
         setRoutine.Then(objects[3].MoveDown)
                   .Then(objects[4].MoveDown);

@@ -108,14 +108,14 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         while (true)
         {
             cards = cardDrawFunc(numDraws).ToList();
-            yield return StartCoroutine(Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), deck.DeckHolder, 10.0f));
+            yield return Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), deck.DeckHolder, 10.0f);
             if (Game.Player.Stats.Mulligans > 0)
             {
                 Game.UI.ToggleMulliganPanel(true);
                 var pressEvent = new AwaitKeyPress(MulliganKey, TakeKey);
                 var triggerEvent = new AwaitTriggerEvent<UIEvent>(Game.UI.GetCurrentUIEvent, UIEvent.MulliganPressed, UIEvent.TakePressed);
                 var awaits = new CompositeAwaitEvent(pressEvent, triggerEvent);
-                yield return StartCoroutine(awaits);
+                yield return awaits;
                 if ((pressEvent.Activated && pressEvent.KeyPressed == TakeKey) || 
                     (triggerEvent.Activated && triggerEvent.EventValue == UIEvent.TakePressed))
                 {
@@ -124,7 +124,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
                 else if ((pressEvent.Activated && pressEvent.KeyPressed == MulliganKey) ||
                          (triggerEvent.Activated && triggerEvent.EventValue == UIEvent.MulliganPressed))
                 {
-                    yield return StartCoroutine(MulliganCardsIntoDeck(deck, cards));                    
+                    yield return MulliganCardsIntoDeck(deck, cards);
                 }
 
                 Game.UI.ToggleMulliganPanel(false);
@@ -140,7 +140,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
         if (cards != null && cards.Count > 0)
         {
-            yield return StartCoroutine(DoCardEvents(cards, cardRoutine));
+            yield return DoCardEvents(cards, cardRoutine);
         }
 
         Game.States.IsPaused = false;
@@ -149,14 +149,14 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     private IEnumerator MulliganCardsIntoDeck<TCardType>(Deck<TCardType> deck, List<TCardType> cards) where TCardType : class, ICard
     {
         Game.Player.Stats.Mulligans--;
-        ParallelRoutineSet routines = new ParallelRoutineSet(StartCoroutine);
+        ParallelRoutineSet routines = new ParallelRoutineSet();
         foreach (var card in cards)
         {
             var routine = Routine.Create(Game.Decks.AnimateShuffleIntoDeck, card, deck.DeckHolder, 10.0f);
             routines.AddRoutine(routine);
         }
 
-        yield return StartCoroutine(routines);
+        yield return routines;
 
         deck.PushToBottom(cards);
         Game.UI.UpdateUI();        

@@ -21,10 +21,14 @@ public class Routine : IEnumerator
 
     private Action _completed = null;
 
-    private bool _executed = false;    
+    private bool _executed = false;
+
+    // For debug only
+    public string Trace = null;
 
     protected Routine()
     {
+        TrackDebugTrace();
     }
 
     public Action CancellationCallback
@@ -33,8 +37,18 @@ public class Routine : IEnumerator
     }
 
     public Routine(Func<IEnumerator> func)
-    {
+        : this()
+    {       
         _func = func;
+    }
+
+    protected void TrackDebugTrace()
+    {
+        if (Game.States.DebugEnabled)
+        {
+            System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+            Trace = t.ToString();
+        }
     }
 
     public object Current
@@ -47,6 +61,11 @@ public class Routine : IEnumerator
 
     protected virtual IEnumerator Execute()
     {
+        if (Game.States.DebugEnabled)
+        {
+            Game.States.CoroutineTraces.Add(this);
+        }
+
         return _func();
     }
 
@@ -96,6 +115,11 @@ public class Routine : IEnumerator
         if (_finally != null)
         {
             _finally();
+        }
+
+        if (Game.States.DebugEnabled)
+        {
+            Game.States.CoroutineTraces.Remove(this);
         }
 
         return false;
@@ -158,6 +182,7 @@ public class Routine : IEnumerator
     /// <param name="action"></param>
     public void Finally(Action action)
     {
+        // TODO: this should be a queue
         _finally = action;
     }
 
@@ -235,6 +260,7 @@ public class Routine<T> : Routine
     protected T _arg1;
 
     public Routine(Func<T, IEnumerator> func, T arg1)
+        : base()
     {
         _func = func;
         _arg1 = arg1;
@@ -253,6 +279,7 @@ public class Routine<T1, T2> : Routine
     protected T2 _arg2;
 
     public Routine(Func<T1, T2, IEnumerator> func, T1 arg1, T2 arg2)
+        : base()
     {
         _func = func;
         _arg1 = arg1;
@@ -273,6 +300,7 @@ public class Routine<T1, T2, T3> : Routine
     protected T3 _arg3;
 
     public Routine(Func<T1, T2, T3, IEnumerator> func, T1 arg1, T2 arg2, T3 arg3)
+        : base()
     {
         _func = func;
         _arg1 = arg1;
@@ -295,6 +323,7 @@ public class Routine<T1, T2, T3, T4> : Routine
     protected T4 _arg4;
 
     public Routine(Func<T1, T2, T3, T4, IEnumerator> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        : base()
     {
         _func = func;
         _arg1 = arg1;
