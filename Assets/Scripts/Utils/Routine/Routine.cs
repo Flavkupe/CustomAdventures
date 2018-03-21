@@ -8,6 +8,11 @@ public interface IRoutineConvertable
     Routine AsRoutine();
 }
 
+public interface IRoutineSet : IRoutineConvertable, IEnumerator
+{
+    void AddRoutine(Routine routine);
+}
+
 public class Routine : IEnumerator
 {
     private Func<IEnumerator> _func;

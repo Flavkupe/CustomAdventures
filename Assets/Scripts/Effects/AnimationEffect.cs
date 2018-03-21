@@ -12,8 +12,13 @@ public abstract class AnimationEffect : MonoBehaviourEx
 
     protected virtual void OnComplete()
     {
-        Destroy(this.gameObject, 0.1f);
+        Destroy(this.gameObject);
     }
+
+    /// <summary>
+    /// Run after Data is set
+    /// </summary>
+    public virtual void InitEffect() {}
 
     public abstract void SetData(AnimationEffectData data);
 }

@@ -9,6 +9,8 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
 {
     public Vector3 Target { get; set; }
 
+    public Vector3 Source { get; set; }
+
     protected override IEnumerator RunEffectParallel()
     {
         ParallelRoutineSet routines = new ParallelRoutineSet();
@@ -40,7 +42,7 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
     {
         switch (this.Data.TargetType)
         {
-            case AnimationEffectTargetType.AlwaysTargetPlayer:
+            case AnimationEffectTargetType.AlwaysTargetSource:
                 return Game.Player.transform.position;
             case AnimationEffectTargetType.DefaultTarget:
             default:

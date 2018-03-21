@@ -27,6 +27,11 @@ public class EntityPanel : MonoBehaviour
         }
 
         EnemyCardData data = enemy.Data;
+        if (data == null)
+        {
+            return;
+        }
+
         this.TextBox.text = string.Format(
 @"Name: {0}
 Level: {1}

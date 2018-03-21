@@ -27,9 +27,9 @@ public class AttackCard : AbilityCard<AttackCardData>
         Routine cardUseRoutine = Routine.CreateCancellable(Game.Dungeon.AwaitTargetSelection, entities, 1);
         Routine damageRoutine = Routine.Create(DoAnimationOnAllSelected);
         damageRoutine.Then(() => DamageTargets(Game.Dungeon.SelectedTargets));
-        cardUseRoutine.Then(damageRoutine);        
+        cardUseRoutine.Then(damageRoutine);
         cardUseRoutine.Then(() => 
-        {            
+        {
             this.AfterCardUsed();
             Game.Dungeon.AfterPlayerTurn();
         });
@@ -67,7 +67,7 @@ public class AttackCard : AbilityCard<AttackCardData>
     {
         if (this.Data.AnimationEffect != null)
         {
-            var effect = Game.Effects.CreateTargetedAnimationEffect(this.Data.AnimationEffect, entity.transform.position);
+            var effect = Game.Effects.CreateTargetedAnimationEffect(this.Data.AnimationEffect, entity.transform.position, Game.Player.transform.position);
             yield return effect.CreateRoutine();
         }
     }

@@ -167,7 +167,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         var routineChain = new RoutineChain();
         foreach (TCardType card in cards)
         {
-            routineChain.Enqueue(cardRoutine(card));
+            routineChain.AddRoutine(cardRoutine(card));
         }
 
         yield return StartCoroutine(routineChain.AsRoutine());

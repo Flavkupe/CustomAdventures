@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ParallelRoutineSet : IEnumerator, IRoutineConvertable
+public class ParallelRoutineSet : IEnumerator, IRoutineSet
 {
     private HashSet<Routine> _routines = new HashSet<Routine>();
     private IEnumerator _func = null;

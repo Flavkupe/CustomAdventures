@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class RoutineChain : IEnumerator, IRoutineConvertable
+public class RoutineChain : IEnumerator, IRoutineSet
 {
     private Queue<Routine> _queue = new Queue<Routine>();
 
@@ -27,12 +27,12 @@ public class RoutineChain : IEnumerator, IRoutineConvertable
         }
     }
 
-    public void Enqueue(Action action)
+    public void AddAction(Action action)
     {
         _queue.Enqueue(Routine.Create(action));
     }
 
-    public void Enqueue(Routine routine)
+    public void AddRoutine(Routine routine)
     {
         _queue.Enqueue(routine);
     }
