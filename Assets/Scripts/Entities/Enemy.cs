@@ -17,26 +17,26 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
     public IEnumerator ProcessCharacterTurn()
     {
         if (Game.Dungeon.Grid.GetNeighbors(this.XCoord, this.YCoord).Where(t => t != null && t.GetTileEntity() != null)
-                                                                    .Select(a => a.GetTileEntity()).Any(b => b == Player.Instance))
+                                                                    .Select(a => a.GetTileEntity()).Any(b => b == Game.Player))
         {
             yield return AttackPlayer();
             yield break;
         }
 
         // Basic move
-        if (Player.Instance.XCoord > this.XCoord)
+        if (Game.Player.XCoord > this.XCoord)
         {
             yield return TryMove(Direction.Right);
         }
-        else if (Player.Instance.XCoord < this.XCoord)
+        else if (Game.Player.XCoord < this.XCoord)
         {
             yield return TryMove(Direction.Left);
         }
-        else if (Player.Instance.YCoord > this.YCoord)
+        else if (Game.Player.YCoord > this.YCoord)
         {
             yield return TryMove(Direction.Up);
         }
-        else if (Player.Instance.YCoord < this.YCoord)
+        else if (Game.Player.YCoord < this.YCoord)
         {
             yield return TryMove(Direction.Down);
         }
@@ -56,7 +56,7 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     protected override void OnClicked()
     {
-        UIManager.Instance.UpdateEntityPanel(this);
+        Game.UI.UpdateEntityPanel(this);
         base.OnClicked();
     }
 
@@ -87,7 +87,7 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     private void Die()
     {
-        DungeonManager.Instance.RemoveEnemy(this);
+        Game.Dungeon.RemoveEnemy(this);
         Destroy(this.gameObject, 0.5f);
         Game.Player.GainXP(this.Data.EXP);
     }

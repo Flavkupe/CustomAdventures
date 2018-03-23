@@ -241,7 +241,7 @@ public class TileGrid : MonoBehaviour
 
         if (contents.TileObject != null)
         {
-            if (contents.TileObject == Player.Instance && FitsOccupancyRule(rule, OccupancyRule.CanBePlayer))
+            if (contents.TileObject == Game.Player && FitsOccupancyRule(rule, OccupancyRule.CanBePlayer))
             {
                 return true;
             }

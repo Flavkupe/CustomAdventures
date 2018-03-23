@@ -31,12 +31,12 @@ public class InventoryItemButton : MonoBehaviour
     {
         if (this.BackingItem != null)
         {
-            PlayerInventory inv = Player.Instance.Stats.Inventory;
+            PlayerInventory inv = Game.Player.Stats.Inventory;
             if (this.BackingItem == inv.EquippedWeapon ||
                 this.BackingItem == inv.EquippedArmor ||
                 this.BackingItem == inv.EquippedAccessory)
             {
-                if (Player.Instance.Unequip(this.BackingItem))
+                if (Game.Player.Unequip(this.BackingItem))
                 {
                     this.BackingItem = null;
                 }
@@ -47,7 +47,7 @@ public class InventoryItemButton : MonoBehaviour
                     (this.BackingItem.Type == InventoryItemType.Armor) ||
                     (this.BackingItem.Type == InventoryItemType.Accessory))
                 {
-                    Player.Instance.Equip(this.BackingItem);
+                    Game.Player.Equip(this.BackingItem);
                 } 
             }
         }

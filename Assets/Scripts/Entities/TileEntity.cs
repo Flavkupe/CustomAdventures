@@ -55,7 +55,7 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
 
     public bool CanMove(Direction direction)
     {
-        TileGrid grid = DungeonManager.Instance.Grid;
+        TileGrid grid = Game.Dungeon.Grid;
         return grid.CanOccupyAdjacent(this.XCoord, this.YCoord, direction);
     }
 
@@ -66,12 +66,12 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
             yield break;
         }
 
-        StateManager.Instance.SetState(GameState.CharacterMoving);
-        TileGrid grid = DungeonManager.Instance.Grid;
+        Game.States.SetState(GameState.CharacterMoving);
+        TileGrid grid = Game.Dungeon.Grid;
         grid.MoveTo(this.XCoord, this.YCoord, direction, this);
         Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
         yield return this.transform.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false);
-        StateManager.Instance.RevertState();
+        Game.States.RevertState();
     }
 
     private void OnMouseUp()

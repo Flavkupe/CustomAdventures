@@ -67,7 +67,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         {
             return Routine.Create(() =>
             {
-                Player.Instance.EquipAbility(card);                
+                Game.Player.EquipAbility(card);                
             });
         };
 

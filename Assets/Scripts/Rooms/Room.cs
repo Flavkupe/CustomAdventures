@@ -27,7 +27,7 @@ public class Room : MonoBehaviour, IHasCoords
             {
                 int currX = this.LeftGridXCoord + x;
                 int currY = this.BottomGridYCoord + y;
-                Tile tile = DungeonManager.Instance.Grid.Get(currX, currY).Tile;
+                Tile tile = Game.Dungeon.Grid.Get(currX, currY).Tile;
                 if (tile != null)
                 {
                     tileList.Add(tile);

@@ -7,7 +7,7 @@ public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> 
     public override void ExecuteLootGetEvent()
     {
         InventoryItem item = this.Data.BackingItem.CloneInstance();
-        if (Player.Instance.TryMoveToInventory(item, true))
+        if (Game.Player.TryMoveToInventory(item, true))
         {
             // TODO: message?
         }

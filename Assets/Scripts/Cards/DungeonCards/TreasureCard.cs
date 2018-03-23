@@ -9,7 +9,7 @@ public class TreasureCard : DungeonCard<TreasureCardData>
     public override void ExecuteTileSpawnEvent(Tile tile)
     {
         Treasure treasure = this.InstantiateTreasure();        
-        DungeonManager.Instance.SpawnTreasure(treasure, tile);
+        Game.Dungeon.SpawnTreasure(treasure, tile);
     }
 
     private Treasure InstantiateTreasure()

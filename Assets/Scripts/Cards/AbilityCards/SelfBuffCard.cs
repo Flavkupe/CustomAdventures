@@ -5,7 +5,7 @@ public class SelfBuffCard : AbilityCard<SelfBuffCardData>
     {
         foreach (SelfBuff buff in this.Data.Buffs)
         {
-            Player.Instance.ApplyEffect(buff);
+            Game.Player.ApplyEffect(buff);
         }
     }
 }

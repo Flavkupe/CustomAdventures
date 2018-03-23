@@ -54,7 +54,7 @@ public class RoomArea : MonoBehaviour
     {
         List<Tile> corners = new List<Tile>();
         List<Tile> tiles = this.GetAreaTiles();
-        TileGrid grid = DungeonManager.Instance.Grid;
+        TileGrid grid = Game.Dungeon.Grid;
         foreach (Tile tile in tiles)
         {
             if (grid.IsCorner(tile.XCoord, tile.YCoord))
@@ -69,7 +69,7 @@ public class RoomArea : MonoBehaviour
     public List<Tile> GetWideOpenTiles()
     {
         List<Tile> freeTiles = new List<Tile>();
-        TileGrid grid = DungeonManager.Instance.Grid;
+        TileGrid grid = Game.Dungeon.Grid;
         List<Tile> tiles = this.GetAreaTiles().Where(a => grid.CanOccupy(a)).ToList();        
         foreach (Tile tile in tiles)
         {

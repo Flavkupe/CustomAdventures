@@ -62,7 +62,7 @@ public class Tile : MonoBehaviour, IHasCoords
 
     public bool CanOccupy(OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
-        return DungeonManager.Instance.Grid.CanOccupy(this, rule);
+        return Game.Dungeon.Grid.CanOccupy(this, rule);
     }
 
     public bool IsConnectorTile()

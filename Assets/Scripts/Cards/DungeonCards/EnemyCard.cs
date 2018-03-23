@@ -9,7 +9,7 @@ public class EnemyCard : DungeonCard<EnemyCardData>
     public override void ExecuteTileSpawnEvent(Tile tile)
     {
         Enemy enemy = this.InstantiateEnemy();        
-        DungeonManager.Instance.SpawnEnemy(enemy, tile);
+        Game.Dungeon.SpawnEnemy(enemy, tile);
     }
 
     public Enemy InstantiateEnemy()

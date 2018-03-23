@@ -25,18 +25,18 @@ public class DungeonManager : SingletonObject<DungeonManager>
     {
         if (this.enemies.Count > 0)
         {
-            StateManager.Instance.SetState(GameState.EnemyTurn);
+            Game.States.SetState(GameState.EnemyTurn);
             RoutineChain enemyTurns = new RoutineChain(enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
             enemyTurns.Then(() =>
             {
-                StateManager.Instance.SetState(GameState.AwaitingCommand);
+                Game.States.SetState(GameState.AwaitingCommand);
             });
 
             Game.States.EnqueueCoroutine(enemyTurns);
         }
         else
         {
-            StateManager.Instance.SetState(GameState.AwaitingCommand);
+            Game.States.SetState(GameState.AwaitingCommand);
         }
     }
 
@@ -158,7 +158,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     private void StartDungeon()
     {
-        StateManager.Instance.SetState(GameState.AwaitingCommand);
+        Game.States.SetState(GameState.AwaitingCommand);
         //Game.States.EnqueueRoutine(Routine.Create(Game.CardDraw.PerformCharacterCardDrawing, 2));
     }
 
@@ -167,7 +167,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
         switch (rangeType)
         {
             case TileRangeType.Radial:
-                return Grid.GetRadialTileContents(Player.Instance.XCoord, Player.Instance.YCoord, range).Select(a => a.Tile).ToList();
+                return Grid.GetRadialTileContents(Game.Player.XCoord, Game.Player.YCoord, range).Select(a => a.Tile).ToList();
             default:
                 throw new NotImplementedException();
         }
@@ -177,7 +177,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     {
         switch (rangeType) {
             case TileRangeType.Radial:
-                return Grid.GetRadialEntities(Player.Instance.XCoord, Player.Instance.YCoord, range, filter);
+                return Grid.GetRadialEntities(Game.Player.XCoord, Game.Player.YCoord, range, filter);
             default:
                 throw new NotImplementedException();
         }

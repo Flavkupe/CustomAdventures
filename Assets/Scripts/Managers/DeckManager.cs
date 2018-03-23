@@ -139,7 +139,7 @@ public class DeckManager : SingletonObject<DeckManager>
 
         yield return new WaitForSecondsSpeedable(0.5f);
 
-        StateManager.Instance.TriggerEvent(TriggeredEvent.CardDrawDone);
+        Game.States.TriggerEvent(TriggeredEvent.CardDrawDone);
     }
 
     void Awake()

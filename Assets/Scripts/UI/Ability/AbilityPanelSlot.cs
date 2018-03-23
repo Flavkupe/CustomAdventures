@@ -61,7 +61,7 @@ public class AbilityPanelSlot : MonoBehaviour
     {
         if (this.ability != null)
         {
-            Player.Instance.UseAbility(this.ability);
+            Game.Player.UseAbility(this.ability);
         }
     }
 

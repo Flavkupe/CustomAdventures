@@ -136,7 +136,7 @@ public class StateManager : SingletonObject<StateManager>
             OnStateChanged(_state, state);
             _lastState = _state;
             _state = state;
-            UIManager.Instance.UpdateUI();
+            Game.UI.UpdateUI();
         }    
     }
 

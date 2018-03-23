@@ -46,7 +46,7 @@ public class AttackCard : AbilityCard<AttackCardData>
 
     private void ActivateInstant()
     {
-        List<TileEntity> entities = DungeonManager.Instance.GetEntitiesNearPlayer(this.Data.RangeType, this.Data.Range, this.Data.AffectedTargetType);
+        List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(this.Data.RangeType, this.Data.Range, this.Data.AffectedTargetType);
         ParallelRoutineSet routines = new ParallelRoutineSet();
         foreach (var target in entities)
         {

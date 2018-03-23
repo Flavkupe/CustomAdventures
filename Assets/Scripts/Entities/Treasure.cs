@@ -19,7 +19,7 @@ public class Treasure : TileEntity, IObjectOnTile
 
     protected override void OnClicked()
     {
-        //UIManager.Instance.UpdateEntityPanel(this);
+        //Game.UI.UpdateEntityPanel(this);
         base.OnClicked();
     }
 

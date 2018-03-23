@@ -85,12 +85,12 @@ public class Player : TileEntity
 	// Update is called once per frame
 	void Update ()
     {
-        if (StateManager.Instance.IsPaused)
+        if (Game.States.IsPaused)
         {
             return;
         }
 
-        if (StateManager.Instance.State == GameState.AwaitingCommand)
+        if (Game.States.State == GameState.AwaitingCommand)
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -173,19 +173,19 @@ public class Player : TileEntity
     private void OnAfterPlayerAttack()
     {
         ProcessEffects(EffectDurationType.Attacks);
-        DungeonManager.Instance.AfterPlayerTurn();
+        Game.Dungeon.AfterPlayerTurn();
     }
 
     private IEnumerator TryPlayerMove(Direction direction)
     {
         yield return this.TryMove(direction);
         OnAfterPlayerMove();
-        DungeonManager.Instance.AfterPlayerTurn();
+        Game.Dungeon.AfterPlayerTurn();
     }
 
     public void PlayerMoveCommand(Direction direction)
     {
-        TileGrid grid = DungeonManager.Instance.Grid;
+        TileGrid grid = Game.Dungeon.Grid;
         if (this.CanMove(direction))
         {            
             Game.States.EnqueueCoroutine(() => this.TryPlayerMove(direction));
@@ -213,7 +213,7 @@ public class Player : TileEntity
             }
         }
         
-        UIManager.Instance.UpdateUI();
+        Game.UI.UpdateUI();
     }
 
     public int GetAttackStrength()
@@ -245,8 +245,8 @@ public class Player : TileEntity
                 inv.EquippedAccessory = null;
             }
 
-            UIManager.Instance.UpdateInventory();
-            UIManager.Instance.UpdateUI();
+            Game.UI.UpdateInventory();
+            Game.UI.UpdateUI();
             return true;
         }
         
@@ -281,8 +281,8 @@ public class Player : TileEntity
         }
 
         this.TryMoveToInventory(temp, false);
-        UIManager.Instance.UpdateInventory();
-        UIManager.Instance.UpdateUI();
+        Game.UI.UpdateInventory();
+        Game.UI.UpdateUI();
     }
 
     public bool TryMoveToInventory(InventoryItem item, bool updateUI)
@@ -313,13 +313,13 @@ public class Player : TileEntity
             inv.InventoryItems.Add(item);
             if (updateUI)
             {
-                UIManager.Instance.UpdateInventory();
+                Game.UI.UpdateInventory();
             }            
         }
 
         if (madeChanges && updateUI)
         {            
-            UIManager.Instance.UpdateInventory();
+            Game.UI.UpdateInventory();
         }
 
         return madeChanges;

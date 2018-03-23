@@ -62,7 +62,7 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
 
     public virtual void InitCard()
     {
-        this.transform.SetParent(DeckManager.Instance.transform);
+        this.transform.SetParent(Game.Decks.transform);
 
         // TODO: card based on rarity
         if (this.CardMesh == null)

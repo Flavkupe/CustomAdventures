@@ -26,8 +26,8 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
 
     private void CreateRooms()
     {
-        this.roomGrid = DungeonManager.Instance.RoomGrid;
-        this.grid = DungeonManager.Instance.Grid;
+        this.roomGrid = Game.Dungeon.RoomGrid;
+        this.grid = Game.Dungeon.Grid;
 
         this.grid.Init(Dims, Dims);
         List<Tile> openConnectors = new List<Tile>();
@@ -137,7 +137,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
             DestroyConnectorNeighborsRecursive(connector);
         }
 
-        this.grid.PutObject(startingTile.XCoord, startingTile.YCoord, Player.Instance, true);
+        this.grid.PutObject(startingTile.XCoord, startingTile.YCoord, Game.Player, true);
     }
 
     private HashSet<Tile> visitedNeighbors = new HashSet<Tile>();

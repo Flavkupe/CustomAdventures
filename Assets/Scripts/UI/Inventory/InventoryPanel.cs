@@ -35,7 +35,7 @@ public class InventoryPanel : MonoBehaviour {
 
     public void UpdateInventory()
     {
-        PlayerInventory inv = Player.Instance.Stats.Inventory;
+        PlayerInventory inv = Game.Player.Stats.Inventory;
         weaponButton.UpdateItem(inv.EquippedWeapon);
         armorButton.UpdateItem(inv.EquippedArmor);
         accessoryButton.UpdateItem(inv.EquippedAccessory);
