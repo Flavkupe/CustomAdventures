@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class EnemyCard : DungeonCard<EnemyCardData>
 {
-    public override void ExecuteTileSpawnEvent(Tile tile)
+    public override void ExecuteTileSpawnEvent(GridTile tile)
     {
         Enemy enemy = this.InstantiateEnemy();        
         Game.Dungeon.SpawnEnemy(enemy, tile);

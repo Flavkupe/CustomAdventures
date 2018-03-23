@@ -34,14 +34,14 @@ public class RoomArea : MonoBehaviour
         }
     }
 
-    public List<Tile> GetAreaTiles()
+    public List<GridTile> GetAreaTiles()
     {
-        List<Tile> tiles = this.parentRoom.GetTiles().ToList();
+        List<GridTile> tiles = this.parentRoom.GetTiles().ToList();
         int firstX = this.parentRoom.LeftGridXCoord + (int)this.transform.localPosition.x;
         int firstY = this.parentRoom.BottomGridYCoord + (int)this.transform.localPosition.y;
         int lastX = firstX + (int)(this.col.size.x);
         int lastY = firstY + (int)(this.col.size.y);
-        List<Tile> areaTiles = tiles.Where(a => a.XCoord >= firstX && a.XCoord < lastX &&
+        List<GridTile> areaTiles = tiles.Where(a => a.XCoord >= firstX && a.XCoord < lastX &&
                                                 a.YCoord >= firstY && a.YCoord < lastY).ToList();
         return areaTiles;
     }
@@ -50,12 +50,12 @@ public class RoomArea : MonoBehaviour
     /// Gets tiles which are corners (2 free neighbors, 2 filled ones)
     /// </summary>
     /// <returns></returns>
-    public List<Tile> GetCornerTiles()
+    public List<GridTile> GetCornerTiles()
     {
-        List<Tile> corners = new List<Tile>();
-        List<Tile> tiles = this.GetAreaTiles();
+        List<GridTile> corners = new List<GridTile>();
+        List<GridTile> tiles = this.GetAreaTiles();
         TileGrid grid = Game.Dungeon.Grid;
-        foreach (Tile tile in tiles)
+        foreach (GridTile tile in tiles)
         {
             if (grid.IsCorner(tile.XCoord, tile.YCoord))
             {
@@ -66,12 +66,12 @@ public class RoomArea : MonoBehaviour
         return corners;
     }
 
-    public List<Tile> GetWideOpenTiles()
+    public List<GridTile> GetWideOpenTiles()
     {
-        List<Tile> freeTiles = new List<Tile>();
+        List<GridTile> freeTiles = new List<GridTile>();
         TileGrid grid = Game.Dungeon.Grid;
-        List<Tile> tiles = this.GetAreaTiles().Where(a => grid.CanOccupy(a)).ToList();        
-        foreach (Tile tile in tiles)
+        List<GridTile> tiles = this.GetAreaTiles().Where(a => grid.CanOccupy(a)).ToList();        
+        foreach (GridTile tile in tiles)
         {
             if (grid.GetAll8Neighbors(tile.XCoord, tile.YCoord).All(a => grid.CanOccupy(a, OccupancyRule.CanBeTemporaryEntity)))
             {

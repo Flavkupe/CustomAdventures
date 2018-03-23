@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.3.1f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -315,7 +317,7 @@
     <Compile Include="Assets\Scripts\Cards\LootCards\LootCard.cs" />
     <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCard.cs" />
     <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\RuleTile.cs" />
+    <Compile Include="Assets\Scripts\Tiles\RuleTile.cs" />
     <Compile Include="Assets\Scripts\Effects\AnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffectData.cs" />
@@ -344,7 +346,7 @@
     <Compile Include="Assets\Scripts\Rooms\RoomArea.cs" />
     <Compile Include="Assets\Scripts\Rooms\RoomGrid.cs" />
     <Compile Include="Assets\Scripts\Status\StatusEffect.cs" />
-    <Compile Include="Assets\Scripts\Tiles\Tile.cs" />
+    <Compile Include="Assets\Scripts\Tiles\GridTile.cs" />
     <Compile Include="Assets\Scripts\Tiles\TileGrid.cs" />
     <Compile Include="Assets\Scripts\UI\Ability\AbilityPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Ability\AbilityPanelSlot.cs" />

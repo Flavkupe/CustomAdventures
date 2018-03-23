@@ -7,7 +7,7 @@ public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCa
 {
     public override CardType CardType { get { return CardType.Dungeon; } }
 
-    public abstract void ExecuteTileSpawnEvent(Tile tile);
+    public abstract void ExecuteTileSpawnEvent(GridTile tile);
 
     public DungeonEventType DungeonEventType { get { return Data.DungeonEventType; } }
 
@@ -26,7 +26,7 @@ public interface IDungeonCard : ICard
 {
     DungeonEventType DungeonEventType { get; }
 
-    void ExecuteTileSpawnEvent(Tile tile);
+    void ExecuteTileSpawnEvent(GridTile tile);
 }
 
 public enum DungeonCardType

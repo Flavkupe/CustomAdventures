@@ -5,8 +5,8 @@ using UnityEngine;
 using System.Linq;
 
 public class DungeonManager : SingletonObject<DungeonManager>
-{    
-    public Tile GenericTileTemplate;
+{
+    public GridTile GenericTileTemplate;
     public TileGrid Grid;
     public Room[,] RoomGrid;
 
@@ -104,20 +104,20 @@ public class DungeonManager : SingletonObject<DungeonManager>
     public void PerformSpawnEvent(RoomArea roomArea, IDungeonCard card) 
     {
         TileGrid grid = Grid;
-        Tile tile = null;
+        GridTile tile = null;
         if (card.DungeonEventType == DungeonEventType.SpawnNear)
         {
-            List<Tile> tiles = roomArea.GetAreaTiles();
+            List<GridTile> tiles = roomArea.GetAreaTiles();
             tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();            
         }
         else if (card.DungeonEventType == DungeonEventType.SpawnOnCorner)
         {
-            List<Tile> tiles = roomArea.GetCornerTiles();
+            List<GridTile> tiles = roomArea.GetCornerTiles();
             tile = tiles.GetRandom();
         }
         else if (card.DungeonEventType == DungeonEventType.SpawnOnWideOpen)
         {
-            List<Tile> tiles = roomArea.GetWideOpenTiles();
+            List<GridTile> tiles = roomArea.GetWideOpenTiles();
             tile = tiles.GetRandom();
         }
 
@@ -133,13 +133,13 @@ public class DungeonManager : SingletonObject<DungeonManager>
         }
     }
 
-    public void SpawnEnemy(Enemy enemy, Tile tile)
+    public void SpawnEnemy(Enemy enemy, GridTile tile)
     {        
         this.Grid.PutObject(tile, enemy, true);
         this.enemies.Add(enemy);
     }
 
-    public void SpawnTreasure(Treasure treasure, Tile tile)
+    public void SpawnTreasure(Treasure treasure, GridTile tile)
     {
         this.Grid.PutObject(tile, treasure, true);
         this.treasures.Add(treasure);
@@ -162,7 +162,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
         //Game.States.EnqueueRoutine(Routine.Create(Game.CardDraw.PerformCharacterCardDrawing, 2));
     }
 
-    public List<Tile> GetTilesNearPlayer(TileRangeType rangeType, int range)
+    public List<GridTile> GetTilesNearPlayer(TileRangeType rangeType, int range)
     {
         switch (rangeType)
         {

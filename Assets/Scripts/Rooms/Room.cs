@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Tilemaps;
 
 public class Room : MonoBehaviour, IHasCoords
 {
@@ -16,18 +17,18 @@ public class Room : MonoBehaviour, IHasCoords
     public int LeftGridXCoord { get { return this.XCoord * Dims; } }
     public int BottomGridYCoord { get { return this.YCoord * Dims; } }
 
-    public Tile[] GetTiles()
+    public GridTile[] GetTiles()
     {
-        Tile[] tiles = this.GetComponentsInChildren<Tile>();
+        GridTile[] tiles = this.GetComponentsInChildren<GridTile>();
         if (tiles.Length == 0)
         {
             // Rooms were built and tiles transferred; find them in the map
-            List<Tile> tileList = new List<Tile>();
+            List<GridTile> tileList = new List<GridTile>();
             Utils.DoForXY(Dims, Dims, (x, y) =>
             {
                 int currX = this.LeftGridXCoord + x;
                 int currY = this.BottomGridYCoord + y;
-                Tile tile = Game.Dungeon.Grid.Get(currX, currY).Tile;
+                GridTile tile = Game.Dungeon.Grid.Get(currX, currY).Tile;
                 if (tile != null)
                 {
                     tileList.Add(tile);
@@ -44,14 +45,14 @@ public class Room : MonoBehaviour, IHasCoords
 
     public bool HasConnectorToDirection(Direction direction)
     {
-        Tile[] tiles = this.GetTiles();
+        GridTile[] tiles = this.GetTiles();
         return tiles.Any(a => a.IsConnectorTile() && a.ConnectsTo == direction);
     }
 
-    public bool HasExactMatchingConnector(Tile connector)
+    public bool HasExactMatchingConnector(GridTile connector)
     {
         Direction direction = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
-        Tile[] tiles = this.GetTiles();
+        GridTile[] tiles = this.GetTiles();
         if (direction == Direction.Down || direction == Direction.Up)
         {
             return tiles.Any(a => a.IsConnectorTile() && a.ConnectsTo == direction && 
@@ -66,7 +67,24 @@ public class Room : MonoBehaviour, IHasCoords
 
     public void InitRoomTiles()
     {
-        foreach (Tile tile in this.GetTiles())
+        foreach(Tilemap tilemap in this.GetComponentsInChildren<Tilemap>())
+        {
+            for (var x = tilemap.cellBounds.x; x < tilemap.cellBounds.xMax; x++)
+            {
+                for (var y = tilemap.cellBounds.y; y < tilemap.cellBounds.yMax; y++)
+                {
+                    RuleTile tile = tilemap.GetTile<RuleTile>(new Vector3Int(x, y, 0));
+                    if (tile != null)
+                    {
+                        var gridTile = tile.InstantiateGridTile(Game.Dungeon.GenericTileTemplate, this);
+                        gridTile.transform.localPosition = new Vector3(x + 1, y + 1); // TODO: why do they need + 1...?
+                        tile.sprite = null;
+                    }
+                }
+            }
+        }
+
+        foreach (GridTile tile in this.GetTiles())
         {
             tile.CachedRoom = this;
             if (tile.GetComponent<SpriteRenderer>() != null)

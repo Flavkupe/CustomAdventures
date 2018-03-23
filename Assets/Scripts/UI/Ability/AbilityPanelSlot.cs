@@ -13,6 +13,10 @@ public class AbilityPanelSlot : MonoBehaviour
 
     public bool IsEmpty { get { return this.ability == null; } }
 
+    public float HoverTimer = 1.0f;
+    private float _timer;
+    private bool _hovering = false;
+
     public void SetAbility(IAbilityCard ability)
     {
         this.ability = ability;
@@ -43,14 +47,13 @@ public class AbilityPanelSlot : MonoBehaviour
 
     public void OnHoverEnter()
     {
-        if (this.ability != null && this.ability.Object != null)
-        {
-            this.ability.Object.gameObject.SetActive(true);
-        }
+        _hovering = true;        
     }
 
     public void OnHoverExit()
     {
+        _hovering = false;
+        this._timer = HoverTimer;
         if (this.ability != null && this.ability.Object != null)
         {
             this.ability.Object.gameObject.SetActive(false);
@@ -65,8 +68,21 @@ public class AbilityPanelSlot : MonoBehaviour
         }
     }
 
+    public void Update()
+    {
+        if (this._hovering && _timer > 0.0f && this.ability != null && this.ability.Object != null)
+        {
+            _timer -= Time.deltaTime;
+            if (_timer <= 0.0f)
+            {
+                this.ability.Object.gameObject.SetActive(true);
+            }
+        }
+    }
+
     private void Awake()
     {
+        this._timer = HoverTimer;
         this.IconImage.gameObject.SetActive(false);
         Debug.Assert(IconImage != null, "Must have IconImage set!");
     }        

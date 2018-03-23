@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.Tilemaps;
 
-public class Tile : MonoBehaviour, IHasCoords
+public class GridTile : MonoBehaviour, IHasCoords
 {
     public int XCoord { get; set; }
     public int YCoord { get; set; }

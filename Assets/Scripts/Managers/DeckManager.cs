@@ -116,22 +116,31 @@ public class DeckManager : SingletonObject<DeckManager>
         obj.transform.SetParent(deckHolder.transform);        
     }
 
+    private IEnumerator AnimateIndividualCardDraw(ICard card, float targetX)
+    {
+        MonoBehaviourEx obj = card.Object;        
+        Vector3 target = obj.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
+        yield return obj.transform.MoveToSpotCoroutine(target, this.CardMoveSpeed);
+        yield return obj.RotateCoroutine(Vector3.up, 180.0f, 200.0f);
+        obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
+        obj.transform.SetParent(null);
+    }
+
     public IEnumerator AnimateCardDraws(List<ICard> cards, GameObject deckHolder, float deckMoveSpeed = 10.0f)
     {
         float targetX = 0.0f;
         Vector3 initPos = deckHolder.transform.position;
         yield return MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed);
 
+        ParallelRoutineSet routineSet = new ParallelRoutineSet();
+            
         foreach (ICard card in cards)
         {
-            MonoBehaviourEx obj = card.Object;
             targetX += 3.0f;
-            Vector3 target = obj.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
-            yield return obj.transform.MoveToSpotCoroutine(target, this.CardMoveSpeed);
-            yield return obj.RotateCoroutine(Vector3.up, 180.0f, 200.0f);
-            obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
-            obj.transform.SetParent(null);
+            routineSet.AddRoutine(Routine.Create(AnimateIndividualCardDraw, card, targetX));
         }
+
+        yield return routineSet;
 
         yield return new WaitForSecondsSpeedable(1.0f);
 
@@ -158,6 +167,7 @@ public class DeckManager : SingletonObject<DeckManager>
     {
 	}
 }
+
 
 [Serializable]
 public class CardMeshes

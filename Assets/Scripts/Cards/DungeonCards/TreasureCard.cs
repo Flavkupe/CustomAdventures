@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class TreasureCard : DungeonCard<TreasureCardData>
 {
-    public override void ExecuteTileSpawnEvent(Tile tile)
+    public override void ExecuteTileSpawnEvent(GridTile tile)
     {
         Treasure treasure = this.InstantiateTreasure();        
         Game.Dungeon.SpawnTreasure(treasure, tile);

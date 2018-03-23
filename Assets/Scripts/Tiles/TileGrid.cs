@@ -9,7 +9,7 @@ public class TileGrid : MonoBehaviour
     [Serializable]
     public class TileContents
     {
-        public Tile Tile;
+        public GridTile Tile;
         public TileEntity TileObject;
 
         public bool HasTile { get { return this.Tile != null; } }
@@ -23,14 +23,14 @@ public class TileGrid : MonoBehaviour
         return grid[x, y];
     }
 
-    public Tile GetTile(int x, int y)
+    public GridTile GetTile(int x, int y)
     {
         return grid[x, y] == null ? null : grid[x, y].Tile;
     }
 
-    public IEnumerable<Tile> GetAllTiles()
+    public IEnumerable<GridTile> GetAllTiles()
     {
-        List<Tile> list = new List<Tile>();
+        List<GridTile> list = new List<GridTile>();
         foreach (TileContents tile in grid)
         {
             if (tile != null && tile.Tile != null)
@@ -62,12 +62,12 @@ public class TileGrid : MonoBehaviour
         });            
     }
 
-    public void PutTile(Tile tile)
+    public void PutTile(GridTile tile)
     {
         this.PutTile(tile.XCoord, tile.YCoord, tile);
     }
 
-    public void PutTile(int x, int y, Tile tile)
+    public void PutTile(int x, int y, GridTile tile)
     {
         grid[x, y].Tile = tile;
         tile.XCoord = x;
@@ -75,9 +75,9 @@ public class TileGrid : MonoBehaviour
         tile.transform.parent = this.transform;
     }
 
-    public List<Tile> GetNeighbors(int x, int y)
+    public List<GridTile> GetNeighbors(int x, int y)
     {
-        List<Tile> neighbors = new List<Tile>();
+        List<GridTile> neighbors = new List<GridTile>();
         if (!this.IsOffBounds(x - 1, y)) { neighbors.Add(this.grid[x - 1, y].Tile); }
         if (!this.IsOffBounds(x + 1, y)) { neighbors.Add(this.grid[x + 1, y].Tile); }
         if (!this.IsOffBounds(x, y - 1)) { neighbors.Add(this.grid[x, y - 1].Tile); }
@@ -85,9 +85,9 @@ public class TileGrid : MonoBehaviour
         return neighbors;
     }
 
-    public List<Tile> GetCornerNeighbors(int x, int y)
+    public List<GridTile> GetCornerNeighbors(int x, int y)
     {
-        List<Tile> neighbors = new List<Tile>();
+        List<GridTile> neighbors = new List<GridTile>();
         if (!this.IsOffBounds(x - 1, y - 1)) { neighbors.Add(this.grid[x - 1, y - 1].Tile); }
         if (!this.IsOffBounds(x + 1, y + 1)) { neighbors.Add(this.grid[x + 1, y + 1].Tile); }
         if (!this.IsOffBounds(x + 1, y - 1)) { neighbors.Add(this.grid[x + 1, y - 1].Tile); }
@@ -95,9 +95,9 @@ public class TileGrid : MonoBehaviour
         return neighbors;
     }
 
-    public List<Tile> GetAll8Neighbors(int x, int y)
+    public List<GridTile> GetAll8Neighbors(int x, int y)
     {
-        List<Tile> neighbors = this.GetNeighbors(x, y);
+        List<GridTile> neighbors = this.GetNeighbors(x, y);
         neighbors.AddRange(this.GetCornerNeighbors(x, y));
         return neighbors;
     }
@@ -108,7 +108,7 @@ public class TileGrid : MonoBehaviour
         grid[x, y].Tile.IsReserved = false;
     }
 
-    public void PutObject<T>(Tile tile, T obj, bool moveObj = false) where T : TileEntity
+    public void PutObject<T>(GridTile tile, T obj, bool moveObj = false) where T : TileEntity
     {
         this.PutObject(tile.XCoord, tile.YCoord, obj, moveObj);
     }
@@ -120,7 +120,7 @@ public class TileGrid : MonoBehaviour
         obj.YCoord = y;
         if (moveObj)
         {
-            Tile tile = grid[x, y].Tile;
+            GridTile tile = grid[x, y].Tile;
             obj.transform.position = tile.transform.position;
             tile.IsReserved = false;
         }
@@ -169,7 +169,7 @@ public class TileGrid : MonoBehaviour
         return false;        
     }
 
-    public bool CanOccupy(Tile tile, OccupancyRule rule = OccupancyRule.MustBeEmpty)
+    public bool CanOccupy(GridTile tile, OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
         return tile != null && CanOccupy(tile.XCoord, tile.YCoord, rule);
     }

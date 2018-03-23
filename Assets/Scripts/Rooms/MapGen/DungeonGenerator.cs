@@ -8,7 +8,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
     public int NumRooms = 4;
     public int RoomDims = 16;
     public int Dims { get { return this.RoomDims * NumRooms; } }
-    public Tile GenericTileTemplate;
+    public GridTile GenericTileTemplate;
     public Room[] PossibleRoomTemplates;
 
     private TileGrid grid = null;
@@ -30,8 +30,8 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         this.grid = Game.Dungeon.Grid;
 
         this.grid.Init(Dims, Dims);
-        List<Tile> openConnectors = new List<Tile>();
-        List<Tile> toClearLater = new List<Tile>();
+        List<GridTile> openConnectors = new List<GridTile>();
+        List<GridTile> toClearLater = new List<GridTile>();
 
         roomGrid = new Room[NumRooms, NumRooms];
 
@@ -45,14 +45,14 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         roomGrid[0, 0] = firstRoom;
 
         // For first tile, ignore the down connector
-        Tile[] tiles = firstRoom.GetTiles();
-        Tile startingTile = tiles.First(a => a.ConnectsTo == Direction.Down);
+        GridTile[] tiles = firstRoom.GetTiles();
+        GridTile startingTile = tiles.First(a => a.ConnectsTo == Direction.Down);
         openConnectors.AddRange(tiles.Where(a => a.IsConnectorTile() && a.ConnectsTo != Direction.Down));
         int numRoomsCreated = 1;
         while (true)
         {
             // Clear out the bad connectors
-            foreach (Tile connectorToCheck in openConnectors.ToList())
+            foreach (GridTile connectorToCheck in openConnectors.ToList())
             {
                 Room room = connectorToCheck.GetRoom();
                 if (roomGrid.IsAdjacentOffBoundsOrFull(room.XCoord, room.YCoord, connectorToCheck.ConnectsTo.Value))
@@ -90,7 +90,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
             }
             else
             {
-                Tile connector = openConnectors.GetRandom();
+                GridTile connector = openConnectors.GetRandom();
                 openConnectors.Remove(connector);
                 Room currRoom = connector.GetRoom();
                 IEnumerable<Room> possibleRooms = this.PossibleRoomTemplates.Where(a => a.HasExactMatchingConnector(connector));
@@ -101,7 +101,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
                 newRoom.ShiftInDirection(connector.ConnectsTo.Value);
                 roomGrid[newRoom.XCoord, newRoom.YCoord] = newRoom;
                 newRoom.transform.position = new Vector3(newRoom.XCoord * RoomDims, newRoom.YCoord * RoomDims);
-                Tile[] newTiles = newRoom.GetTiles();
+                GridTile[] newTiles = newRoom.GetTiles();
                 Direction opposite = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
                 openConnectors.AddRange(newTiles.Where(a => a.IsConnectorTile() && !(a.ConnectsTo.Value == opposite)));
                 numRoomsCreated++;
@@ -116,7 +116,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
             {
                 int roomOffsetX = room.XCoord * RoomDims;
                 int roomOffsetY = room.YCoord * RoomDims;
-                foreach (Tile tile in room.GetTiles())
+                foreach (GridTile tile in room.GetTiles())
                 {
                     tile.XCoord = roomOffsetX + (int)tile.transform.localPosition.x;
                     tile.YCoord = roomOffsetY + (int)tile.transform.localPosition.y;
@@ -127,12 +127,12 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         });
 
         // Remove all left-over connectors
-        foreach (Tile connector in openConnectors)
+        foreach (GridTile connector in openConnectors)
         {
             DestroyConnectorNeighborsRecursive(connector);
         }
 
-        foreach (Tile connector in toClearLater)
+        foreach (GridTile connector in toClearLater)
         {
             DestroyConnectorNeighborsRecursive(connector);
         }
@@ -140,8 +140,8 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         this.grid.PutObject(startingTile.XCoord, startingTile.YCoord, Game.Player, true);
     }
 
-    private HashSet<Tile> visitedNeighbors = new HashSet<Tile>();
-    private void DestroyConnectorNeighborsRecursive(Tile tile)
+    private HashSet<GridTile> visitedNeighbors = new HashSet<GridTile>();
+    private void DestroyConnectorNeighborsRecursive(GridTile tile)
     {
         if (tile == null)
         {
@@ -158,7 +158,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         int x = tile.XCoord;
         int y = tile.YCoord;
         tile.RemoveConnector();        
-        foreach (Tile neighbor in this.grid.GetNeighbors(x, y))
+        foreach (GridTile neighbor in this.grid.GetNeighbors(x, y))
         {
             if (neighbor != null && (neighbor.IsConnectorTile() || neighbor.IsConnectorNeighbor))
             {

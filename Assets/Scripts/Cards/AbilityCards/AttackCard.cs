@@ -21,7 +21,7 @@ public class AttackCard : AbilityCard<AttackCardData>
     private void ActivateTargeted()
     {
         List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(this.Data.RangeType, this.Data.Range, this.Data.AffectedTargetType);
-        List<Tile> tiles = Game.Dungeon.GetTilesNearPlayer(this.Data.RangeType, this.Data.Range);
+        List<GridTile> tiles = Game.Dungeon.GetTilesNearPlayer(this.Data.RangeType, this.Data.Range);
         tiles.ForEach(a => a.Show(true));
        
         Routine cardUseRoutine = Routine.CreateCancellable(Game.Dungeon.AwaitTargetSelection, entities, 1);

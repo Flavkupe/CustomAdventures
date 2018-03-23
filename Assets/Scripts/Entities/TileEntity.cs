@@ -69,7 +69,7 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
         Game.States.SetState(GameState.CharacterMoving);
         TileGrid grid = Game.Dungeon.Grid;
         grid.MoveTo(this.XCoord, this.YCoord, direction, this);
-        Tile newTile = grid.GetTile(this.XCoord, this.YCoord);
+        GridTile newTile = grid.GetTile(this.XCoord, this.YCoord);
         yield return this.transform.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false);
         Game.States.RevertState();
     }
