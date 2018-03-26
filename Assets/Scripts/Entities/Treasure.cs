@@ -39,11 +39,17 @@ public class Treasure : TileEntity, IObjectOnTile
         return _canInteractWith;
     }
 
-    public override PlayerInteraction PlayerInteractWith(Player player)
+    public override PlayerInteraction GetPlayerInteraction(Player player)
     {
+        return PlayerInteraction.InteractWithObject;
+    }
+
+    public override IEnumerator PlayerInteractWith()
+    {
+        var playerDirection = Game.Player.transform.position.GetRelativeDirection(this.transform.position);
+        yield return Game.Player.TwitchTowards(playerDirection);
         Game.CardDraw.PerformLootCardDrawing(2);
         this._canInteractWith = false;
         Destroy(this.gameObject, 1.0f);
-        return PlayerInteraction.InteractWithObject;
     }
 }

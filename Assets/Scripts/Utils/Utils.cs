@@ -51,15 +51,46 @@ public static class Utils
             case Direction.Right:
                 return Direction.Left;            
         }
-    }
+    }    
 }
 
 public static class ExtensionFunctions
 {
+    public static Direction GetRelativeDirection(this Vector3 me, Vector3 target)
+    {
+        float x = target.x - me.x;
+        float y = target.y - me.y;
+        if (Mathf.Abs(x) > Mathf.Abs(y))
+        {
+            return x >= 0 ? Direction.Right : Direction.Left;
+        }
+
+        return y >= 0 ? Direction.Up : Direction.Down;
+    }
+
     public static IEnumerator DoNextFrame(this MonoBehaviour obj, Action action)
     {
         yield return null;
         action.Invoke();
+    }
+
+    public static T GetMax<T, R>(this IList<T> list, Func<T, R> selector) where R : IComparable<R>
+    {
+        if (list.Count == 0)
+        {
+            return default(T);
+        }
+
+        T max = list[0];
+        foreach (var item in list)
+        {
+            if (selector(item).CompareTo(selector(max)) > 0)
+            {
+                max = item;
+            }
+        }
+
+        return max;
     }
 
     public static T GetRandom<T>(this IList<T> list)
@@ -67,6 +98,11 @@ public static class ExtensionFunctions
         if (list.Count == 0)
         {
             return default(T);
+        }
+
+        if (list.Count == 1)
+        {
+            return list[0];
         }
 
         return list[UnityEngine.Random.Range(0, list.Count)];

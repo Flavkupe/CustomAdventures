@@ -13,8 +13,6 @@ public class DungeonManager : SingletonObject<DungeonManager>
     private List<Enemy> enemies = new List<Enemy>();
     private List<Treasure> treasures = new List<Treasure>();
 
-    public Room[] PossibleRoomTemplates;
-
     public void RemoveEnemy(Enemy enemy)
     {
         this.enemies.Remove(enemy);

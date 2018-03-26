@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public abstract class TileEntity : MonoBehaviour, IObjectOnTile
+public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 {
     public float TileSlideSpeed = 10.0f;
 
@@ -48,9 +48,14 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
     {
     }
 
-    public virtual PlayerInteraction PlayerInteractWith(Player player)
+    public virtual PlayerInteraction GetPlayerInteraction(Player player)
     {
         return PlayerInteraction.None;
+    }
+
+    public virtual IEnumerator PlayerInteractWith()
+    {
+        yield return null;
     }
 
     public bool CanMove(Direction direction)
@@ -60,7 +65,7 @@ public abstract class TileEntity : MonoBehaviour, IObjectOnTile
     }
 
     public IEnumerator TryMove(Direction direction)
-    {        
+    {
         if (!CanMove(direction))
         {
             yield break;

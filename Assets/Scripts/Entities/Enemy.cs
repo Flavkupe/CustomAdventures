@@ -44,9 +44,8 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     private IEnumerator AttackPlayer()
     {
-        yield return new WaitForSecondsSpeedable(1.0f);
+        yield return this.TwitchTowards(Game.Player.transform.position);
         Game.Player.TakeDamage(this.Data.Attack);
-        yield return null;
     }
 
     public override void DoDamage(int damage)
@@ -97,10 +96,16 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
         return true;
     }
 
-    public override PlayerInteraction PlayerInteractWith(Player player)
+    public override PlayerInteraction GetPlayerInteraction(Player player)
     {
-        int damage = player.GetAttackStrength();
-        this.TakeDamage(damage);
         return PlayerInteraction.Attack;
+    }
+
+    public override IEnumerator PlayerInteractWith()
+    {
+        var playerDirection = Game.Player.transform.position.GetRelativeDirection(this.transform.position);
+        yield return Game.Player.TwitchTowards(playerDirection);
+        int damage = Game.Player.GetAttackStrength();
+        this.TakeDamage(damage);        
     }
 }

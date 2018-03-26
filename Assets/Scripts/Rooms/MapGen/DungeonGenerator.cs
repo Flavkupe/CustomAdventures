@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Tilemaps;
 
 public class DungeonGenerator: SingletonObject<DungeonGenerator>
 {
@@ -13,6 +14,10 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
 
     private TileGrid grid = null;
     private Room[,] roomGrid = null;
+
+    private List<GridTile> _openConnectors = new List<GridTile>();
+    private List<GridTile> _toClearLater = new List<GridTile>();
+    private int _numRoomsCreated = 0;
 
     void Awake()
     {
@@ -26,17 +31,18 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
 
     private void CreateRooms()
     {
+        // At least 2 rooms (start and boss rooms)
+        this.NumRooms = Mathf.Max(this.NumRooms, 2);
+
         this.roomGrid = Game.Dungeon.RoomGrid;
         this.grid = Game.Dungeon.Grid;
 
         this.grid.Init(Dims, Dims);
-        List<GridTile> openConnectors = new List<GridTile>();
-        List<GridTile> toClearLater = new List<GridTile>();
 
         roomGrid = new Room[NumRooms, NumRooms];
 
         // First room needs both a down and either a right or an up
-        Room firstRoom = Instantiate(this.PossibleRoomTemplates.FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down) &&
+        Room firstRoom = Instantiate(this.PossibleRoomTemplates.Where(a => !a.BossRoom).FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down) &&
           (a.HasConnectorToDirection(Direction.Right) || a.HasConnectorToDirection(Direction.Up))));
         firstRoom.InitRoomTiles();
         firstRoom.XCoord = 0;
@@ -47,33 +53,48 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         // For first tile, ignore the down connector
         GridTile[] tiles = firstRoom.GetTiles();
         GridTile startingTile = tiles.First(a => a.ConnectsTo == Direction.Down);
-        openConnectors.AddRange(tiles.Where(a => a.IsConnectorTile() && a.ConnectsTo != Direction.Down));
-        int numRoomsCreated = 1;
-        while (true)
+        _openConnectors.AddRange(tiles.Where(a => a.IsConnectorTile() && a.ConnectsTo != Direction.Down));
+        _numRoomsCreated = 1;
+
+        bool bossTime = false;
+        int attempts = 0;
+        while (attempts < 5000)
         {
-            // Clear out the bad connectors
-            foreach (GridTile connectorToCheck in openConnectors.ToList())
+            if (++attempts >= 5000)
             {
-                Room room = connectorToCheck.GetRoom();
-                if (roomGrid.IsAdjacentOffBoundsOrFull(room.XCoord, room.YCoord, connectorToCheck.ConnectsTo.Value))
-                {
-                    toClearLater.Add(connectorToCheck);
-                    openConnectors.Remove(connectorToCheck);
-                }
-                else if (!this.PossibleRoomTemplates.Any(a => a.HasExactMatchingConnector(connectorToCheck)))
-                {
-                    // No possible connectors for this
-                    toClearLater.Add(connectorToCheck);
-                    openConnectors.Remove(connectorToCheck);
-                }
+                // TODO: better failsafe
+                Debug.Assert(false, "Uhoh, could not create map!");
+                Application.Quit();
             }
 
-            if (numRoomsCreated == this.NumRooms)
+            if (_numRoomsCreated == this.NumRooms - 1)
+            {
+                bossTime = true;
+            }
+
+            if (_numRoomsCreated >= this.NumRooms)
             {
                 break;
             }
 
-            if (openConnectors.Count == 0)
+            // Clear out the bad connectors
+            foreach (GridTile connectorToCheck in _openConnectors.ToList())
+            {
+                Room room = connectorToCheck.GetRoom();
+                if (roomGrid.IsAdjacentOffBoundsOrFull(room.XCoord, room.YCoord, connectorToCheck.ConnectsTo.Value))
+                {
+                    _toClearLater.Add(connectorToCheck);
+                    _openConnectors.Remove(connectorToCheck);
+                }
+                else if (!this.PossibleRoomTemplates.Where(a => a.BossRoom == bossTime).Any(a => a.HasExactMatchingConnector(connectorToCheck)))
+                {
+                    // No possible connectors for this
+                    _toClearLater.Add(connectorToCheck);
+                    _openConnectors.Remove(connectorToCheck);
+                }
+            }
+
+            if (_openConnectors.Count == 0)
             {
                 // If no possible connectors, throw it away and start over
                 Utils.DoForXY(NumRooms, NumRooms, (x, y) =>
@@ -90,21 +111,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
             }
             else
             {
-                GridTile connector = openConnectors.GetRandom();
-                openConnectors.Remove(connector);
-                Room currRoom = connector.GetRoom();
-                IEnumerable<Room> possibleRooms = this.PossibleRoomTemplates.Where(a => a.HasExactMatchingConnector(connector));
-                Room newRoom = Instantiate(possibleRooms.ToList().GetRandom());
-                newRoom.InitRoomTiles();
-                newRoom.XCoord = currRoom.XCoord;
-                newRoom.YCoord = currRoom.YCoord;
-                newRoom.ShiftInDirection(connector.ConnectsTo.Value);
-                roomGrid[newRoom.XCoord, newRoom.YCoord] = newRoom;
-                newRoom.transform.position = new Vector3(newRoom.XCoord * RoomDims, newRoom.YCoord * RoomDims);
-                GridTile[] newTiles = newRoom.GetTiles();
-                Direction opposite = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
-                openConnectors.AddRange(newTiles.Where(a => a.IsConnectorTile() && !(a.ConnectsTo.Value == opposite)));
-                numRoomsCreated++;
+                MakeNewRoom(bossTime);
             }
         }
 
@@ -123,21 +130,63 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
                     tile.name = string.Format("Tile_{0}_{1}", tile.XCoord, tile.YCoord);
                     this.grid.PutTile(tile);
                 }
+
+                if (room.Pathing != null)
+                {
+                    room.Pathing.GetComponent<TilemapRenderer>().enabled = false;
+                }
             }
         });
 
         // Remove all left-over connectors
-        foreach (GridTile connector in openConnectors)
+        foreach (GridTile connector in _openConnectors)
         {
             DestroyConnectorNeighborsRecursive(connector);
         }
 
-        foreach (GridTile connector in toClearLater)
+        foreach (GridTile connector in _toClearLater)
         {
             DestroyConnectorNeighborsRecursive(connector);
         }
 
         this.grid.PutObject(startingTile.XCoord, startingTile.YCoord, Game.Player, true);
+    }
+
+    private void MakeNewRoom(bool bossRoom)
+    {
+        GridTile connector = null;
+        if (bossRoom)
+        {
+            connector = _openConnectors.GetMax(a => Vector3.Distance(a.transform.position, Game.Player.transform.position));
+        }
+        else
+        {
+            connector = _openConnectors.GetRandom();
+        }
+
+        _openConnectors.Remove(connector);
+        Room currRoom = connector.GetRoom();
+        List<Room> possibleRooms = this.PossibleRoomTemplates.Where(a => a.BossRoom == bossRoom && a.HasExactMatchingConnector(connector)).ToList();
+        if (possibleRooms.Count == 0)
+        {
+            // No rooms for this connector; try again
+            return;
+        }
+
+        Room newRoom = Instantiate(possibleRooms.ToList().GetRandom());
+        newRoom.InitRoomTiles();        
+        newRoom.XCoord = currRoom.XCoord;
+        newRoom.YCoord = currRoom.YCoord;
+        newRoom.ShiftInDirection(connector.ConnectsTo.Value);
+        roomGrid[newRoom.XCoord, newRoom.YCoord] = newRoom;
+        newRoom.transform.position = new Vector3(newRoom.XCoord * RoomDims, newRoom.YCoord * RoomDims);
+        GridTile[] newTiles = newRoom.GetTiles();
+        Direction opposite = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
+        var newConnectors = newTiles.Where(a => a.IsConnectorTile());
+        var matching = newRoom.GetExactMatchingConnector(connector);
+        _openConnectors.AddRange(newConnectors.Where(a => !(a.ConnectsTo.Value == opposite)));
+        _toClearLater.AddRange(newConnectors.Where(a => a != matching && a.ConnectsTo.Value == opposite));
+        _numRoomsCreated++;
     }
 
     private HashSet<GridTile> visitedNeighbors = new HashSet<GridTile>();

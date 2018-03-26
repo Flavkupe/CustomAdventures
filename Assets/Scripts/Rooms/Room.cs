@@ -11,8 +11,12 @@ public class Room : MonoBehaviour, IHasCoords
     /// </summary>
     public int Dims = 9;
 
+    public Tilemap Pathing;
+
+    public bool BossRoom = false;
+
     public int XCoord { get; set; }
-    public int YCoord { get; set; }      
+    public int YCoord { get; set; }
     
     public int LeftGridXCoord { get { return this.XCoord * Dims; } }
     public int BottomGridYCoord { get { return this.YCoord * Dims; } }
@@ -51,16 +55,21 @@ public class Room : MonoBehaviour, IHasCoords
 
     public bool HasExactMatchingConnector(GridTile connector)
     {
+        return GetExactMatchingConnector(connector) != null;
+    }
+
+    public GridTile GetExactMatchingConnector(GridTile connector)
+    {
         Direction direction = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
         GridTile[] tiles = this.GetTiles();
         if (direction == Direction.Down || direction == Direction.Up)
         {
-            return tiles.Any(a => a.IsConnectorTile() && a.ConnectsTo == direction && 
+            return tiles.FirstOrDefault(a => a.IsConnectorTile() && a.ConnectsTo == direction &&
                 a.transform.localPosition.x == connector.transform.localPosition.x);
         }
         else
         {
-            return tiles.Any(a => a.IsConnectorTile() && a.ConnectsTo == direction &&
+            return tiles.FirstOrDefault(a => a.IsConnectorTile() && a.ConnectsTo == direction &&
                 a.transform.localPosition.y == connector.transform.localPosition.y);
         }
     }

@@ -23,6 +23,9 @@ public class Player : TileEntity
 
     private List<IAbilityCard> abilities = new List<IAbilityCard>();
 
+    // Stuff like the decks and such
+    public GameObject InterfaceObjects;
+
     // Use this for initialization
     void Awake()
     {
@@ -82,7 +85,6 @@ public class Player : TileEntity
     {
     }
 	
-	// Update is called once per frame
 	void Update ()
     {
         if (Game.States.IsPaused)
@@ -197,14 +199,7 @@ public class Player : TileEntity
             {
                 if (obj.PlayerCanInteractWith())
                 {
-                    switch(obj.PlayerInteractWith(this))
-                    {
-                        case PlayerInteraction.Attack:
-                            this.OnAfterPlayerAttack();
-                            break;
-                        default:
-                            break;
-                    }
+                    this.InteractWith(obj);                    
                 }
             }
             else
@@ -214,6 +209,19 @@ public class Player : TileEntity
         }
         
         Game.UI.UpdateUI();
+    }
+
+    private void InteractWith(TileEntity obj)
+    {
+        var interaction = obj.GetPlayerInteraction(this);
+        var routine = Routine.Create(() => obj.PlayerInteractWith());
+        
+        if (interaction == PlayerInteraction.Attack)
+        {
+            routine.Then(() => this.OnAfterPlayerAttack());
+        }
+
+        Game.States.EnqueueCoroutine(routine);
     }
 
     public int GetAttackStrength()
@@ -239,7 +247,7 @@ public class Player : TileEntity
             else if (item.Type == InventoryItemType.Armor)
             {
                 inv.EquippedArmor = null;
-            }
+            } 
             else if (item.Type == InventoryItemType.Accessory)
             {
                 inv.EquippedAccessory = null;
@@ -323,6 +331,16 @@ public class Player : TileEntity
         }
 
         return madeChanges;
+    }
+
+    public override IEnumerator TwitchTowards(Direction direction, float speed = 5.0f)
+    {
+        Camera.main.transform.SetParent(null);
+        this.InterfaceObjects.transform.SetParent(null);
+        yield return base.TwitchTowards(direction, speed);
+        this.InterfaceObjects.transform.SetParent(this.transform);
+        Camera.main.transform.SetParent(this.transform);
+        
     }
 }
 
