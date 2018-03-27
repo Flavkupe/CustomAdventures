@@ -8,7 +8,7 @@ public class EnemyCard : DungeonCard<EnemyCardData>
 {
     public override void ExecuteTileSpawnEvent(GridTile tile)
     {
-        Enemy enemy = this.InstantiateEnemy();        
+        Enemy enemy = this.InstantiateEnemy();
         Game.Dungeon.SpawnEnemy(enemy, tile);
     }
 
@@ -26,6 +26,6 @@ public class EnemyCard : DungeonCard<EnemyCardData>
 	
 	// Update is called once per frame
 	void Update ()
-    {		
+    {
 	}
 }

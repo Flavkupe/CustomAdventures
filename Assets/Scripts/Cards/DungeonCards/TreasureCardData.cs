@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Treasure Card", order = 1)]
+[CreateAssetMenu(fileName = "Card", menuName = "CreateAction Cards/Dungeon/Treasure Card", order = 1)]
 public class TreasureCardData : DungeonCardData
 {
     public Sprite Sprite;

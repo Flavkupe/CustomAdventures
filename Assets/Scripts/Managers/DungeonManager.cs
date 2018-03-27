@@ -106,7 +106,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
         if (card.DungeonEventType == DungeonEventType.SpawnNear)
         {
             List<GridTile> tiles = roomArea.GetAreaTiles();
-            tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();            
+            tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();
         }
         else if (card.DungeonEventType == DungeonEventType.SpawnOnCorner)
         {
@@ -157,7 +157,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     private void StartDungeon()
     {
         Game.States.SetState(GameState.AwaitingCommand);
-        //Game.States.EnqueueRoutine(Routine.Create(Game.CardDraw.PerformCharacterCardDrawing, 2));
+        //Game.States.EnqueueRoutine(Routine.CreateAction(Game.CardDraw.PerformCharacterCardDrawing, 2));
     }
 
     public List<GridTile> GetTilesNearPlayer(TileRangeType rangeType, int range)

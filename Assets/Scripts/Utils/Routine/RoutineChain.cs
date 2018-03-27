@@ -29,7 +29,7 @@ public class RoutineChain : IEnumerator, IRoutineSet
 
     public void AddAction(Action action)
     {
-        _queue.Enqueue(Routine.Create(action));
+        _queue.Enqueue(Routine.CreateAction(action));
     }
 
     public void AddRoutine(Routine routine)

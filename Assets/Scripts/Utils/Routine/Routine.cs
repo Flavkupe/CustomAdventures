@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IRoutineConvertable
@@ -19,12 +20,13 @@ public class Routine : IEnumerator
     private Routine _next = null;
     private IEnumerator _current = null;
 
-    private Action _reject = null;
+    private List<Action> _reject = new List<Action>();
+
     protected bool _rejected = false;
 
-    private Action _finally = null;
+    private List<Action> _finally = new List<Action>();
 
-    private Action _completed = null;
+    private List<Action> _completed = new List<Action>();
 
     private bool _executed = false;
 
@@ -78,13 +80,14 @@ public class Routine : IEnumerator
     {
         if (_rejected)
         {
-            if (_reject != null)
+            foreach (var doReject in _reject)
             {
-                _reject();
+                doReject();
             }
-            if (_finally != null)
+
+            foreach (var doFinally in _finally)
             {
-                _finally();
+                doFinally();
             }
 
             return false;
@@ -112,14 +115,14 @@ public class Routine : IEnumerator
             }
         }
 
-        if (_completed != null)
+        foreach (var doCompleted in _completed)
         {
-            _completed();
+            doCompleted();
         }
 
-        if (_finally != null)
+        foreach (var doFinally in _finally)
         {
-            _finally();
+            doFinally();
         }
 
         if (Game.States.DebugEnabled)
@@ -137,12 +140,21 @@ public class Routine : IEnumerator
 
     public void OnReject(Action action)
     {
-        _reject = action;
+        _reject.Add(action);
     }
 
     public void OnCompleted(Action action)
     {
-        _completed = action;
+        _completed.Add(action);
+    }
+
+    /// <summary>
+    /// Runs at the end, no matter what (even if rejected)
+    /// </summary>
+    /// <param name="action"></param>
+    public void Finally(Action action)
+    {
+        _finally.Add(action);
     }
 
     /// <summary>
@@ -152,7 +164,7 @@ public class Routine : IEnumerator
     /// </summary>
     public Routine Then(Action action)
     {
-        return Then(Routine.Create(action));
+        return Then(Routine.CreateAction(action));
     }
 
     public Routine Then(Func<IEnumerator> func)
@@ -181,16 +193,6 @@ public class Routine : IEnumerator
         }
     }
 
-    /// <summary>
-    /// Runs at the end, no matter what (even if rejected)
-    /// </summary>
-    /// <param name="action"></param>
-    public void Finally(Action action)
-    {
-        // TODO: this should be a queue
-        _finally = action;
-    }
-
     private static IEnumerator DoActionQuick(Action action)
     {
         action();
@@ -203,12 +205,20 @@ public class Routine : IEnumerator
         yield break;
     }
 
-    public static Routine Create(Action action)
+    /// <summary>
+    /// Big dumb empty routine, does nothing
+    /// </summary>
+    public static Routine Empty
+    {
+        get { return CreateAction(() => {}); }
+    }
+
+    public static Routine CreateAction(Action action)
     {
         return Routine.Create(() => DoActionQuick(action));
     }
 
-    public static Routine Create<T>(Action<T> action, T arg1)
+    public static Routine CreateAction<T>(Action<T> action, T arg1)
     {
         return Routine.Create(() => DoActionQuick(action, arg1));
     }
@@ -253,9 +263,16 @@ public class Routine : IEnumerator
         return new CancellableRoutine<T1, T2>(func, arg1, arg2);
     }
 
-    public static IEnumerator WaitForSeconds(float seconds)
+    public static IEnumerator WaitForSeconds(float seconds, bool speedable = false)
     {
-        yield return new WaitForSeconds(seconds);
+        if (speedable)
+        {
+            yield return new WaitForSecondsSpeedable(seconds);
+        }
+        else
+        {
+            yield return new WaitForSeconds(seconds);
+        }
     }
 }
 

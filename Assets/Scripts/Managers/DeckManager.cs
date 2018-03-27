@@ -62,11 +62,27 @@ public class DeckManager : SingletonObject<DeckManager>
         deck.ScaleDeck(DeckSmallSize);
     }
 
+    public TCardInterface CreateAnonymousCardFromData<TCardInterface>(CardData data) where TCardInterface : class, ICard
+    {
+        var card = InstantiateOfType<TCardInterface>(data.BackingCardType, data.Name ?? data.name);
+        if (card != null)
+        {
+            card.SetData(data);
+            card.InitCard();
+        }
+
+        return card;
+    }
+
     public TCardType CreateCardFromData<TCardType, TCardDataType>(TCardDataType data) where TCardType : class, ICard where TCardDataType : CardData
     {
         TCardType card = InstantiateOfType<TCardType>(data.BackingCardType, data.Name);
-        card.SetData(data);
-        card.InitCard();
+        if (card != null)
+        {
+            card.SetData(data);
+            card.InitCard();
+        }
+
         return card;
     }
 

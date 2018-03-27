@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Enemy Card", order = 1)]
+[CreateAssetMenu(fileName = "Card", menuName = "CreateAction Cards/Dungeon/Enemy Card", order = 1)]
 public class EnemyCardData : DungeonCardData
 {
     public Sprite Sprite;
@@ -13,6 +13,8 @@ public class EnemyCardData : DungeonCardData
     public int Movement = 1;
     public int Attack = 1;
     public int EXP = 1;
+
+    public bool Boss = false;
 
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Enemy; } }
 

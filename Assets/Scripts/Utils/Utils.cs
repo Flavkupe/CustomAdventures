@@ -157,9 +157,9 @@ public static class ExtensionFunctions
         return vector.OffsetBy(offset, offset);
     }
 
-    public static Vector3 OffsetBy(this Vector3 vector, float xOffset, float yOffset)
+    public static Vector3 OffsetBy(this Vector3 vector, float xOffset, float yOffset, float zOffset = 0.0f)
     {
-        return new Vector3(vector.x - xOffset, vector.y - yOffset);
+        return new Vector3(vector.x - xOffset, vector.y - yOffset, vector.z - zOffset);
     }
 
     public static Vector3 IncrementBy(this Vector3 vector, float xOffset, float yOffset, float zOffset)

@@ -18,28 +18,87 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     public Routine PerformDungeonEvents(RoomArea roomArea)
     {
-        // TODO: empty deck?        
-        Func<IDungeonCard, Routine> func = (IDungeonCard card) =>
+        // TODO: empty deck?
+        Func<IDungeonCard, Routine> func = card =>
         {
-            switch (card.DungeonEventType)
-            {
-                case DungeonEventType.SpawnNear:
-                case DungeonEventType.SpawnOnCorner:
-                case DungeonEventType.SpawnOnWideOpen:
-                    return Routine.Create(() =>
-                    {
-                        Game.Dungeon.PerformSpawnEvent(roomArea, card);
-                    });
-                default:
-                    Debug.LogError("No behavior set for DungeonEventType!");
-                    return null;
-            }
+            return GetDungeonCardRoutine(roomArea, card);
         };
 
         roomArea.gameObject.SetActive(false);
         Game.Dungeon.PostGroupEventCleanup();
 
         return DoCardDraw(Game.Decks.DrawDungeonCards, 2, Game.Decks.DungeonDeck, func);
+    }
+
+    private Routine GetDungeonCardRoutine(RoomArea roomArea, IDungeonCard card)
+    {
+        switch (card.DungeonEventType)
+        {
+            case DungeonEventType.SpawnNear:
+            case DungeonEventType.SpawnOnCorner:
+            case DungeonEventType.SpawnOnWideOpen:
+                return Routine.CreateAction(() => { Game.Dungeon.PerformSpawnEvent(roomArea, card); });
+            case DungeonEventType.MultiEvent:
+                return GenerateMultiEventRoutines(roomArea, card);
+            default:
+                Debug.LogError("No behavior set for DungeonEventType!");
+                return Routine.Empty;
+        }
+    }
+
+    private Routine GenerateMultiEventRoutines(RoomArea roomArea, IDungeonCard card)
+    {
+        var data = card.GetData<MultiEventCardData>();
+        if (data == null)
+        {
+            Debug.LogError("Invalid cast for MultiEventCardData!");
+            return Routine.Empty;
+        }
+
+        var drawChain = new ParallelRoutineSet();
+        var effectChain = new ParallelRoutineSet();
+        var events = new List<DungeonCardData>();
+        if (data.MultiEventType == MultiEventType.DoEach)
+        {
+            events.AddRange(data.Events);
+        }
+        else
+        {
+            for (var i = 0; i < data.NumberOfEvents; i++)
+            {
+                events.Add(data.Events.GetRandom());
+            }
+        }
+
+        var yDist = 1.2f;
+        var zOffset = -0.2f;
+        foreach (var subevent in events)
+        {
+            var newCard = Game.Decks.CreateAnonymousCardFromData<IDungeonCard>(subevent);
+            if (newCard != null)
+            {
+                newCard.SetFaceUp();
+                newCard.Object.transform.position = card.Object.transform.position.OffsetBy(0.0f, 0.0f, zOffset);
+                drawChain.AddRoutine(Routine.Create(SlideCardUp, newCard, yDist));
+                yDist += 1.2f;
+                zOffset -= 0.2f;
+
+                var cardRoutine = GetDungeonCardRoutine(roomArea, newCard);
+                effectChain.AddRoutine(cardRoutine);
+            }
+        }
+
+        var routine = drawChain.AsRoutine();
+        routine.Then(() => Routine.WaitForSeconds(0.5f, true));
+        routine.Then(() => effectChain);
+        routine.Finally(card.DestroyCard);
+        return routine;
+    }
+
+    private IEnumerator SlideCardUp(ICard card, float yDist)
+    {
+        Vector3 target = card.Object.transform.position + (Vector3.up * yDist);
+        yield return card.Object.transform.MoveToSpotCoroutine(target, 10.0f);
     }
 
     public Routine PerformLootCardDrawing(int cardNum)
@@ -50,7 +109,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             {
                 case LootEventType.GainLoot:
                 default:
-                    return Routine.Create(() =>
+                    return Routine.CreateAction(() =>
                     {
                         card.ExecuteLootGetEvent();
                         card.DestroyCard();
@@ -65,9 +124,9 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     {
         Func<IAbilityCard, Routine> func = (IAbilityCard card) =>
         {
-            return Routine.Create(() =>
+            return Routine.CreateAction(() =>
             {
-                Game.Player.EquipAbility(card);                
+                Game.Player.EquipAbility(card);
             });
         };
 
@@ -82,7 +141,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             {
                 case CharacterCardType.AttributeGain:
                 default:
-                    return Routine.Create(() =>
+                    return Routine.CreateAction(() =>
                     {
                         card.ApplyEffect();
                         card.DestroyCard();
@@ -97,8 +156,8 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     {
         Game.States.IsPaused = true;
 
-        Routine drawRoutine = Routine.Create(InternalDrawCoroutine, cardDrawFunc, numDraws, deck, cardRoutine);        
-        Game.States.EnqueueIfNotState(GameState.CharacterMoving, () => drawRoutine);        
+        Routine drawRoutine = Routine.Create(InternalDrawCoroutine, cardDrawFunc, numDraws, deck, cardRoutine);
+        Game.States.EnqueueIfNotState(GameState.CharacterMoving, () => drawRoutine);
         return drawRoutine;
     }
 
@@ -136,9 +195,8 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         }
 
         Game.UI.ToggleMulliganPanel(false);
-        Debug.Assert(cards != null, "Card are null!");
 
-        if (cards != null && cards.Count > 0)
+        if (cards.Count > 0)
         {
             yield return DoCardEvents(cards, cardRoutine);
         }
@@ -159,7 +217,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         yield return routines;
 
         deck.PushToBottom(cards);
-        Game.UI.UpdateUI();        
+        Game.UI.UpdateUI();
     }
 
     private IEnumerator DoCardEvents<TCardType>(List<TCardType> cards, Func<TCardType, Routine> cardRoutine) where TCardType : ICard
