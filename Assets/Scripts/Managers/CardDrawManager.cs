@@ -18,8 +18,20 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     public Routine PerformDungeonEvents(RoomArea roomArea)
     {
+        int draws = roomArea.NumDraws;
+        if (roomArea.BossArea)
+        {
+            foreach (var bossCardData in Game.Dungeon.PossibleBossCards)
+            {
+                var bossCard = Game.Decks.CreateCardFromData<IDungeonCard, DungeonCardData>(bossCardData);
+                Game.Decks.DungeonDeck.PushCard(bossCard);
+            }
+
+            draws = Game.Dungeon.PossibleBossCards.Length;
+        }
+
         // TODO: empty deck?
-        Func<IDungeonCard, Routine> func = card =>
+        Func<IDungeonCard, Routine> cardExecuteRoutine = card =>
         {
             return GetDungeonCardRoutine(roomArea, card);
         };
@@ -27,7 +39,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         roomArea.gameObject.SetActive(false);
         Game.Dungeon.PostGroupEventCleanup();
 
-        return DoCardDraw(Game.Decks.DrawDungeonCards, 2, Game.Decks.DungeonDeck, func);
+        return DoCardDraw(new DrawCoroutineProps<IDungeonCard>(Game.Decks.DrawDungeonCards, draws, Game.Decks.DungeonDeck, cardExecuteRoutine, !roomArea.BossArea));
     }
 
     private Routine GetDungeonCardRoutine(RoomArea roomArea, IDungeonCard card)
@@ -152,23 +164,49 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         return DoCardDraw(Game.Decks.DrawCharacterCards, cardNum, Game.Decks.CharacterDeck, func);
     }
 
-    private Routine DoCardDraw<TCardType>(Func<int, List<TCardType>> cardDrawFunc, int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine) where TCardType : class, ICard
+    private Routine DoCardDraw<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
     {
         Game.States.IsPaused = true;
-
-        Routine drawRoutine = Routine.Create(InternalDrawCoroutine, cardDrawFunc, numDraws, deck, cardRoutine);
+        Routine drawRoutine = Routine.Create(InternalDrawCoroutine, props);
         Game.States.EnqueueIfNotState(GameState.CharacterMoving, () => drawRoutine);
         return drawRoutine;
     }
 
-    private IEnumerator InternalDrawCoroutine<TCardType>(Func<int, List<TCardType>> cardDrawFunc, int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine) where TCardType : class, ICard
+    private Routine DoCardDraw<TCardType>(Func<int, List<TCardType>> cardDrawFunc, int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine) where TCardType : class, ICard
+    {
+        return DoCardDraw(new DrawCoroutineProps<TCardType>(cardDrawFunc, numDraws, deck, cardRoutine));
+    }
+
+    private class DrawCoroutineProps<TCardType> where TCardType : class, ICard
+    {
+        public DrawCoroutineProps(Func<int, List<TCardType>> cardDrawFunc, int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine, bool allowMulligan = true)
+        {
+            CardDrawFunc = cardDrawFunc;
+            NumDraws = numDraws;
+            Deck = deck;
+            CardRoutine = cardRoutine;
+            AllowMulligan = allowMulligan;
+        }
+
+        public Func<int, List<TCardType>> CardDrawFunc { get; set; }
+
+        public int NumDraws { get; private set; }
+
+        public Deck<TCardType> Deck { get; private set; }
+
+        public Func<TCardType, Routine> CardRoutine { get; private set; }
+
+        public bool AllowMulligan { get; private set; }
+    }
+
+    private IEnumerator InternalDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
     {
         List<TCardType> cards = null;
         while (true)
         {
-            cards = cardDrawFunc(numDraws).ToList();
-            yield return Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), deck.DeckHolder, 10.0f);
-            if (Game.Player.Stats.Mulligans > 0)
+            cards = props.CardDrawFunc(props.NumDraws).ToList();
+            yield return Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), props.Deck.DeckHolder, 10.0f);
+            if (props.AllowMulligan && Game.Player.Stats.Mulligans > 0)
             {
                 Game.UI.ToggleMulliganPanel(true);
                 var pressEvent = new AwaitKeyPress(MulliganKey, TakeKey);
@@ -183,7 +221,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
                 else if ((pressEvent.Activated && pressEvent.KeyPressed == MulliganKey) ||
                          (triggerEvent.Activated && triggerEvent.EventValue == UIEvent.MulliganPressed))
                 {
-                    yield return MulliganCardsIntoDeck(deck, cards);
+                    yield return MulliganCardsIntoDeck(props.Deck, cards);
                 }
 
                 Game.UI.ToggleMulliganPanel(false);
@@ -198,7 +236,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
         if (cards.Count > 0)
         {
-            yield return DoCardEvents(cards, cardRoutine);
+            yield return DoCardEvents(cards, props.CardRoutine);
         }
 
         Game.States.IsPaused = false;

@@ -15,7 +15,7 @@ public class MultiEventCardData : DungeonCardData
 
     public override Type BackingCardType { get { return typeof(MultiEventCard); } }
 
-    [Description("Only used with PickXRandomly MultiEventType")]
+    [Tooltip("Only used with PickXRandomly MultiEventType")]
     public int NumberOfEvents = 2;
 
     public MultiEventType MultiEventType;

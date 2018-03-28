@@ -11,6 +11,8 @@ public class RoomArea : MonoBehaviour
     private Room parentRoom = null;
     private BoxCollider2D col;
 
+    public int NumDraws = 2;
+    public bool BossArea = false;
     public OnPlayerEnterEvents OnPlayerEnter = OnPlayerEnterEvents.DungeonEvents;
 
     // Use this for initialization
@@ -70,7 +72,7 @@ public class RoomArea : MonoBehaviour
     {
         List<GridTile> freeTiles = new List<GridTile>();
         TileGrid grid = Game.Dungeon.Grid;
-        List<GridTile> tiles = this.GetAreaTiles().Where(a => grid.CanOccupy(a)).ToList();        
+        List<GridTile> tiles = this.GetAreaTiles().Where(a => grid.CanOccupy(a)).ToList();
         foreach (GridTile tile in tiles)
         {
             if (grid.GetAll8Neighbors(tile.XCoord, tile.YCoord).All(a => grid.CanOccupy(a, OccupancyRule.CanBeTemporaryEntity)))
@@ -84,7 +86,7 @@ public class RoomArea : MonoBehaviour
 
     // Update is called once per frame
     void Update ()
-    {		
+    {
 	}
 }
 

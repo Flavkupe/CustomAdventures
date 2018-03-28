@@ -6,6 +6,8 @@ using System.Linq;
 
 public class DungeonManager : SingletonObject<DungeonManager>
 {
+    public DungeonCardData[] PossibleBossCards;
+
     public GridTile GenericTileTemplate;
     public TileGrid Grid;
     public Room[,] RoomGrid;

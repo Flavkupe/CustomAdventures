@@ -37,9 +37,14 @@ public class Deck<T> where T : class, ICard
         RestackDeck(cards);
     }
 
+    public bool IsEmpty()
+    {
+        return deck.Count == 0;
+    }
+
     public T DrawCard()
     {
-        if (deck.Count == 0)
+        if (IsEmpty())
         {
             return null;
         }

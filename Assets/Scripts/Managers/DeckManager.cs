@@ -86,14 +86,31 @@ public class DeckManager : SingletonObject<DeckManager>
         return card;
     }
 
-    private List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, GameObject deckHolder, float deckMoveSpeed = 10.0f) where TCardType : class, ICard
+    private List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, GameObject deckHolder, float deckMoveSpeed = 10.0f, Func<TCardType, bool> drawConditionFunc = null) where TCardType : class, ICard
     {
         List<TCardType> cards = new List<TCardType>();
+        List<TCardType> invalidCards = new List<TCardType>();
         for (int i = 0; i < numDrawn; i++)
         {
+            if (deck.IsEmpty())
+            {
+                break;
+            }
+
             TCardType card = deck.DrawCard();
-            cards.Add(card);
+
+            if (drawConditionFunc != null && !drawConditionFunc(card))
+            {
+                i--; // don't count the draw
+                invalidCards.Add(card);
+            }
+            else
+            {
+                cards.Add(card);
+            }
         }
+
+        deck.PushToBottom(invalidCards);
 
         return cards;
     }
