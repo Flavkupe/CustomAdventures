@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 public class CompositeAwaitEvent : CustomYieldInstruction
@@ -43,8 +42,8 @@ public class AwaitKeyPress : CustomYieldInstruction
             if (Input.anyKeyDown && !string.IsNullOrEmpty(Input.inputString) && 
                 (_validKeys.Count == 0 || _validKeys.Contains(Input.inputString)))
             {
-                this.KeyPressed = Input.inputString;
-                this.Activated = true;
+                KeyPressed = Input.inputString;
+                Activated = true;
                 return false;
             }
 
@@ -77,8 +76,8 @@ public class AwaitTriggerEvent<T> : CustomYieldInstruction where T : struct
             T? current = _eventChecker();
             if (current != null && (_validTriggers.Count == 0 || _validTriggers.Contains(current.Value)))
             {
-                this.EventValue = current.Value;
-                this.Activated = true;
+                EventValue = current.Value;
+                Activated = true;
                 return false;
             }
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCardData
 {
@@ -15,16 +12,6 @@ public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCa
     }
 
     public DungeonEventType DungeonEventType { get { return Data.DungeonEventType; } }
-
-    // Use this for initialization
-    void Start ()
-    {
-	}
-
-	// Update is called once per frame
-	void Update ()
-    {
-	}
 }
 
 public interface IDungeonCard : ICard

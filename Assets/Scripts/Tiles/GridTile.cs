@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Linq;
 using UnityEngine.Tilemaps;
 
@@ -20,21 +17,21 @@ public class GridTile : MonoBehaviour, IHasCoords
     {
         get
         {
-            Room room = this.GetRoom();
+            Room room = GetRoom();
 
-            if (this.transform.localPosition.x == 0)
+            if (transform.localPosition.x == 0)
             {
                 return Direction.Left;
             }            
-            if (this.transform.localPosition.y == 0)
+            if (transform.localPosition.y == 0)
             {
                 return Direction.Down;
             }
-            if (this.transform.localPosition.x == room.Dims - 1)
+            if (transform.localPosition.x == room.Dims - 1)
             {
                 return Direction.Right;
             }
-            if (this.transform.localPosition.y == room.Dims - 1)
+            if (transform.localPosition.y == room.Dims - 1)
             {
                 return Direction.Up;
             }
@@ -51,12 +48,12 @@ public class GridTile : MonoBehaviour, IHasCoords
             return CachedRoom;
         }
 
-        if (this.transform.GetComponentsInParent<Room>(true).Length == 0)
+        if (transform.GetComponentsInParent<Room>(true).Length == 0)
         {
             Debug.Assert(false, "No room associated with this tile");
         }
 
-        CachedRoom = this.transform.GetComponentsInParent<Room>(true).FirstOrDefault();
+        CachedRoom = transform.GetComponentsInParent<Room>(true).FirstOrDefault();
         return CachedRoom;
     }
 
@@ -67,12 +64,12 @@ public class GridTile : MonoBehaviour, IHasCoords
 
     public bool IsConnectorTile()
     {        
-        Room room = this.GetRoom();
+        Room room = GetRoom();
 
-        if (this.transform.localPosition.x == 0 ||
-            this.transform.localPosition.y == 0 ||
-            this.transform.localPosition.x == room.Dims - 1 ||
-            this.transform.localPosition.y == room.Dims - 1)
+        if (transform.localPosition.x == 0 ||
+            transform.localPosition.y == 0 ||
+            transform.localPosition.x == room.Dims - 1 ||
+            transform.localPosition.y == room.Dims - 1)
         {
             return true;
         }
@@ -82,28 +79,28 @@ public class GridTile : MonoBehaviour, IHasCoords
 
     public void Show(bool show)
     {
-        if (this.GetComponent<SpriteRenderer>() == null)
+        if (GetComponent<SpriteRenderer>() == null)
         {
             Debug.Assert(false, "Trying to show tile with no sprite renderer");
             return;
         }
-        
-        this.GetComponent<SpriteRenderer>().enabled = show;        
+
+        GetComponent<SpriteRenderer>().enabled = show;        
     }
 
     public TileEntity GetTileEntity()
     {
-        var contents = Game.Dungeon.Grid.Get(this.XCoord, this.YCoord);
+        var contents = Game.Dungeon.Grid.Get(XCoord, YCoord);
         return contents.TileObject;
     }
 
     // Use this for initialization
-    void Start ()
+    private void Start ()
     {	
 	}
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    private void Update ()
     {		
 	}
 
@@ -116,6 +113,6 @@ public class GridTile : MonoBehaviour, IHasCoords
             }                
         }
 
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 }

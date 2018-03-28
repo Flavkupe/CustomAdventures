@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -138,6 +136,7 @@ public static class ExtensionFunctions
             float proportion = delta / targetDistance;
             obj.position = Vector3.MoveTowards(obj.position, target, delta);
 
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (targetScaleChange != 0.0f)
             {
                 float scaleChange = proportion * targetScaleChange;
@@ -184,8 +183,6 @@ public static class ExtensionFunctions
                 break;
             case Direction.Right:
                 obj.XCoord++;
-                break;
-            default:
                 break;
         }
     }
@@ -344,12 +341,12 @@ public class EnumFlagsAttribute : PropertyAttribute { }
 
 public class SingletonObject<T> : MonoBehaviourEx where T : MonoBehaviour
 {
-    private static T instance;
+    private static T _instance;
 
     public static T Instance
     {
-        get { return instance; }
-        protected set { instance = value; }
+        get { return _instance; }
+        protected set { _instance = value; }
     }
 }
 
@@ -363,9 +360,9 @@ public class CooldownTimer
     /// The goal of the timer. Once this time is reached,
     /// the timer is "expired" (ie goes "ding!").
     /// </summary>
-    private float baseLine = 0.0f;
+    private float _baseLine;
 
-    private float currentTime = 0.0f;
+    private float _currentTime;
 
     public event EventHandler OnCooldownExpired;
 
@@ -375,7 +372,7 @@ public class CooldownTimer
     /// </summary>
     public CooldownTimer()
     {
-        this.baseLine = 0.0f;
+        _baseLine = 0.0f;
     }
 
     /// <summary>
@@ -386,7 +383,7 @@ public class CooldownTimer
     /// before cooldown expires</param>
     public CooldownTimer(float baseLine)
     {
-        this.baseLine = baseLine;
+        _baseLine = baseLine;
     }
 
     /// <summary>
@@ -405,15 +402,15 @@ public class CooldownTimer
     /// <returns></returns>
     public CooldownTimer Tick(float? delta = null)
     {
-        if (this.IsActive)
+        if (IsActive)
         {
-            this.currentTime += delta ?? Time.deltaTime;
-            if (this.IsExpired)
+            _currentTime += delta ?? Time.deltaTime;
+            if (IsExpired)
             {
                 // On the exact tick after expiry, this event fires.
-                if (this.OnCooldownExpired != null)
+                if (OnCooldownExpired != null)
                 {
-                    this.OnCooldownExpired(this, new EventArgs());
+                    OnCooldownExpired(this, new EventArgs());
                 }
             }
         }
@@ -424,19 +421,19 @@ public class CooldownTimer
     /// <summary>
     /// Whether or not the timer reached its goal
     /// </summary>
-    public bool IsExpired { get { return this.currentTime >= baseLine; } }
+    public bool IsExpired { get { return _currentTime >= _baseLine; } }
 
     /// <summary>
     /// Whether or not this timer should tick.
     /// </summary>
-    public bool IsActive { get { return this.baseLine > 0.0f && !this.IsExpired; } }
+    public bool IsActive { get { return _baseLine > 0.0f && !IsExpired; } }
 
     /// <summary>
     /// Resets the timer to be used again.
     /// </summary>
     public void Reset()
     {
-        this.currentTime = 0.0f;
+        _currentTime = 0.0f;
     }
 
     /// <summary>
@@ -445,7 +442,7 @@ public class CooldownTimer
     /// <param name="baseLine"></param>
     public void SetBaseline(float baseLine)
     {
-        this.baseLine = baseLine;
+        _baseLine = baseLine;
     }
 
 }

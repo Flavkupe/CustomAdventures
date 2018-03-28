@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
-public class AttributeGainCard : CharacterCard<AttributeGainCardData>
+﻿public class AttributeGainCard : CharacterCard<AttributeGainCardData>
 {
     public override void ApplyEffect()
     {
-        if (this.Data.StrengthGain > 0)
+        if (Data.StrengthGain > 0)
         {
-            Game.Player.Stats.BaseStrength += this.Data.StrengthGain;
+            Game.Player.Stats.BaseStrength += Data.StrengthGain;
         }
 
-        if (this.Data.MaxHPGain > 0)
+        if (Data.MaxHPGain > 0)
         {
-            Game.Player.Stats.MaxHP += this.Data.MaxHPGain;
-            Game.Player.Stats.HP += this.Data.MaxHPGain;
+            Game.Player.Stats.MaxHP += Data.MaxHPGain;
+            Game.Player.Stats.HP += Data.MaxHPGain;
         }
     }
 }

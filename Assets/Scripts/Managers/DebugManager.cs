@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class DebugManager : SingletonObject<DebugManager>
@@ -18,7 +16,8 @@ public class DebugManager : SingletonObject<DebugManager>
         }
     }
 
-    void Awake()
+    [UsedImplicitly]
+    private void Awake()
     {
         Instance = this;
     }

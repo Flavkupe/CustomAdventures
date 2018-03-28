@@ -516,7 +516,7 @@ namespace Borodar.ReorderableList {
 		/// <param name="flags">Optional flags which affect behavior of control.</param>
 		public ReorderableListControl(ReorderableListFlags flags)
 			: this() {
-			this.Flags = flags;
+            Flags = flags;
 		}
 
 		#endregion

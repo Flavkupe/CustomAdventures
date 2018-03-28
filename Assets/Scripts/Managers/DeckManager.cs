@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using JetBrains.Annotations;
 
 public class DeckManager : SingletonObject<DeckManager>
 {
@@ -86,7 +87,7 @@ public class DeckManager : SingletonObject<DeckManager>
         return card;
     }
 
-    private List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, GameObject deckHolder, float deckMoveSpeed = 10.0f, Func<TCardType, bool> drawConditionFunc = null) where TCardType : class, ICard
+    private List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, Func<TCardType, bool> drawConditionFunc = null) where TCardType : class, ICard
     {
         List<TCardType> cards = new List<TCardType>();
         List<TCardType> invalidCards = new List<TCardType>();
@@ -117,22 +118,22 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public List<IDungeonCard> DrawDungeonCards(int numDrawn)
     {
-        return this.DrawCards(numDrawn, DungeonDeck, DungeonDeckHolder);
+        return DrawCards(numDrawn, DungeonDeck);
     }
 
     public List<ILootCard> DrawLootCards(int numDrawn)
     {
-        return this.DrawCards(numDrawn, LootDeck, LootDeckHolder);
+        return DrawCards(numDrawn, LootDeck);
     }
 
     public List<IAbilityCard> DrawAbilityCards(int numDrawn)
     {
-        return this.DrawCards(numDrawn, AbilityDeck, AbilityDeckHolder);
+        return DrawCards(numDrawn, AbilityDeck);
     }
 
     public List<ICharacterCard> DrawCharacterCards(int numDrawn)
     {
-        return this.DrawCards(numDrawn, CharacterDeck, CharDeckHolder, 30.0f);
+        return DrawCards(numDrawn, CharacterDeck);
     }
 
     public IEnumerator MoveDeckToPosition(GameObject deckHolder, Vector3 target, float sizeChange, float deckMoveSpeed = 10.0f)
@@ -143,7 +144,7 @@ public class DeckManager : SingletonObject<DeckManager>
     public IEnumerator AnimateShuffleIntoDeck(ICard card, GameObject deckHolder, float deckMoveSpeed = 10.0f)
     {
         MonoBehaviourEx obj = card.Object;
-        yield return obj.transform.MoveToSpotAndScaleCoroutine(deckHolder.transform.position, this.CardMoveSpeed, DeckSmallSize - DeckBigSize);
+        yield return obj.transform.MoveToSpotAndScaleCoroutine(deckHolder.transform.position, CardMoveSpeed, DeckSmallSize - DeckBigSize);
         yield return obj.RotateCoroutine(Vector3.up, 0.0f, 200.0f);
         obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
         obj.transform.SetParent(deckHolder.transform);        
@@ -153,7 +154,7 @@ public class DeckManager : SingletonObject<DeckManager>
     {
         MonoBehaviourEx obj = card.Object;        
         Vector3 target = obj.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
-        yield return obj.transform.MoveToSpotCoroutine(target, this.CardMoveSpeed);
+        yield return obj.transform.MoveToSpotCoroutine(target, CardMoveSpeed);
         yield return obj.RotateCoroutine(Vector3.up, 180.0f, 200.0f);
         obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
         obj.transform.SetParent(null);
@@ -184,21 +185,17 @@ public class DeckManager : SingletonObject<DeckManager>
         Game.States.TriggerEvent(TriggeredEvent.CardDrawDone);
     }
 
-    void Awake()
+    [UsedImplicitly]
+    private void Awake()
     {
         Instance = this;
     }
 
-    // Use this for initialization
-    void Start ()
+    [UsedImplicitly]
+    private void Start ()
     {
         InitDecks();
     }
-	
-	// Update is called once per frame
-	void Update ()
-    {
-	}
 }
 
 

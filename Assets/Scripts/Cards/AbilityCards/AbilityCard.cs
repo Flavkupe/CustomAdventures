@@ -1,14 +1,15 @@
 ﻿
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCardData
 {
     public override CardType CardType { get { return CardType.Ability; } }
-    public AbilityCardType AbilityCardType { get { return this.Data.AbilityCardType; } }
-    public AbilityActivationType ActivationType { get { return this.Data.ActivationType; } }
+    public AbilityCardType AbilityCardType { get { return Data.AbilityCardType; } }
+    public AbilityActivationType ActivationType { get { return Data.ActivationType; } }
 
-    public Sprite AbilityIcon { get { return this.Data.AbilityIcon; } }
+    public Sprite AbilityIcon { get { return Data.AbilityIcon; } }
 
     // TODO: based on character class and card
     public bool ForgetOnUse { get { return true; } }
@@ -21,19 +22,19 @@ public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCa
 
     protected void AfterCardUsed()
     {
-        if (this.ForgetOnUse)
+        if (ForgetOnUse)
         {
             Game.Player.ForgetAbility(this);
         }
     }
 
-    // Use this for initialization
-    void Start ()
+    [UsedImplicitly]
+    private void Start ()
     {
 	}
 
-	// Update is called once per frame
-	void Update ()
+    [UsedImplicitly]
+    private void Update ()
     {
 	}
 }

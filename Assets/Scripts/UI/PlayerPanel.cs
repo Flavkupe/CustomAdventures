@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerPanel : MonoBehaviour
@@ -18,17 +16,17 @@ Mulligans: {2}
 Weapon: {3}
 GameState: {4}
 ", stats.Level, stats.HP, stats.Mulligans, weaponName, Game.States.State.ToString());
-        this.TextBox.text = data;
+        TextBox.text = data;
     }
 
-	// Use this for initialization
-	void Awake ()
+    // Use this for initialization
+    private void Awake ()
     {
-        this.TextBox = this.GetComponentInChildren<Text>();
+        TextBox = GetComponentInChildren<Text>();
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    private void Update ()
     {		
 	}
 }

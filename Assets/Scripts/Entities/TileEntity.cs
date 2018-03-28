@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
 
 public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 {
@@ -18,17 +15,8 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
     public void ShowFloatyText(string text)
     {
         FloatyText damageText = Instantiate(TextManager.Instance.DamageTextTemplate);
-        damageText.Init(this.transform.position, text);
+        damageText.Init(transform.position, text);
     }
-
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	}
 
     protected virtual void OnClicked()
     {
@@ -36,7 +24,7 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 
     private void OnMouseDown()
     {
-        this.OnClicked();
+        OnClicked();
     }
 
     public virtual bool PlayerCanInteractWith()
@@ -61,7 +49,7 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
     public bool CanMove(Direction direction)
     {
         TileGrid grid = Game.Dungeon.Grid;
-        return grid.CanOccupyAdjacent(this.XCoord, this.YCoord, direction);
+        return grid.CanOccupyAdjacent(XCoord, YCoord, direction);
     }
 
     public IEnumerator TryMove(Direction direction)
@@ -73,9 +61,9 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 
         Game.States.SetState(GameState.CharacterMoving);
         TileGrid grid = Game.Dungeon.Grid;
-        grid.MoveTo(this.XCoord, this.YCoord, direction, this);
-        GridTile newTile = grid.GetTile(this.XCoord, this.YCoord);
-        yield return this.transform.MoveToSpotCoroutine(newTile.transform.position, this.TileSlideSpeed, false);
+        grid.MoveTo(XCoord, YCoord, direction, this);
+        GridTile newTile = grid.GetTile(XCoord, YCoord);
+        yield return transform.MoveToSpotCoroutine(newTile.transform.position, TileSlideSpeed, false);
         Game.States.RevertState();
     }
 
@@ -83,7 +71,7 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
     {
         if (Game.States.State == GameState.AwaitingSelection)
         {
-            this.Selected = !this.Selected;
+            Selected = !Selected;
             Game.Dungeon.AfterToggledSelection(this);
         }
     }

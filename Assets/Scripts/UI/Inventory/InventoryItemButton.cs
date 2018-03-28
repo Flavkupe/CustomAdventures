@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,40 +11,40 @@ public class InventoryItemButton : MonoBehaviour
     public TextMeshProUGUI StackCount;
 
     public Image subImage;
-    
-	// Use this for initialization
-	void Start ()
+
+    // Use this for initialization
+    private void Start ()
     {
-        this.subImage.gameObject.SetActive(false);
-        this.StackCount.gameObject.SetActive(false);
+        subImage.gameObject.SetActive(false);
+        StackCount.gameObject.SetActive(false);
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    private void Update ()
     {
 	}
 
     public void OnButtonClicked()
     {
-        if (this.BackingItem != null)
+        if (BackingItem != null)
         {
             PlayerInventory inv = Game.Player.Stats.Inventory;
-            if (this.BackingItem == inv.EquippedWeapon ||
-                this.BackingItem == inv.EquippedArmor ||
-                this.BackingItem == inv.EquippedAccessory)
+            if (BackingItem == inv.EquippedWeapon ||
+                BackingItem == inv.EquippedArmor ||
+                BackingItem == inv.EquippedAccessory)
             {
-                if (Game.Player.Unequip(this.BackingItem))
+                if (Game.Player.Unequip(BackingItem))
                 {
-                    this.BackingItem = null;
+                    BackingItem = null;
                 }
             }
             else
             {
-                if ((this.BackingItem.Type == InventoryItemType.Weapon) ||
-                    (this.BackingItem.Type == InventoryItemType.Armor) ||
-                    (this.BackingItem.Type == InventoryItemType.Accessory))
+                if ((BackingItem.Type == InventoryItemType.Weapon) ||
+                    (BackingItem.Type == InventoryItemType.Armor) ||
+                    (BackingItem.Type == InventoryItemType.Accessory))
                 {
-                    Game.Player.Equip(this.BackingItem);
+                    Game.Player.Equip(BackingItem);
                 } 
             }
         }
@@ -55,32 +52,32 @@ public class InventoryItemButton : MonoBehaviour
 
     public void ClearItem()
     {
-        this.BackingItem = null;
-        this.subImage.sprite = null;
-        this.subImage.gameObject.SetActive(false);
+        BackingItem = null;
+        subImage.sprite = null;
+        subImage.gameObject.SetActive(false);
     }
 
     public void UpdateItem(InventoryItem item)
     {
-        this.BackingItem = item;
-        if (this.BackingItem != null)
+        BackingItem = item;
+        if (BackingItem != null)
         {
-            this.subImage.gameObject.SetActive(true);
-            this.subImage.sprite = this.BackingItem.ItemData.Sprite;
+            subImage.gameObject.SetActive(true);
+            subImage.sprite = BackingItem.ItemData.Sprite;
 
             if (item.CurrentStackSize > 1)
             {
-                this.StackCount.gameObject.SetActive(true);
-                this.StackCount.text = item.CurrentStackSize.ToString();
+                StackCount.gameObject.SetActive(true);
+                StackCount.text = item.CurrentStackSize.ToString();
             }
             else
             {
-                this.StackCount.gameObject.SetActive(false);
+                StackCount.gameObject.SetActive(false);
             }
         }        
         else
         {
-            this.ClearItem();
+            ClearItem();
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine.Tilemaps;
 
 public class Room : MonoBehaviour, IHasCoords
@@ -18,20 +18,20 @@ public class Room : MonoBehaviour, IHasCoords
     public int XCoord { get; set; }
     public int YCoord { get; set; }
     
-    public int LeftGridXCoord { get { return this.XCoord * Dims; } }
-    public int BottomGridYCoord { get { return this.YCoord * Dims; } }
+    public int LeftGridXCoord { get { return XCoord * Dims; } }
+    public int BottomGridYCoord { get { return YCoord * Dims; } }
 
     public GridTile[] GetTiles()
     {
-        GridTile[] tiles = this.GetComponentsInChildren<GridTile>();
+        GridTile[] tiles = GetComponentsInChildren<GridTile>();
         if (tiles.Length == 0)
         {
             // Rooms were built and tiles transferred; find them in the map
             List<GridTile> tileList = new List<GridTile>();
             Utils.DoForXY(Dims, Dims, (x, y) =>
             {
-                int currX = this.LeftGridXCoord + x;
-                int currY = this.BottomGridYCoord + y;
+                int currX = LeftGridXCoord + x;
+                int currY = BottomGridYCoord + y;
                 GridTile tile = Game.Dungeon.Grid.Get(currX, currY).Tile;
                 if (tile != null)
                 {
@@ -49,7 +49,7 @@ public class Room : MonoBehaviour, IHasCoords
 
     public bool HasConnectorToDirection(Direction direction)
     {
-        GridTile[] tiles = this.GetTiles();
+        GridTile[] tiles = GetTiles();
         return tiles.Any(a => a.IsConnectorTile() && a.ConnectsTo == direction);
     }
 
@@ -61,7 +61,7 @@ public class Room : MonoBehaviour, IHasCoords
     public GridTile GetExactMatchingConnector(GridTile connector)
     {
         Direction direction = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
-        GridTile[] tiles = this.GetTiles();
+        GridTile[] tiles = GetTiles();
         if (direction == Direction.Down || direction == Direction.Up)
         {
             return tiles.FirstOrDefault(a => a.IsConnectorTile() && a.ConnectsTo == direction &&
@@ -76,7 +76,7 @@ public class Room : MonoBehaviour, IHasCoords
 
     public void InitRoomTiles()
     {
-        foreach(Tilemap tilemap in this.GetComponentsInChildren<Tilemap>())
+        foreach(Tilemap tilemap in GetComponentsInChildren<Tilemap>())
         {
             for (var x = tilemap.cellBounds.x; x < tilemap.cellBounds.xMax; x++)
             {
@@ -93,7 +93,7 @@ public class Room : MonoBehaviour, IHasCoords
             }
         }
 
-        foreach (GridTile tile in this.GetTiles())
+        foreach (GridTile tile in GetTiles())
         {
             tile.CachedRoom = this;
             if (tile.GetComponent<SpriteRenderer>() != null)
@@ -103,23 +103,14 @@ public class Room : MonoBehaviour, IHasCoords
         }
     }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
+    [UsedImplicitly]
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
-        Vector3 pos = this.transform.position;
-        Gizmos.DrawLine(pos.OffsetBy(0.5f), (pos + (this.transform.up * this.Dims)).OffsetBy(0.5f));
-        Gizmos.DrawLine(pos.OffsetBy(0.5f), (pos + (this.transform.right * this.Dims)).OffsetBy(0.5f));
-        Gizmos.DrawLine((pos + (this.transform.up * this.Dims)).OffsetBy(0.5f), (pos + (this.transform.up * this.Dims + this.transform.right * this.Dims)).OffsetBy(0.5f));
-        Gizmos.DrawLine((pos + (this.transform.right * this.Dims)).OffsetBy(0.5f), (pos + (this.transform.up * this.Dims + this.transform.right * this.Dims)).OffsetBy(0.5f));
+        Vector3 pos = transform.position;
+        Gizmos.DrawLine(pos.OffsetBy(0.5f), (pos + (transform.up * Dims)).OffsetBy(0.5f));
+        Gizmos.DrawLine(pos.OffsetBy(0.5f), (pos + (transform.right * Dims)).OffsetBy(0.5f));
+        Gizmos.DrawLine((pos + (transform.up * Dims)).OffsetBy(0.5f), (pos + (transform.up * Dims + transform.right * Dims)).OffsetBy(0.5f));
+        Gizmos.DrawLine((pos + (transform.right * Dims)).OffsetBy(0.5f), (pos + (transform.up * Dims + transform.right * Dims)).OffsetBy(0.5f));
     }
 }

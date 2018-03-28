@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System;
 
 public class InventoryPanel : MonoBehaviour {
 
@@ -15,21 +13,21 @@ public class InventoryPanel : MonoBehaviour {
 
     private List<InventoryItemButton> inventoryButtons;
 
-    void Awake()
+    private void Awake()
     {
-        weaponButton = this.GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Weapon);
-        armorButton = this.GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Armor);
-        accessoryButton = this.GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Accessory);
-        inventoryButtons = this.GetComponentsInChildren<InventoryItemButton>().Where(a => a.Type == InventoryItemButtonType.Inventory).ToList();
+        weaponButton = GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Weapon);
+        armorButton = GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Armor);
+        accessoryButton = GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Accessory);
+        inventoryButtons = GetComponentsInChildren<InventoryItemButton>().Where(a => a.Type == InventoryItemButtonType.Inventory).ToList();
     }
 
     // Use this for initialization
-    void Start ()
+    private void Start ()
     {
-    } 
+    }
 
     // Update is called once per frame
-    void Update ()
+    private void Update ()
     {
 	}
 

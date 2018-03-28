@@ -12,8 +12,8 @@ public class TileGrid : MonoBehaviour
         public GridTile Tile;
         public TileEntity TileObject;
 
-        public bool HasTile { get { return this.Tile != null; } }
-        public bool IsEmpty { get { return this.HasTile && this.TileObject == null; } }
+        public bool HasTile { get { return Tile != null; } }
+        public bool IsEmpty { get { return HasTile && TileObject == null; } }
     }
 
     public TileContents[,] grid;
@@ -64,7 +64,7 @@ public class TileGrid : MonoBehaviour
 
     public void PutTile(GridTile tile)
     {
-        this.PutTile(tile.XCoord, tile.YCoord, tile);
+        PutTile(tile.XCoord, tile.YCoord, tile);
     }
 
     public void PutTile(int x, int y, GridTile tile)
@@ -72,33 +72,33 @@ public class TileGrid : MonoBehaviour
         grid[x, y].Tile = tile;
         tile.XCoord = x;
         tile.YCoord = y;
-        tile.transform.parent = this.transform;
+        tile.transform.parent = transform;
     }
 
     public List<GridTile> GetNeighbors(int x, int y)
     {
         List<GridTile> neighbors = new List<GridTile>();
-        if (!this.IsOffBounds(x - 1, y)) { neighbors.Add(this.grid[x - 1, y].Tile); }
-        if (!this.IsOffBounds(x + 1, y)) { neighbors.Add(this.grid[x + 1, y].Tile); }
-        if (!this.IsOffBounds(x, y - 1)) { neighbors.Add(this.grid[x, y - 1].Tile); }
-        if (!this.IsOffBounds(x, y + 1)) { neighbors.Add(this.grid[x, y + 1].Tile); }
+        if (!IsOffBounds(x - 1, y)) { neighbors.Add(grid[x - 1, y].Tile); }
+        if (!IsOffBounds(x + 1, y)) { neighbors.Add(grid[x + 1, y].Tile); }
+        if (!IsOffBounds(x, y - 1)) { neighbors.Add(grid[x, y - 1].Tile); }
+        if (!IsOffBounds(x, y + 1)) { neighbors.Add(grid[x, y + 1].Tile); }
         return neighbors;
     }
 
     public List<GridTile> GetCornerNeighbors(int x, int y)
     {
         List<GridTile> neighbors = new List<GridTile>();
-        if (!this.IsOffBounds(x - 1, y - 1)) { neighbors.Add(this.grid[x - 1, y - 1].Tile); }
-        if (!this.IsOffBounds(x + 1, y + 1)) { neighbors.Add(this.grid[x + 1, y + 1].Tile); }
-        if (!this.IsOffBounds(x + 1, y - 1)) { neighbors.Add(this.grid[x + 1, y - 1].Tile); }
-        if (!this.IsOffBounds(x - 1, y + 1)) { neighbors.Add(this.grid[x - 1, y + 1].Tile); }
+        if (!IsOffBounds(x - 1, y - 1)) { neighbors.Add(grid[x - 1, y - 1].Tile); }
+        if (!IsOffBounds(x + 1, y + 1)) { neighbors.Add(grid[x + 1, y + 1].Tile); }
+        if (!IsOffBounds(x + 1, y - 1)) { neighbors.Add(grid[x + 1, y - 1].Tile); }
+        if (!IsOffBounds(x - 1, y + 1)) { neighbors.Add(grid[x - 1, y + 1].Tile); }
         return neighbors;
     }
 
     public List<GridTile> GetAll8Neighbors(int x, int y)
     {
-        List<GridTile> neighbors = this.GetNeighbors(x, y);
-        neighbors.AddRange(this.GetCornerNeighbors(x, y));
+        List<GridTile> neighbors = GetNeighbors(x, y);
+        neighbors.AddRange(GetCornerNeighbors(x, y));
         return neighbors;
     }
 
@@ -110,7 +110,7 @@ public class TileGrid : MonoBehaviour
 
     public void PutObject<T>(GridTile tile, T obj, bool moveObj = false) where T : TileEntity
     {
-        this.PutObject(tile.XCoord, tile.YCoord, obj, moveObj);
+        PutObject(tile.XCoord, tile.YCoord, obj, moveObj);
     }
 
     public void PutObject<T>(int x, int y, T obj, bool moveObj = false) where T : TileEntity
@@ -128,41 +128,41 @@ public class TileGrid : MonoBehaviour
 
     public TileContents GetAdjacent(int x, int y, Direction direction)
     {
-        return this.grid.GetAdjacent(x, y, direction);
+        return grid.GetAdjacent(x, y, direction);
     }
 
     public TileEntity GetAdjacentObject(int x, int y, Direction direction)
     {
-        TileContents contents = this.GetAdjacent(x, y, direction);
+        TileContents contents = GetAdjacent(x, y, direction);
         return contents == null ? null : contents.TileObject;
     }
 
     public bool IsOffBounds(int x, int y)
     {
-        return this.grid.IsOffBounds(x, y);
+        return grid.IsOffBounds(x, y);
     }    
 
     public void MoveTo<T>(int x, int y, Direction direction, T obj) where T : TileEntity
     {
-        TileContents contents = this.GetAdjacent(x, y, direction);
-        Debug.Assert(this.CanOccupyContents(contents), "Trying to occupy tile that cannot be occupied!");
-        this.ClearTile(x, y);
-        this.PutObject(contents.Tile.XCoord, contents.Tile.YCoord, obj);
+        TileContents contents = GetAdjacent(x, y, direction);
+        Debug.Assert(CanOccupyContents(contents), "Trying to occupy tile that cannot be occupied!");
+        ClearTile(x, y);
+        PutObject(contents.Tile.XCoord, contents.Tile.YCoord, obj);
     }
 
     public bool CanOccupyAdjacent(int x, int y, Direction direction, OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
-        TileContents contents = this.GetAdjacent(x, y, direction);
-        return this.CanOccupyContents(contents, rule);
+        TileContents contents = GetAdjacent(x, y, direction);
+        return CanOccupyContents(contents, rule);
     }
 
     public bool IsCorner(int x, int y, OccupancyRule rule = OccupancyRule.CanBeTemporaryEntity)
     {
-        if (!this.CanOccupy(x, y, OccupancyRule.MustBeEmpty)) return false;
-        bool top = this.CanOccupyAdjacent(x, y, Direction.Up, rule);
-        bool left = this.CanOccupyAdjacent(x, y, Direction.Left, rule);
-        bool right = this.CanOccupyAdjacent(x, y, Direction.Right, rule);
-        bool bottom = this.CanOccupyAdjacent(x, y, Direction.Down, rule);
+        if (!CanOccupy(x, y, OccupancyRule.MustBeEmpty)) return false;
+        bool top = CanOccupyAdjacent(x, y, Direction.Up, rule);
+        bool left = CanOccupyAdjacent(x, y, Direction.Left, rule);
+        bool right = CanOccupyAdjacent(x, y, Direction.Right, rule);
+        bool bottom = CanOccupyAdjacent(x, y, Direction.Down, rule);
         if ((top && bottom) || (left && right)) return false;
         if ((top && right) || (top && left)) return true;
         if ((bottom && right) || (bottom && left)) return true;
@@ -180,7 +180,7 @@ public class TileGrid : MonoBehaviour
     public List<TileEntity> GetRadialEntities(int x, int y, int range, TileEntityType? filter = null)
     {
         List<TileEntity> entities = new List<TileEntity>();
-        List<TileContents> contents = this.GetRadialTileContents(x, y, range);
+        List<TileContents> contents = GetRadialTileContents(x, y, range);
         entities = contents.Where(a => a.TileObject != null).Select(b => b.TileObject).ToList();
         if (filter != null)
         {
@@ -213,13 +213,13 @@ public class TileGrid : MonoBehaviour
 
     public bool CanOccupy(int x, int y, OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
-        if (this.IsOffBounds(x, y))
+        if (IsOffBounds(x, y))
         {
             return false;
         }
 
-        TileContents contents = this.grid[x, y];
-        if (!this.CanOccupyContents(contents, rule))
+        TileContents contents = grid[x, y];
+        if (!CanOccupyContents(contents, rule))
         {
             return false;
         }
@@ -253,12 +253,12 @@ public class TileGrid : MonoBehaviour
     }
 
     // Use this for initialization
-    void Start ()
+    private void Start ()
     {		
 	}
 
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    private void Update () {
 		
 	}
 

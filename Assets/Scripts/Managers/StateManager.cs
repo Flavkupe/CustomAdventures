@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class StateManager : SingletonObject<StateManager>
@@ -10,43 +11,43 @@ public class StateManager : SingletonObject<StateManager>
 
     public float MousedownSpeedMultiplier = 3.0f;
 
-    private Dictionary<GameState, Queue<Action>> onStateChangeFromQueues = new Dictionary<GameState, Queue<Action>>();
-    private Dictionary<GameState, Queue<Action>> onStateChangeToQueues = new Dictionary<GameState, Queue<Action>>();
-    private Dictionary<GameState, Queue<Func<IEnumerator>>> onStateChangeFromCoroutineQueues = new Dictionary<GameState, Queue<Func<IEnumerator>>>();
-    private Dictionary<GameState, Queue<Func<IEnumerator>>> onStateChangeToCoroutineQueues = new Dictionary<GameState, Queue<Func<IEnumerator>>>();
+    private readonly Dictionary<GameState, Queue<Action>> _onStateChangeFromQueues = new Dictionary<GameState, Queue<Action>>();
+    private readonly Dictionary<GameState, Queue<Action>> _onStateChangeToQueues = new Dictionary<GameState, Queue<Action>>();
+    private readonly Dictionary<GameState, Queue<Func<IEnumerator>>> _onStateChangeFromCoroutineQueues = new Dictionary<GameState, Queue<Func<IEnumerator>>>();
+    private readonly Dictionary<GameState, Queue<Func<IEnumerator>>> _onStateChangeToCoroutineQueues = new Dictionary<GameState, Queue<Func<IEnumerator>>>();
 
-    private Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>> onTriggeredEventCoroutineQueues = new Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>>();
-    private Dictionary<TriggeredEvent, Queue<Action>> onTriggeredEventActionQueues = new Dictionary<TriggeredEvent, Queue<Action>>();
+    private readonly Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>> _onTriggeredEventCoroutineQueues = new Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>>();
+    private readonly Dictionary<TriggeredEvent, Queue<Action>> _onTriggeredEventActionQueues = new Dictionary<TriggeredEvent, Queue<Action>>();
 
-    private Queue<Func<IEnumerator>> coroutineQueue = new Queue<Func<IEnumerator>>();
+    private readonly Queue<Func<IEnumerator>> _coroutineQueue = new Queue<Func<IEnumerator>>();
 
     public HashSet<Routine> CoroutineTraces = new HashSet<Routine>();
 
-    private string Traces
-    {
-        get { return string.Join("\n\n\n", CoroutineTraces.Select(a => a.Trace).ToArray()); }
-    }
+    //private string Traces
+    //{
+    //    get { return string.Join("\n\n\n", CoroutineTraces.Select(a => a.Trace).ToArray()); }
+    //}
 
-    private bool processingCoroutine = false;
+    private bool _processingCoroutine;
 
-    private void EnqueueThingOnQueue<R, T>(R state, T thing, Dictionary<R, Queue<T>> dict)
+    private void EnqueueThingOnQueue<TR, T>(TR state, T thing, Dictionary<TR, Queue<T>> dict)
     {
         dict[state].Enqueue(thing);
     }
 
     public void EnqueueRoutine(Routine routine)
     {
-        this.coroutineQueue.Enqueue(() => routine);
+        _coroutineQueue.Enqueue(() => routine);
     }
 
     public void EnqueueCoroutine(IEnumerator enumerator)
     {
-        this.EnqueueCoroutine(() => enumerator);
+        EnqueueCoroutine(() => enumerator);
     }
 
     public void EnqueueCoroutine(Func<IEnumerator> action)
     {
-        this.coroutineQueue.Enqueue(action);
+        _coroutineQueue.Enqueue(action);
     }
 
     public void EnqueueIfNotState(GameState afterStateChangedFrom, Routine routine)
@@ -56,9 +57,9 @@ public class StateManager : SingletonObject<StateManager>
 
     public void EnqueueIfNotState(GameState afterStateChangedFrom, Func<IEnumerator> action)
     {
-        if (afterStateChangedFrom == this.State)
+        if (afterStateChangedFrom == State)
         {
-            EnqueueThingOnQueue(afterStateChangedFrom, action, onStateChangeFromCoroutineQueues);
+            EnqueueThingOnQueue(afterStateChangedFrom, action, _onStateChangeFromCoroutineQueues);
         }
         else
         {
@@ -69,9 +70,9 @@ public class StateManager : SingletonObject<StateManager>
 
     public void EnqueueOnNewState(GameState afterStateChangedTo, Func<IEnumerator> action)
     {
-        if (afterStateChangedTo != this.State)
+        if (afterStateChangedTo != State)
         {
-            EnqueueThingOnQueue(afterStateChangedTo, action, onStateChangeToCoroutineQueues);
+            EnqueueThingOnQueue(afterStateChangedTo, action, _onStateChangeToCoroutineQueues);
         }
         else
         {
@@ -82,9 +83,9 @@ public class StateManager : SingletonObject<StateManager>
 
     public void EnqueueIfNotState(GameState afterStateChangedFrom, Action action)
     {
-        if (afterStateChangedFrom == this.State)
+        if (afterStateChangedFrom == State)
         {
-            EnqueueThingOnQueue(afterStateChangedFrom, action, onStateChangeFromQueues);
+            EnqueueThingOnQueue(afterStateChangedFrom, action, _onStateChangeFromQueues);
         }
         else
         {
@@ -96,9 +97,9 @@ public class StateManager : SingletonObject<StateManager>
     public void EnqueueOnNewState(GameState afterStateChangedTo, Action action)
     {
         // TODO: make this case conditional on params...?
-        if (afterStateChangedTo != this.State)
+        if (afterStateChangedTo != State)
         {
-            EnqueueThingOnQueue(afterStateChangedTo, action, onStateChangeToQueues);
+            EnqueueThingOnQueue(afterStateChangedTo, action, _onStateChangeToQueues);
         }
         else
         {
@@ -114,12 +115,12 @@ public class StateManager : SingletonObject<StateManager>
 
     public void EnqueueTriggeredEventAction(TriggeredEvent trigger, Action action)
     {
-        EnqueueThingOnQueue(trigger, action, onTriggeredEventActionQueues);
+        EnqueueThingOnQueue(trigger, action, _onTriggeredEventActionQueues);
     }
 
     public void EnqueueTriggeredEventCoroutine(TriggeredEvent trigger, Func<IEnumerator> action)
     {
-        EnqueueThingOnQueue(trigger, action, onTriggeredEventCoroutineQueues);
+        EnqueueThingOnQueue(trigger, action, _onTriggeredEventCoroutineQueues);
     }
 
     private GameState _state;
@@ -142,21 +143,21 @@ public class StateManager : SingletonObject<StateManager>
 
     public void RevertState()
     {
-        this.SetState(_lastState);
+        SetState(_lastState);
     }
 
     public void TriggerEvent(TriggeredEvent triggeredEvent)
     {
-        ProcessQueuedActions(onTriggeredEventActionQueues[triggeredEvent]);
-        MoveCoroutinesToInvokeQueue(onTriggeredEventCoroutineQueues[triggeredEvent]);
+        ProcessQueuedActions(_onTriggeredEventActionQueues[triggeredEvent]);
+        MoveCoroutinesToInvokeQueue(_onTriggeredEventCoroutineQueues[triggeredEvent]);
     }
 
     private void OnStateChanged(GameState oldState, GameState newState)
     {
-        ProcessQueuedActions(onStateChangeToQueues[newState]);
-        ProcessQueuedActions(onStateChangeFromQueues[oldState]);
-        MoveCoroutinesToInvokeQueue(onStateChangeToCoroutineQueues[newState]);
-        MoveCoroutinesToInvokeQueue(onStateChangeFromCoroutineQueues[oldState]);
+        ProcessQueuedActions(_onStateChangeToQueues[newState]);
+        ProcessQueuedActions(_onStateChangeFromQueues[oldState]);
+        MoveCoroutinesToInvokeQueue(_onStateChangeToCoroutineQueues[newState]);
+        MoveCoroutinesToInvokeQueue(_onStateChangeFromCoroutineQueues[oldState]);
     }
 
     /// <summary>
@@ -178,13 +179,13 @@ public class StateManager : SingletonObject<StateManager>
     /// </summary>
     private IEnumerator InvokeNextQueuedCoroutine()
     {
-        if (coroutineQueue.Count > 0)
+        if (_coroutineQueue.Count > 0)
         {
             // TODO: How to handle thrown exceptions from action?
-            Func<IEnumerator> action = coroutineQueue.Dequeue();                       
-            processingCoroutine = true;
+            Func<IEnumerator> action = _coroutineQueue.Dequeue();                       
+            _processingCoroutine = true;
             yield return action();
-            processingCoroutine = false;
+            _processingCoroutine = false;
         }
     }
 
@@ -197,29 +198,29 @@ public class StateManager : SingletonObject<StateManager>
         }
     }
 
-    // Use this for initialization
-    void Awake()
+    [UsedImplicitly]
+    private void Awake()
     {
         Instance = this;
         foreach (GameState state in Enum.GetValues(typeof(GameState)))
         {
-            onStateChangeFromQueues[state] = new Queue<Action>();
-            onStateChangeToQueues[state] = new Queue<Action>();
-            onStateChangeFromCoroutineQueues[state] = new Queue<Func<IEnumerator>>();
-            onStateChangeToCoroutineQueues[state] = new Queue<Func<IEnumerator>>();
+            _onStateChangeFromQueues[state] = new Queue<Action>();
+            _onStateChangeToQueues[state] = new Queue<Action>();
+            _onStateChangeFromCoroutineQueues[state] = new Queue<Func<IEnumerator>>();
+            _onStateChangeToCoroutineQueues[state] = new Queue<Func<IEnumerator>>();
         }
 
         foreach (TriggeredEvent trigger in Enum.GetValues(typeof(TriggeredEvent)))
         {
-            onTriggeredEventCoroutineQueues[trigger] = new Queue<Func<IEnumerator>>();
-            onTriggeredEventActionQueues[trigger] = new Queue<Action>();
+            _onTriggeredEventCoroutineQueues[trigger] = new Queue<Func<IEnumerator>>();
+            _onTriggeredEventActionQueues[trigger] = new Queue<Action>();
         }
     }
 
-    // Update is called once per frame
-    void Update ()
+    [UsedImplicitly]
+    private void Update ()
     {
-        if (!processingCoroutine && coroutineQueue.Count > 0)
+        if (!_processingCoroutine && _coroutineQueue.Count > 0)
         {
             StartCoroutine(InvokeNextQueuedCoroutine());
         }
@@ -227,7 +228,7 @@ public class StateManager : SingletonObject<StateManager>
 
     public float GetMouseDownSpeedMultiplier()
     {
-        return Input.GetMouseButton(0) ? this.MousedownSpeedMultiplier : 1.0f;
+        return Input.GetMouseButton(0) ? MousedownSpeedMultiplier : 1.0f;
     }
 
     public static class Checks

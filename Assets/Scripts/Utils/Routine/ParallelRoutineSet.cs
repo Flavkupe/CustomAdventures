@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class ParallelRoutineSet : IEnumerator, IRoutineSet
 {
@@ -31,7 +30,7 @@ public class ParallelRoutineSet : IEnumerator, IRoutineSet
 
     public void AddRoutine(Routine routine)
     {
-        this._routines.Add(routine);
+        _routines.Add(routine);
     }
 
     public object Current

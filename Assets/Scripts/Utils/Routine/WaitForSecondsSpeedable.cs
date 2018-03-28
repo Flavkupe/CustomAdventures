@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WaitForSecondsSpeedable : CustomYieldInstruction
 {
-    float _seconds = 0.0f;
+    private float _seconds = 0.0f;
     public WaitForSecondsSpeedable(float seconds)
     {
         _seconds = seconds;

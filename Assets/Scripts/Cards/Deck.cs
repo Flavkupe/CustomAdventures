@@ -1,20 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System;
 
 public class Deck<T> where T : class, ICard
 {
-    private float yOffset = 0.0f;
-    private float xOffset = 0.0f;
+    private float yOffset;
+    private float xOffset;
     private float zOffset = -0.001f;
 
     public GameObject DeckHolder;
+    private Stack<T> deck = new Stack<T>();
 
-    Stack<T> deck = new Stack<T>();
-
-    public int CardCount { get { return this.deck.Count; } }
+    public int CardCount { get { return deck.Count; } }
 
     public void Init(IList<T> cards)
     {
@@ -55,7 +52,7 @@ public class Deck<T> where T : class, ICard
 
     public R DrawOfType<R>() where R : class, T
     {
-        R card = this.deck.FirstOrDefault(a => a.GetType() == typeof(R)) as R;
+        R card = deck.FirstOrDefault(a => a.GetType() == typeof(R)) as R;
         RemoveCard(card);
         return card;
     }
@@ -109,7 +106,7 @@ public class Deck<T> where T : class, ICard
 
     public void PushToBottom(IList<T> cards)
     {
-        List<T> current = this.deck.ToList();
+        List<T> current = deck.ToList();
         current.AddRange(cards);
         RestackDeck(current);
     }
@@ -127,7 +124,7 @@ public class Deck<T> where T : class, ICard
 
     public void PushCard(T card)
     {
-        this.deck.Push(card);
+        deck.Push(card);
         var cardTransform = card.Object.transform;
         cardTransform.position = DeckHolder.transform.position;
         cardTransform.SetParent(DeckHolder.transform, true);

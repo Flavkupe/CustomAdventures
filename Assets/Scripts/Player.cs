@@ -27,21 +27,21 @@ public class Player : TileEntity
     public GameObject InterfaceObjects;
 
     // Use this for initialization
-    void Awake()
+    private void Awake()
     {
         Instance = this;
     }
 
     public void EquipAbility(IAbilityCard ability)
     {
-        this.abilities.Add(ability);
+        abilities.Add(ability);
         AbilityPanel.Instance.SyncSlotsWithPlayer();
     }
 
     public void ForgetAbility(IAbilityCard ability)
     {
-        Debug.Assert(this.abilities.Contains(ability));        
-        this.abilities.Remove(ability);
+        Debug.Assert(abilities.Contains(ability));
+        abilities.Remove(ability);
         ability.DestroyCard();
         AbilityPanel.Instance.SyncSlotsWithPlayer();
     }
@@ -49,7 +49,7 @@ public class Player : TileEntity
     public void UseAbility(IAbilityCard ability)
     {
         // TODO: targetted abilities
-        Debug.Assert(this.abilities.Contains(ability));
+        Debug.Assert(abilities.Contains(ability));
         ability.ActivateAbility();        
     }
 
@@ -61,11 +61,11 @@ public class Player : TileEntity
 
     public void TakeDamage(int attack)
     {
-        this.Stats.HP -= attack;
-        this.ShowFloatyText("-" + attack);
-        if (this.Stats.HP <= 0)
+        Stats.HP -= attack;
+        ShowFloatyText("-" + attack);
+        if (Stats.HP <= 0)
         {
-            this.Die();
+            Die();
         }        
     }
 
@@ -81,11 +81,11 @@ public class Player : TileEntity
         Effects.Remove(effect);
     }
 
-    void Start()
+    private void Start()
     {
     }
-	
-	void Update ()
+
+    private void Update ()
     {
         if (Game.States.IsPaused)
         {
@@ -96,27 +96,27 @@ public class Player : TileEntity
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
-                this.PlayerMoveCommand(Direction.Up);
+                PlayerMoveCommand(Direction.Up);
             }
             else if (Input.GetKeyDown(KeyCode.S))
             {
-                this.PlayerMoveCommand(Direction.Down);
+                PlayerMoveCommand(Direction.Down);
             }
             else if (Input.GetKeyDown(KeyCode.A))
             {
-                this.PlayerMoveCommand(Direction.Left);
+                PlayerMoveCommand(Direction.Left);
             }
             else if (Input.GetKeyDown(KeyCode.D))
             {
-                this.PlayerMoveCommand(Direction.Right);
+                PlayerMoveCommand(Direction.Right);
             }
         }
 
-        if (!drawingAbilities && this.Abilities.Count < this.AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
+        if (!drawingAbilities && Abilities.Count < AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
         {
-            int numToDraw = this.AbilityThreshold - this.Abilities.Count;
+            int numToDraw = AbilityThreshold - Abilities.Count;
             numToDraw = Mathf.Min(Game.Decks.AbilityDeck.CardCount, numToDraw);
-            this.DrawAbilities(numToDraw);
+            DrawAbilities(numToDraw);
         }
     }
 
@@ -132,21 +132,21 @@ public class Player : TileEntity
 
     public void GainXP(int exp)
     {
-        this.ShowFloatyText(exp.ToString() + " XP");
-        this.Stats.EXP += exp;
+        ShowFloatyText(exp.ToString() + " XP");
+        Stats.EXP += exp;
 
-        if ((this.Stats.EXP / 10) + 1 > this.Stats.Level)
+        if ((Stats.EXP / 10) + 1 > Stats.Level)
         {
-            this.LevelUp();
+            LevelUp();
         }
         
     }
 
     public void LevelUp()
     {
-        this.Stats.Level++;
+        Stats.Level++;
         Routine routine = Routine.Create(() => Routine.WaitForSeconds(0.5f));
-        routine.Then(() => this.ShowFloatyText("LEVEL UP!"))
+        routine.Then(() => ShowFloatyText("LEVEL UP!"))
                .Then(() => Game.CardDraw.PerformCharacterCardDrawing(2))
                .Then(() => Game.UI.UpdateUI());
         Game.States.EnqueueIfNotState(GameState.CharacterMoving, routine);
@@ -154,14 +154,14 @@ public class Player : TileEntity
 
     private void ProcessEffects(EffectDurationType actionTaken)
     {
-        foreach (StatusEffect effect in this.Effects.ToList())
+        foreach (StatusEffect effect in Effects.ToList())
         {
             if (effect.DurationType == actionTaken)
             {
                 effect.Duration--;
                 if (effect.Duration <= 0)
                 {
-                    this.EffectExpire(effect);
+                    EffectExpire(effect);
                 }
             }
         }
@@ -180,7 +180,7 @@ public class Player : TileEntity
 
     private IEnumerator TryPlayerMove(Direction direction)
     {
-        yield return this.TryMove(direction);
+        yield return TryMove(direction);
         OnAfterPlayerMove();
         Game.Dungeon.AfterPlayerTurn();
     }
@@ -188,18 +188,18 @@ public class Player : TileEntity
     public void PlayerMoveCommand(Direction direction)
     {
         TileGrid grid = Game.Dungeon.Grid;
-        if (this.CanMove(direction))
+        if (CanMove(direction))
         {            
-            Game.States.EnqueueCoroutine(() => this.TryPlayerMove(direction));
+            Game.States.EnqueueCoroutine(() => TryPlayerMove(direction));
         }
         else
         {
-            TileEntity obj = grid.GetAdjacentObject(this.XCoord, this.YCoord, direction);
+            TileEntity obj = grid.GetAdjacentObject(XCoord, YCoord, direction);
             if (obj != null)
             {
                 if (obj.PlayerCanInteractWith())
                 {
-                    this.InteractWith(obj);                    
+                    InteractWith(obj);                    
                 }
             }
             else
@@ -218,7 +218,7 @@ public class Player : TileEntity
         
         if (interaction == PlayerInteraction.Attack)
         {
-            routine.Then(() => this.OnAfterPlayerAttack());
+            routine.Then(() => OnAfterPlayerAttack());
         }
 
         Game.States.EnqueueCoroutine(routine);
@@ -226,10 +226,10 @@ public class Player : TileEntity
 
     public int GetAttackStrength()
     {
-        int damage = this.Stats.BaseStrength;
-        if (this.Stats.Inventory.EquippedWeapon != null)
+        int damage = Stats.BaseStrength;
+        if (Stats.Inventory.EquippedWeapon != null)
         {
-            damage += this.Stats.Inventory.EquippedWeapon.Data.Power;
+            damage += Stats.Inventory.EquippedWeapon.Data.Power;
         }
 
         return damage;
@@ -237,8 +237,8 @@ public class Player : TileEntity
 
     public bool Unequip(InventoryItem item)
     {
-        PlayerInventory inv = this.Stats.Inventory;
-        if (this.TryMoveToInventory(item, false))
+        PlayerInventory inv = Stats.Inventory;
+        if (TryMoveToInventory(item, false))
         {
             if (item.Type == InventoryItemType.Weapon)
             {
@@ -263,7 +263,7 @@ public class Player : TileEntity
 
     public void Equip(InventoryItem item)
     {
-        PlayerInventory inv = this.Stats.Inventory;
+        PlayerInventory inv = Stats.Inventory;
         InventoryItem temp = null;
         if (item.Type == InventoryItemType.Weapon)
         {
@@ -288,7 +288,7 @@ public class Player : TileEntity
             inv.InventoryItems.Remove(item);
         }
 
-        this.TryMoveToInventory(temp, false);
+        TryMoveToInventory(temp, false);
         Game.UI.UpdateInventory();
         Game.UI.UpdateUI();
     }
@@ -336,10 +336,10 @@ public class Player : TileEntity
     public override IEnumerator TwitchTowards(Direction direction, float speed = 5.0f)
     {
         Camera.main.transform.SetParent(null);
-        this.InterfaceObjects.transform.SetParent(null);
+        InterfaceObjects.transform.SetParent(null);
         yield return base.TwitchTowards(direction, speed);
-        this.InterfaceObjects.transform.SetParent(this.transform);
-        Camera.main.transform.SetParent(this.transform);
+        InterfaceObjects.transform.SetParent(transform);
+        Camera.main.transform.SetParent(transform);
         
     }
 }

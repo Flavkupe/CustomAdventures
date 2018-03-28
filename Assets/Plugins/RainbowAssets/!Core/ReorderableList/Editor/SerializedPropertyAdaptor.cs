@@ -63,8 +63,8 @@ namespace Borodar.ReorderableList {
 			if (!arrayProperty.isArray)
 				throw new InvalidOperationException("Specified serialized propery is not an array.");
 
-			this._arrayProperty = arrayProperty;
-			this.FixedItemHeight = fixedItemHeight;
+            _arrayProperty = arrayProperty;
+            FixedItemHeight = fixedItemHeight;
 		}
 
 		/// <summary>

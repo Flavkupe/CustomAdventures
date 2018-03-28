@@ -5,18 +5,18 @@ using System.Linq;
 
 public class AbilityPanel : SingletonObject<AbilityPanel>
 {
-    List<AbilityPanelSlot> slots = new List<AbilityPanelSlot>();
+    private List<AbilityPanelSlot> slots = new List<AbilityPanelSlot>();
 
     public bool HasEmpty
     {
-        get { return this.slots.Any(a => a.IsEmpty); }
+        get { return slots.Any(a => a.IsEmpty); }
     }
 
     public void AddAbility(IAbilityCard card)
     {
-        if (this.HasEmpty)
+        if (HasEmpty)
         {
-            AbilityPanelSlot slot = this.slots.FirstOrDefault(a => a.IsEmpty);
+            AbilityPanelSlot slot = slots.FirstOrDefault(a => a.IsEmpty);
             if (slot != null)
             {
                 slot.SetAbility(card);
@@ -55,7 +55,7 @@ public class AbilityPanel : SingletonObject<AbilityPanel>
     private void Awake()
     {
         Instance = this;
-        this.slots.AddRange(this.GetComponentsInChildren<AbilityPanelSlot>());
+        slots.AddRange(GetComponentsInChildren<AbilityPanelSlot>());
     }
 }
 

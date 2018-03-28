@@ -3,7 +3,6 @@ using System.IO;
 using Borodar.RainbowCore.Editor;
 using Borodar.RainbowFolders.Editor.Settings;
 using UnityEditor;
-using UnityEditor.Graphs;
 using UnityEngine;
 using KeyType = Borodar.RainbowFolders.Editor.Settings.RainbowFolder.KeyType;
 

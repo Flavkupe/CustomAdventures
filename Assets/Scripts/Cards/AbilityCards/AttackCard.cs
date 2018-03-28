@@ -1,27 +1,25 @@
-﻿
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 public class AttackCard : AbilityCard<AttackCardData>
 {
     public override void ActivateAbility()
     {
-        switch (this.Data.ActivationType)
+        switch (Data.ActivationType)
         {
             case AbilityActivationType.Instant:
-                this.ActivateInstant();
+                ActivateInstant();
                 break;
             case AbilityActivationType.TargetEntity:
-                this.ActivateTargeted();
+                ActivateTargeted();
                 break;
         }
     }
 
     private void ActivateTargeted()
     {
-        List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(this.Data.RangeType, this.Data.Range, this.Data.AffectedTargetType);
-        List<GridTile> tiles = Game.Dungeon.GetTilesNearPlayer(this.Data.RangeType, this.Data.Range);
+        List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(Data.RangeType, Data.Range, Data.AffectedTargetType);
+        List<GridTile> tiles = Game.Dungeon.GetTilesNearPlayer(Data.RangeType, Data.Range);
         tiles.ForEach(a => a.Show(true));
        
         Routine cardUseRoutine = Routine.CreateCancellable(Game.Dungeon.AwaitTargetSelection, entities, 1);
@@ -30,7 +28,7 @@ public class AttackCard : AbilityCard<AttackCardData>
         cardUseRoutine.Then(damageRoutine);
         cardUseRoutine.Then(() => 
         {
-            this.AfterCardUsed();
+            AfterCardUsed();
             Game.Dungeon.AfterPlayerTurn();
         });
 
@@ -46,7 +44,7 @@ public class AttackCard : AbilityCard<AttackCardData>
 
     private void ActivateInstant()
     {
-        List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(this.Data.RangeType, this.Data.Range, this.Data.AffectedTargetType);
+        List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(Data.RangeType, Data.Range, Data.AffectedTargetType);
         ParallelRoutineSet routines = new ParallelRoutineSet();
         foreach (var target in entities)
         {
@@ -57,7 +55,7 @@ public class AttackCard : AbilityCard<AttackCardData>
         animationsRoutine.Then(() => 
         {
             DamageTargets(entities);
-            this.AfterCardUsed();
+            AfterCardUsed();
         });
 
         Game.States.EnqueueCoroutine(animationsRoutine);
@@ -65,9 +63,9 @@ public class AttackCard : AbilityCard<AttackCardData>
 
     private IEnumerator DoAnimationOnTarget(TileEntity entity)
     {
-        if (this.Data.AnimationEffect != null)
+        if (Data.AnimationEffect != null)
         {
-            var effect = Game.Effects.CreateTargetedAnimationEffect(this.Data.AnimationEffect, entity.transform.position, Game.Player.transform.position);
+            var effect = Game.Effects.CreateTargetedAnimationEffect(Data.AnimationEffect, entity.transform.position, Game.Player.transform.position);
             yield return effect.CreateRoutine();
         }
     }
@@ -83,7 +81,7 @@ public class AttackCard : AbilityCard<AttackCardData>
 
     private void DamageTargets(List<TileEntity> entities)
     {
-        int damage = this.Data.Damage;
+        int damage = Data.Damage;
         foreach (TileEntity entity in entities)
         {
             entity.DoDamage(damage);

@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public interface ICard
@@ -25,21 +24,21 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
 
     public void DestroyCard()
     {
-        Destroy(this.CardMesh.gameObject);
-        Destroy(this.gameObject);
+        Destroy(CardMesh.gameObject);
+        Destroy(gameObject);
     }
 
     public virtual void SetData(CardData data)
     {
         Debug.Assert(data is TCardDataType, "Data must be of type " + typeof(TCardDataType));
-        this.Data = data as TCardDataType;
-        this.InitData();
+        Data = data as TCardDataType;
+        InitData();
     }
 
-    // Use this for initialization
-    void Start ()
+    [UsedImplicitly]
+    private void Start ()
     {
-        Debug.Assert(this.Data != null, "Must set Data!");
+        Debug.Assert(Data != null, "Must set Data!");
 	}
 
     protected virtual void InitData()
@@ -48,7 +47,7 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
 
     protected virtual CardMesh GetCardMesh()
     {
-        switch (this.CardType) {
+        switch (CardType) {
             case CardType.Character:
                 return Game.Decks.CardMeshes.CharBasicCardMesh;
             case CardType.Dungeon:
@@ -62,31 +61,26 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
 
     public virtual void InitCard()
     {
-        this.transform.SetParent(Game.Decks.transform);
+        transform.SetParent(Game.Decks.transform);
 
         // TODO: card based on rarity
-        if (this.CardMesh == null)
+        if (CardMesh == null)
         {
-            this.CardMesh = Instantiate(GetCardMesh());
-            this.CardMesh.transform.parent = this.transform;
-            this.CardMesh.transform.position = new Vector3(0, 0, 0);
-            this.CardMesh.SetCardArt(this.Data.CardArt);
+            CardMesh = Instantiate(GetCardMesh());
+            CardMesh.transform.parent = transform;
+            CardMesh.transform.position = new Vector3(0, 0, 0);
+            CardMesh.SetCardArt(Data.CardArt);
         }
     }
 
     public void SetFaceUp()
     {
-        this.transform.eulerAngles = new Vector3(0, 0, 0);
+        transform.eulerAngles = new Vector3(0, 0, 0);
     }
 
     public void SetFaceDown()
     {
-        this.transform.eulerAngles = new Vector3(0, 180, 0);
-    }
-
-    // Update is called once per frame
-    void Update ()
-    {
+        transform.eulerAngles = new Vector3(0, 180, 0);
     }
 }
 

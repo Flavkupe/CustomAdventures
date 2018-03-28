@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using JetBrains.Annotations;
 using UnityEngine;
 
 public class EffectsManager : SingletonObject<EffectsManager>
@@ -25,6 +22,7 @@ public class EffectsManager : SingletonObject<EffectsManager>
         }
     }
 
+    [UsedImplicitly]
     private void Awake()
     {
         Instance = this;
@@ -40,8 +38,12 @@ public class EffectsManager : SingletonObject<EffectsManager>
     {
         var obj = new GameObject(data.name);
         var effect = obj.AddComponent(data.AnimationEffectObjectType) as AnimationEffect;
-        effect.SetData(data);
-        effect.InitEffect();
+        if (effect != null)
+        {
+            effect.SetData(data);
+            effect.InitEffect();
+        }
+
         return effect;
     }
 
@@ -50,8 +52,12 @@ public class EffectsManager : SingletonObject<EffectsManager>
     {
         var obj = new GameObject(data.name);
         var effect = obj.AddComponent<TEffectType>();
-        effect.Data = data;
-        effect.InitEffect();
+        if (effect != null)
+        {
+            effect.Data = data;
+            effect.InitEffect();
+        }
+
         return effect;
     }
 }

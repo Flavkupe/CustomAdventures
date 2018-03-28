@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class UIEventButton : MonoBehaviour
 {
@@ -10,6 +6,6 @@ public class UIEventButton : MonoBehaviour
 
     public void OnClick()
     {
-        Game.UI.SetCurrentUIEvent(this.ButtonUIEvent);
+        Game.UI.SetCurrentUIEvent(ButtonUIEvent);
     }
 }

@@ -5,13 +5,15 @@ using UnityEngine;
 using System.Linq;
 using System;
 using System.Collections;
+using JetBrains.Annotations;
 
 public class CardDrawManager : SingletonObject<CardDrawManager>
 {
     public string TakeKey = " ";
     public string MulliganKey = "q";
 
-    void Awake()
+    [UsedImplicitly]
+    private void Awake()
     {
         Instance = this;
     }
@@ -115,7 +117,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     public Routine PerformLootCardDrawing(int cardNum)
     {
-        Func<ILootCard, Routine> func = (ILootCard card) =>
+        Func<ILootCard, Routine> func = card =>
         {
             switch (card.LootEventType)
             {
@@ -134,7 +136,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     public Routine PerformAbilityCardDrawing(int cardNum)
     {
-        Func<IAbilityCard, Routine> func = (IAbilityCard card) =>
+        Func<IAbilityCard, Routine> func = card =>
         {
             return Routine.CreateAction(() =>
             {
@@ -147,7 +149,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     public Routine PerformCharacterCardDrawing(int cardNum)
     {
-        Func<ICharacterCard, Routine> func = (ICharacterCard card) =>
+        Func<ICharacterCard, Routine> func = card =>
         {
             switch (card.CharacterCardType)
             {
@@ -201,11 +203,11 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     private IEnumerator InternalDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
     {
-        List<TCardType> cards = null;
+        List<TCardType> cards;
         while (true)
         {
             cards = props.CardDrawFunc(props.NumDraws).ToList();
-            yield return Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), props.Deck.DeckHolder, 10.0f);
+            yield return Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), props.Deck.DeckHolder);
             if (props.AllowMulligan && Game.Player.Stats.Mulligans > 0)
             {
                 Game.UI.ToggleMulliganPanel(true);

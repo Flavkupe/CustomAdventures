@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 public abstract class AnimationEffect : MonoBehaviourEx
@@ -12,7 +9,7 @@ public abstract class AnimationEffect : MonoBehaviourEx
 
     protected virtual void OnComplete()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
     /// <summary>
@@ -27,7 +24,7 @@ public abstract class AnimationEffect<TDataType> : AnimationEffect where TDataTy
 {
     public override Routine Execute()
     {
-        var routine = this.CreateRoutine();
+        var routine = CreateRoutine();
         StartCoroutine(routine);
         return routine;
     }
@@ -58,8 +55,8 @@ public abstract class AnimationEffect<TDataType> : AnimationEffect where TDataTy
 
     public override void SetData(AnimationEffectData data)
     {
-        Debug.Assert(data is TDataType, "Data must be of type " + typeof(TDataType));        
-        this.Data = data as TDataType;
+        Debug.Assert(data is TDataType, "Data must be of type " + typeof(TDataType));
+        Data = data as TDataType;
     }
 }
 

@@ -365,7 +365,7 @@ public class CancellableRoutine : Routine<Action>
     public CancellableRoutine(Func<Action, IEnumerator> func)
         : base(func, null)
     {
-        this._arg1 = CancellationCallback;
+        _arg1 = CancellationCallback;
     }
 }
 
@@ -374,7 +374,7 @@ public class CancellableRoutine<T> : Routine<Action, T>
     public CancellableRoutine(Func<Action, T, IEnumerator> func, T arg1)
         : base(func, null, arg1)
     {
-        this._arg1 = CancellationCallback;
+        _arg1 = CancellationCallback;
     }
 }
 
@@ -383,6 +383,6 @@ public class CancellableRoutine<T1, T2> : Routine<Action, T1, T2>
     public CancellableRoutine(Func<Action, T1, T2, IEnumerator> func, T1 arg1, T2 arg2)
         : base(func, null, arg1, arg2)
     {
-        this._arg1 = CancellationCallback;
+        _arg1 = CancellationCallback;
     }
 }

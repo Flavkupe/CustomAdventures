@@ -1,19 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TestThing : MonoBehaviour {
 
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    private void Start () {
         MoveAllParallelRoutine();
     }
 
     private void MoveAllParallelRoutine()
     {
-        var objects = this.GetComponentsInChildren<TestObj>();
+        var objects = GetComponentsInChildren<TestObj>();
         var routine1 = Routine.Create(objects[0].MoveUp);
         var routine2 = Routine.Create(objects[1].MoveUp);
         var routine3 = Routine.Create(objects[2].MoveUp);
@@ -27,7 +25,7 @@ public class TestThing : MonoBehaviour {
 
     private void MoveAllRoutine()
     {
-        var objects = this.GetComponentsInChildren<TestObj>();
+        var objects = GetComponentsInChildren<TestObj>();
         var routine = Routine.Create(objects[0].MoveUp);
         routine.Then(() => { Destroy(objects[1].gameObject, 2.0f); })
                .Then(Routine.Create(objects[1].MoveUp))
@@ -35,9 +33,9 @@ public class TestThing : MonoBehaviour {
 
         StartCoroutine(routine);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    private void Update () {
 		
 	}
 }

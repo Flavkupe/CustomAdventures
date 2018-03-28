@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
+using JetBrains.Annotations;
 using UnityEngine;
+
 [RequireComponent(typeof(SpriteRenderer))]
-public class Treasure : TileEntity, IObjectOnTile
+public class Treasure : TileEntity
 {
     public TreasureCardData Data { get; set; }
 
@@ -17,22 +17,18 @@ public class Treasure : TileEntity, IObjectOnTile
 
     private bool _canInteractWith = true;
 
-    protected override void OnClicked()
-    {
-        //Game.UI.UpdateEntityPanel(this);
-        base.OnClicked();
-    }
+    //protected override void OnClicked()
+    //{
+    //    //Game.UI.UpdateEntityPanel(this);
+    //    base.OnClicked();
+    //}
 
-    // Use this for initialization
-    void Start ()
+    [UsedImplicitly]
+    private void Start ()
     {
-        this.GetComponent<SpriteRenderer>().sprite = this.Data.Sprite;
-        this.GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
+        GetComponent<SpriteRenderer>().sprite = Data.Sprite;
+        GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
     }
-	
-	// Update is called once per frame
-	void Update () {
-	}
 
     public override bool PlayerCanInteractWith()
     {
@@ -46,10 +42,10 @@ public class Treasure : TileEntity, IObjectOnTile
 
     public override IEnumerator PlayerInteractWith()
     {
-        var playerDirection = Game.Player.transform.position.GetRelativeDirection(this.transform.position);
+        var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
         yield return Game.Player.TwitchTowards(playerDirection);
         Game.CardDraw.PerformLootCardDrawing(2);
-        this._canInteractWith = false;
-        Destroy(this.gameObject, 1.0f);
+        _canInteractWith = false;
+        Destroy(gameObject, 1.0f);
     }
 }

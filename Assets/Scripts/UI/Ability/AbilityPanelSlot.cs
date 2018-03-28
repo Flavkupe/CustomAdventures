@@ -1,6 +1,4 @@
-﻿
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
@@ -11,7 +9,7 @@ public class AbilityPanelSlot : MonoBehaviour
         
     public IAbilityCard Ability { get { return ability; } }
 
-    public bool IsEmpty { get { return this.ability == null; } }
+    public bool IsEmpty { get { return ability == null; } }
 
     public float HoverTimer = 1.0f;
     private float _timer;
@@ -20,8 +18,8 @@ public class AbilityPanelSlot : MonoBehaviour
     public void SetAbility(IAbilityCard ability)
     {
         this.ability = ability;
-        this.IconImage.sprite = ability.AbilityIcon;
-        this.IconImage.gameObject.SetActive(true);
+        IconImage.sprite = ability.AbilityIcon;
+        IconImage.gameObject.SetActive(true);
         
         if (this.ability.Object != null)
         {
@@ -40,9 +38,9 @@ public class AbilityPanelSlot : MonoBehaviour
 
     public void Clear()
     {
-        this.ability = null;
-        this.IconImage.sprite = null;
-        this.IconImage.gameObject.SetActive(false);
+        ability = null;
+        IconImage.sprite = null;
+        IconImage.gameObject.SetActive(false);
     }
 
     public void OnHoverEnter()
@@ -53,37 +51,37 @@ public class AbilityPanelSlot : MonoBehaviour
     public void OnHoverExit()
     {
         _hovering = false;
-        this._timer = HoverTimer;
-        if (this.ability != null && this.ability.Object != null)
+        _timer = HoverTimer;
+        if (ability != null && ability.Object != null)
         {
-            this.ability.Object.gameObject.SetActive(false);
+            ability.Object.gameObject.SetActive(false);
         }
     }
 
     public void OnClick()
     {
-        if (this.ability != null)
+        if (ability != null)
         {
-            Game.Player.UseAbility(this.ability);
+            Game.Player.UseAbility(ability);
         }
     }
 
     public void Update()
     {
-        if (this._hovering && _timer > 0.0f && this.ability != null && this.ability.Object != null)
+        if (_hovering && _timer > 0.0f && ability != null && ability.Object != null)
         {
             _timer -= Time.deltaTime;
             if (_timer <= 0.0f)
             {
-                this.ability.Object.gameObject.SetActive(true);
+                ability.Object.gameObject.SetActive(true);
             }
         }
     }
 
     private void Awake()
     {
-        this._timer = HoverTimer;
-        this.IconImage.gameObject.SetActive(false);
+        _timer = HoverTimer;
+        IconImage.gameObject.SetActive(false);
         Debug.Assert(IconImage != null, "Must have IconImage set!");
     }        
 }

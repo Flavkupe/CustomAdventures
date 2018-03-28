@@ -57,9 +57,9 @@ namespace Borodar.ReorderableList {
 		/// <param name="itemDrawer">Callback to draw list item.</param>
 		/// <param name="itemHeight">Height of list item in pixels.</param>
 		public GenericListAdaptor(IList<T> list, ReorderableListControl.ItemDrawer<T> itemDrawer, float itemHeight) {
-			this._list = list;
-			this._itemDrawer = itemDrawer ?? ReorderableListGUI.DefaultItemDrawer;
-			this.FixedItemHeight = itemHeight;
+            _list = list;
+            _itemDrawer = itemDrawer ?? ReorderableListGUI.DefaultItemDrawer;
+            FixedItemHeight = itemHeight;
 		}
 
 		#endregion

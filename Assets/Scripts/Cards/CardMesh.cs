@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public class CardMesh : MonoBehaviourEx
@@ -11,19 +9,11 @@ public class CardMesh : MonoBehaviourEx
 
     public void SetCardArt(Sprite sprite)
     {
-        this.CardArt.sprite = sprite;
+        CardArt.sprite = sprite;
     }
 
     public void SetCardText(string text)
     {
-        this.CardText.text = text;
+        CardText.text = text;
     }
-
-    // Use this for initialization
-    void Start () {
-	}
-
-	// Update is called once per frame
-	void Update () {
-	}
 }

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MonoBehaviourEx : MonoBehaviour
 {
     public virtual IEnumerator TwitchTowards(Vector3 target, float speed = 5.0f)
     {
-        Direction targetDirection = this.transform.position.GetRelativeDirection(target);
+        Direction targetDirection = transform.position.GetRelativeDirection(target);
         yield return TwitchTowards(targetDirection, speed);
     }
 
@@ -31,10 +30,10 @@ public class MonoBehaviourEx : MonoBehaviour
         }
 
         directionVector *= 0.2f;
-        Vector3 target = this.transform.position + directionVector;
-        Vector3 start = this.transform.position;
-        yield return this.transform.MoveToSpotCoroutine(target, speed, false);
-        yield return this.transform.MoveToSpotCoroutine(start, speed, false);
+        Vector3 target = transform.position + directionVector;
+        Vector3 start = transform.position;
+        yield return transform.MoveToSpotCoroutine(target, speed, false);
+        yield return transform.MoveToSpotCoroutine(start, speed, false);
     }
 
     public IEnumerator RotateCoroutine(Vector3 axis, float angle, float speed)
@@ -44,7 +43,7 @@ public class MonoBehaviourEx : MonoBehaviour
         {
             float speedMultiplier = Game.States.GetMouseDownSpeedMultiplier();
             float delta = Time.deltaTime * speed * speedMultiplier;
-            this.transform.Rotate(axis, delta);
+            transform.Rotate(axis, delta);
             totalRot += delta;
             yield return null;
         }        
@@ -71,12 +70,12 @@ public class MonoBehaviourEx : MonoBehaviour
     }
 
     // Use this for initialization
-    void Start ()
+    private void Start ()
     {		
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    private void Update () {
 		
 	}
 }

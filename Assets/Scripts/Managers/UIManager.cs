@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using JetBrains.Annotations;
 using UnityEngine;
 
 public class UIManager : SingletonObject<UIManager>
@@ -13,61 +11,60 @@ public class UIManager : SingletonObject<UIManager>
 
     public MulliganPanel MulliganPanel;
 
-    private UIEvent? _currentUIEvent; 
+    private UIEvent? _currentUIEvent;
 
-    void Awake()
+    [UsedImplicitly]
+    private void Awake()
     {
         Instance = this;
 
-        if (this.PlayerPanel == null)
+        if (PlayerPanel == null)
         {
-            this.PlayerPanel = GameObject.FindObjectOfType<PlayerPanel>();
+            PlayerPanel = FindObjectOfType<PlayerPanel>();
         }
 
-        if (this.EntityPanel == null)
+        if (EntityPanel == null)
         {
-            this.EntityPanel = GameObject.FindObjectOfType<EntityPanel>();
+            EntityPanel = FindObjectOfType<EntityPanel>();
         }
 
-        if (this.InventoryPanel == null)
+        if (InventoryPanel == null)
         {
-            this.InventoryPanel = GameObject.FindObjectOfType<InventoryPanel>();
-            this.InventoryPanel.gameObject.SetActive(false);
+            InventoryPanel = FindObjectOfType<InventoryPanel>();
+            InventoryPanel.gameObject.SetActive(false);
         }
 
-        if (this.MulliganPanel == null)
+        if (MulliganPanel == null)
         {
-            this.MulliganPanel = FindObjectOfType<MulliganPanel>();
-            this.MulliganPanel.gameObject.SetActive(false);
+            MulliganPanel = FindObjectOfType<MulliganPanel>();
+            MulliganPanel.gameObject.SetActive(false);
         }
     }
 
-    // Use this for initialization
-    void Start ()
+    [UsedImplicitly]
+    private void Start ()
     {
         UpdateUI();
     }
 
+    [UsedImplicitly]
     private void LateUpdate()
     {
         _currentUIEvent = null;
     }
 
-    // Update is called once per frame
-    void Update ()
+    [UsedImplicitly]
+    private void Update ()
     {       
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             // Toggle inventory pane
-            this.InventoryPanel.gameObject.SetActive(!this.InventoryPanel.gameObject.activeSelf);
-            if (this.InventoryPanel.gameObject.activeSelf)
+            InventoryPanel.gameObject.SetActive(!InventoryPanel.gameObject.activeSelf);
+            if (InventoryPanel.gameObject.activeSelf)
             {
                 // Note: activeSelf doesn't activate until next frame, so this happens when the UI
                 //  is actually shown.
-                StartCoroutine(this.DoNextFrame(() =>
-                {
-                    this.UpdateInventory();
-                }));
+                StartCoroutine(this.DoNextFrame(UpdateInventory));
             }
         }
     }
@@ -77,36 +74,37 @@ public class UIManager : SingletonObject<UIManager>
         PlayerPanel.UpdatePanel();
         if (selectedEntity == null)
         {
-            this.ToggleEntityPanel(false);
+            ToggleEntityPanel(false);
         }
     }
 
-    private TileEntity selectedEntity = null;
+    private TileEntity selectedEntity;
+
     public void UpdateEntityPanel(Enemy enemy)
     {
         if (enemy != null)
         {
             selectedEntity = enemy;
-            this.ToggleEntityPanel(true);
+            ToggleEntityPanel(true);
             EntityPanel.ShowEnemyData(enemy);
         }
     }
 
     public void ToggleEntityPanel(bool show)
     {
-        this.EntityPanel.gameObject.SetActive(show);
+        EntityPanel.gameObject.SetActive(show);
     }
 
     public void ToggleMulliganPanel(bool show)
     {
-        this.MulliganPanel.gameObject.SetActive(show);
+        MulliganPanel.gameObject.SetActive(show);
     }
 
     public void UpdateInventory()
     {
-        if (this.InventoryPanel.gameObject.activeSelf)
+        if (InventoryPanel.gameObject.activeSelf)
         {
-            this.InventoryPanel.UpdateInventory();
+            InventoryPanel.UpdateInventory();
         }
     }
 

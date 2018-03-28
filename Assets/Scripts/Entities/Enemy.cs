@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 using System.Linq;
+using JetBrains.Annotations;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
-public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
+public class Enemy : TileEntity, IDungeonActor
 {
     public EnemyCardData Data { get; set; }
 
@@ -16,7 +15,7 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     public IEnumerator ProcessCharacterTurn()
     {
-        if (Game.Dungeon.Grid.GetNeighbors(this.XCoord, this.YCoord).Where(t => t != null && t.GetTileEntity() != null)
+        if (Game.Dungeon.Grid.GetNeighbors(XCoord, YCoord).Where(t => t != null && t.GetTileEntity() != null)
                                                                     .Select(a => a.GetTileEntity()).Any(b => b == Game.Player))
         {
             yield return AttackPlayer();
@@ -24,19 +23,19 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
         }
 
         // Basic move
-        if (Game.Player.XCoord > this.XCoord)
+        if (Game.Player.XCoord > XCoord)
         {
             yield return TryMove(Direction.Right);
         }
-        else if (Game.Player.XCoord < this.XCoord)
+        else if (Game.Player.XCoord < XCoord)
         {
             yield return TryMove(Direction.Left);
         }
-        else if (Game.Player.YCoord > this.YCoord)
+        else if (Game.Player.YCoord > YCoord)
         {
             yield return TryMove(Direction.Up);
         }
-        else if (Game.Player.YCoord < this.YCoord)
+        else if (Game.Player.YCoord < YCoord)
         {
             yield return TryMove(Direction.Down);
         }
@@ -44,13 +43,13 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     private IEnumerator AttackPlayer()
     {
-        yield return this.TwitchTowards(Game.Player.transform.position);
-        Game.Player.TakeDamage(this.Data.Attack);
+        yield return TwitchTowards(Game.Player.transform.position);
+        Game.Player.TakeDamage(Data.Attack);
     }
 
     public override void DoDamage(int damage)
     {
-        this.TakeDamage(damage);
+        TakeDamage(damage);
     }
 
     protected override void OnClicked()
@@ -59,27 +58,23 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
         base.OnClicked();
     }
 
-    // Use this for initialization
-    void Start ()
+    [UsedImplicitly]
+    private void Start ()
     {
-        this.HP = this.Data.MaxHP;
-        this.GetComponent<SpriteRenderer>().sprite = this.Data.Sprite;
-        this.GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
+        HP = Data.MaxHP;
+        GetComponent<SpriteRenderer>().sprite = Data.Sprite;
+        GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
     }
-	
-	// Update is called once per frame
-	void Update () {
-	}
 
     public void TakeDamage(int damage)
     {
-        if (this.HP > 0)
+        if (HP > 0)
         {
-            this.HP -= damage;
-            this.ShowFloatyText(damage.ToString());
-            if (this.HP <= 0)
+            HP -= damage;
+            ShowFloatyText(damage.ToString());
+            if (HP <= 0)
             {
-                this.Die();
+                Die();
             }
         }
     }
@@ -87,8 +82,8 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
     private void Die()
     {
         Game.Dungeon.RemoveEnemy(this);
-        Destroy(this.gameObject, 0.5f);
-        Game.Player.GainXP(this.Data.EXP);
+        Destroy(gameObject, 0.5f);
+        Game.Player.GainXP(Data.EXP);
     }
 
     public override bool PlayerCanInteractWith()
@@ -103,9 +98,9 @@ public class Enemy : TileEntity, IObjectOnTile, IDungeonActor
 
     public override IEnumerator PlayerInteractWith()
     {
-        var playerDirection = Game.Player.transform.position.GetRelativeDirection(this.transform.position);
+        var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
         yield return Game.Player.TwitchTowards(playerDirection);
         int damage = Game.Player.GetAttackStrength();
-        this.TakeDamage(damage);        
+        TakeDamage(damage);        
     }
 }

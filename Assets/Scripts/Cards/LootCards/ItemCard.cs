@@ -1,12 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> where TItemCardDataType : ItemCardData
+﻿public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> where TItemCardDataType : ItemCardData
 {
     public override void ExecuteLootGetEvent()
     {
-        InventoryItem item = this.Data.BackingItem.CloneInstance();
+        InventoryItem item = Data.BackingItem.CloneInstance();
         if (Game.Player.TryMoveToInventory(item, true))
         {
             // TODO: message?
@@ -20,21 +16,11 @@ public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> 
     protected override void InitData()
     {
         base.InitData();
-        this.Data.BackingItem = this.CreateBackingItem();
+        Data.BackingItem = CreateBackingItem();
     }    
 
     protected virtual InventoryItem CreateBackingItem()
     {
-        return new InventoryItem<TItemCardDataType>(this.Data);
+        return new InventoryItem<TItemCardDataType>(Data);
     }
-
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }
