@@ -70,6 +70,8 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
             CardMesh.transform.parent = transform;
             CardMesh.transform.position = new Vector3(0, 0, 0);
             CardMesh.SetCardArt(Data.CardArt);
+            CardMesh.SetCardName(Data.Name);
+            CardMesh.SetCardText(Data.CardText);
         }
     }
 
@@ -90,6 +92,9 @@ public abstract class CardData : ScriptableObject
     public Sprite CardArt;
 
     public string Name;
+
+    [TextArea(3, 10)]
+    public string CardText;
 
     /// <summary>
     /// If this is false, this card will be excluded from all random deckbuilding

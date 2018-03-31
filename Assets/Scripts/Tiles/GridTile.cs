@@ -19,19 +19,19 @@ public class GridTile : MonoBehaviour, IHasCoords
         {
             Room room = GetRoom();
 
-            if (transform.localPosition.x == 0)
+            if ((int)transform.localPosition.x == 0)
             {
                 return Direction.Left;
             }            
-            if (transform.localPosition.y == 0)
+            if ((int)transform.localPosition.y == 0)
             {
                 return Direction.Down;
             }
-            if (transform.localPosition.x == room.Dims - 1)
+            if ((int)transform.localPosition.x == room.Dims - 1)
             {
                 return Direction.Right;
             }
-            if (transform.localPosition.y == room.Dims - 1)
+            if ((int)transform.localPosition.y == room.Dims - 1)
             {
                 return Direction.Up;
             }
@@ -40,7 +40,7 @@ public class GridTile : MonoBehaviour, IHasCoords
         }
     }    
 
-    public Room CachedRoom = null;
+    public Room CachedRoom;
     public Room GetRoom()
     {
         if (CachedRoom != null)
@@ -66,10 +66,10 @@ public class GridTile : MonoBehaviour, IHasCoords
     {        
         Room room = GetRoom();
 
-        if (transform.localPosition.x == 0 ||
-            transform.localPosition.y == 0 ||
-            transform.localPosition.x == room.Dims - 1 ||
-            transform.localPosition.y == room.Dims - 1)
+        if ((int)transform.localPosition.x == 0 ||
+            (int)transform.localPosition.y == 0 ||
+            (int)transform.localPosition.x == room.Dims - 1 ||
+            (int)transform.localPosition.y == room.Dims - 1)
         {
             return true;
         }
@@ -93,16 +93,6 @@ public class GridTile : MonoBehaviour, IHasCoords
         var contents = Game.Dungeon.Grid.Get(XCoord, YCoord);
         return contents.TileObject;
     }
-
-    // Use this for initialization
-    private void Start ()
-    {	
-	}
-
-    // Update is called once per frame
-    private void Update ()
-    {		
-	}
 
     public void RemoveConnector()
     {
