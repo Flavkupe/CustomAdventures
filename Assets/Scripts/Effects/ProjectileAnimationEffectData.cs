@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Effect", menuName = "CreateAction Animation Effects/Projectile Effect", order = 1)]
+[CreateAssetMenu(fileName = "Effect", menuName = "Create Animation Effects/Projectile Effect", order = 1)]
 public class ProjectileAnimationEffectData : TargetedAnimationEffectData
 {
     [Description("Effect that happens when projectile reaches destination")]

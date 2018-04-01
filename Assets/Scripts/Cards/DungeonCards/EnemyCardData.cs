@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Card", menuName = "CreateAction Cards/Dungeon/Enemy Card", order = 1)]
+[CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Dungeon/Enemy Card", order = 1)]
 public class EnemyCardData : DungeonCardData
 {
     public Sprite Sprite;

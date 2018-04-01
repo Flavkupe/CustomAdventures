@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Card", menuName = "CreateAction Cards/Ability/Attack Card", order = 1)]
+[CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Ability/Attack Card", order = 1)]
 public class AttackCardData : AbilityCardData
 {
     public override AbilityCardType AbilityCardType { get { return AbilityCardType.Attack; } }

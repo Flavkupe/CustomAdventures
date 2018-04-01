@@ -4,7 +4,7 @@ using UnityEngine.Tilemaps;
 namespace UnityEngine
 {
 	[Serializable]
-    [CreateAssetMenu(fileName = "Tile", menuName = "CreateAction Tiles/Rule Tile", order = 1)]
+    [CreateAssetMenu(fileName = "Tile", menuName = "Create Tiles/Rule Tile", order = 1)]
     public class RuleTile : Tile
 	{
         public bool IsConnector = false;

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Card", menuName = "CreateAction Cards/Character Card/Ability Gain Card", order = 1)]
+[CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Character Card/Ability Gain Card", order = 1)]
 public class AbilityGainCardData : CharacterCardData
 {
     public override Type BackingCardType
