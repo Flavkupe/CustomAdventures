@@ -254,7 +254,8 @@ public enum GameState
     Neutral,
     DrawingCard,
     AwaitingCommand,
-    CharacterMoving,
+    CharacterMoving,    
     EnemyTurn,
     AwaitingSelection,
+    CharacterActing,
 }

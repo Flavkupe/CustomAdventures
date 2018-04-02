@@ -119,6 +119,13 @@ public class DungeonManager : SingletonObject<DungeonManager>
         {
             List<GridTile> tiles = roomArea.GetWideOpenTiles();
             tile = tiles.GetRandom();
+
+            if (tile == null)
+            {
+                // Fall back to corner tiles
+                tiles = roomArea.GetCornerTiles();
+                tile = tiles.GetRandom();
+            }
         }
 
         if (tile != null)

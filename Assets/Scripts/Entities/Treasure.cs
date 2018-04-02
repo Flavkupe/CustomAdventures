@@ -44,7 +44,7 @@ public class Treasure : TileEntity
     {
         var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
         yield return Game.Player.TwitchTowards(playerDirection);
-        Game.CardDraw.PerformLootCardDrawing(2);
+        Game.CardDraw.PerformLootCardDrawing(this.Data.NumTreasures);
         _canInteractWith = false;
         Destroy(gameObject, 1.0f);
     }

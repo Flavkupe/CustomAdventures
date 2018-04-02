@@ -87,7 +87,7 @@ public class Room : MonoBehaviour, IHasCoords
                     {
                         var gridTile = tile.InstantiateGridTile(Game.Dungeon.GenericTileTemplate, this);
                         gridTile.transform.localPosition = new Vector3(x + 1, y + 1); // TODO: why do they need + 1...?
-                        tile.sprite = null;
+                        gridTile.Show(false);
                     }
                 }
             }

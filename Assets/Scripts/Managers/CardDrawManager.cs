@@ -93,7 +93,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             {
                 newCard.SetFaceUp();
                 newCard.Object.transform.position = card.Object.transform.position.OffsetBy(0.0f, 0.0f, zOffset);
-                drawChain.AddRoutine(Routine.Create(SlideCardUp, newCard, yDist));
+                drawChain.AddRoutine(Routine.Create(SlideCardUp, newCard, yDist, 10.0f));
                 yDist += 1.2f;
                 zOffset -= 0.2f;
 
@@ -109,10 +109,10 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         return routine;
     }
 
-    private IEnumerator SlideCardUp(ICard card, float yDist)
+    private IEnumerator SlideCardUp(ICard card, float yDist, float speed)
     {
         Vector3 target = card.Object.transform.position + (Vector3.up * yDist);
-        yield return card.Object.transform.MoveToSpotCoroutine(target, 10.0f);
+        yield return card.Object.transform.MoveToSpotCoroutine(target, speed);
     }
 
     public Routine PerformLootCardDrawing(int cardNum)
@@ -144,7 +144,10 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             });
         };
 
-        return DoCardDraw(Game.Decks.DrawAbilityCards, cardNum, Game.Decks.AbilityDeck, func);
+        var routine = Routine.Create(QuickDrawCoroutine, new DrawCoroutineProps<IAbilityCard>(Game.Decks.DrawAbilityCards, cardNum, Game.Decks.AbilityDeck, func));
+        // Game.States.EnqueueIfNotState(GameState.CharacterMoving, () => routine);
+        StartCoroutine(routine);
+        return routine;
     }
 
     public Routine PerformCharacterCardDrawing(int cardNum)
@@ -199,6 +202,24 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         public Func<TCardType, Routine> CardRoutine { get; private set; }
 
         public bool AllowMulligan { get; private set; }
+    }
+
+    private IEnumerator QuickDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
+    {
+        List<TCardType> cards;
+        var fullSize = Game.Decks.DeckBigSize;
+        cards = props.CardDrawFunc(props.NumDraws).ToList();
+        foreach (var card in cards)
+        {
+            yield return SlideCardUp(card, 1.5f, 20.0f);
+            yield return Routine.WaitForSeconds(0.5f, true);
+            yield return card.Object.RotateCoroutine(Vector3.up, 180, 500.0f);
+            yield return Routine.WaitForSeconds(0.5f, true);
+            yield return props.CardRoutine(card);
+
+            // Make card big for UI display
+            card.Object.transform.localScale = new Vector3(fullSize, fullSize, fullSize);
+        }
     }
 
     private IEnumerator InternalDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard

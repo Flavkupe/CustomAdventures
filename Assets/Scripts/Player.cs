@@ -94,19 +94,19 @@ public class Player : TileEntity
 
         if (Game.States.State == GameState.AwaitingCommand)
         {
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKey(KeyCode.W))
             {
                 PlayerMoveCommand(Direction.Up);
             }
-            else if (Input.GetKeyDown(KeyCode.S))
+            else if (Input.GetKey(KeyCode.S))
             {
                 PlayerMoveCommand(Direction.Down);
             }
-            else if (Input.GetKeyDown(KeyCode.A))
+            else if (Input.GetKey(KeyCode.A))
             {
                 PlayerMoveCommand(Direction.Left);
             }
-            else if (Input.GetKeyDown(KeyCode.D))
+            else if (Input.GetKey(KeyCode.D))
             {
                 PlayerMoveCommand(Direction.Right);
             }
@@ -167,6 +167,12 @@ public class Player : TileEntity
         }
     }
 
+    private void OnAfterPlayerInteract()
+    {
+        ProcessEffects(EffectDurationType.Steps);
+        Game.Dungeon.AfterPlayerTurn();
+    }
+
     private void OnAfterPlayerMove()
     {
         ProcessEffects(EffectDurationType.Steps);
@@ -199,7 +205,8 @@ public class Player : TileEntity
             {
                 if (obj.PlayerCanInteractWith())
                 {
-                    InteractWith(obj);                    
+                    Game.States.SetState(GameState.CharacterActing);
+                    InteractWith(obj);
                 }
             }
             else
@@ -220,7 +227,11 @@ public class Player : TileEntity
         {
             routine.Then(() => OnAfterPlayerAttack());
         }
-
+        else if (interaction == PlayerInteraction.InteractWithObject)
+        {
+            routine.Then(() => OnAfterPlayerInteract());
+        }
+        
         Game.States.EnqueueCoroutine(routine);
     }
 
