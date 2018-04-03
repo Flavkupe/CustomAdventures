@@ -23,6 +23,8 @@ public class Player : TileEntity
 
     private List<IAbilityCard> abilities = new List<IAbilityCard>();
 
+    public DungeonCardData[] EntranceCards;
+
     // Stuff like the decks and such
     public GameObject InterfaceObjects;
 
@@ -322,7 +324,7 @@ public class Player : TileEntity
                 if (item.CurrentStackSize == 0)
                 {
                     break;
-                }                
+                }
             }
         }
 
@@ -333,11 +335,11 @@ public class Player : TileEntity
             if (updateUI)
             {
                 Game.UI.UpdateInventory();
-            }            
+            }
         }
 
         if (madeChanges && updateUI)
-        {            
+        {
             Game.UI.UpdateInventory();
         }
 
@@ -352,6 +354,12 @@ public class Player : TileEntity
         InterfaceObjects.transform.SetParent(transform);
         Camera.main.transform.SetParent(transform);
         
+    }
+
+    public DungeonCardData[] GetEntranceCards()
+    {
+        // TODO: other classes
+        return EntranceCards;
     }
 }
 

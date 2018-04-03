@@ -10,7 +10,21 @@ public class RoomArea : MonoBehaviour
     private BoxCollider2D col;
 
     public int NumDraws = 2;
-    public bool BossArea = false;
+    public bool IsBossArea
+    {
+        get { return this.parentRoom.BossRoom; }
+    }
+
+    public bool IsEntranceArea
+    {
+        get { return this.parentRoom.EntranceRoom; }
+    }
+
+    public bool IsNormalArea
+    {
+        get { return this.parentRoom.IsNormalRoom; }
+    }
+
     public OnPlayerEnterEvents OnPlayerEnter = OnPlayerEnterEvents.DungeonEvents;
 
     [UsedImplicitly]

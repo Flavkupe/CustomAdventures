@@ -71,8 +71,13 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
             CardMesh.transform.position = new Vector3(0, 0, 0);
             CardMesh.SetCardArt(Data.CardArt);
             CardMesh.SetCardName(Data.Name);
-            CardMesh.SetCardText(Data.CardText);
+            CardMesh.SetCardText(this.GetCardText());
         }
+    }
+
+    protected virtual string GetCardText()
+    {
+        return Data.CardText;
     }
 
     public void SetFaceUp()

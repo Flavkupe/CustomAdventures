@@ -14,6 +14,12 @@ public class Room : MonoBehaviour, IHasCoords
     public Tilemap Pathing;
 
     public bool BossRoom = false;
+    public bool EntranceRoom = false;
+
+    public bool IsNormalRoom
+    {
+        get { return !BossRoom && !EntranceRoom; }
+    }
 
     public int XCoord { get; set; }
     public int YCoord { get; set; }
@@ -41,10 +47,8 @@ public class Room : MonoBehaviour, IHasCoords
 
             return tileList.ToArray();
         }
-        else
-        {
-            return tiles;
-        }        
+        
+        return tiles;
     }
 
     public bool HasConnectorToDirection(Direction direction)
@@ -60,18 +64,21 @@ public class Room : MonoBehaviour, IHasCoords
 
     public GridTile GetExactMatchingConnector(GridTile connector)
     {
+        if (connector.ConnectsTo == null)
+        {
+            return null;
+        }
+
         Direction direction = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
         GridTile[] tiles = GetTiles();
         if (direction == Direction.Down || direction == Direction.Up)
         {
             return tiles.FirstOrDefault(a => a.IsConnectorTile() && a.ConnectsTo == direction &&
-                a.transform.localPosition.x == connector.transform.localPosition.x);
+                (int)a.transform.localPosition.x == (int)connector.transform.localPosition.x);
         }
-        else
-        {
-            return tiles.FirstOrDefault(a => a.IsConnectorTile() && a.ConnectsTo == direction &&
-                a.transform.localPosition.y == connector.transform.localPosition.y);
-        }
+
+        return tiles.FirstOrDefault(a => a.IsConnectorTile() && a.ConnectsTo == direction &&
+            (int)a.transform.localPosition.y == (int)connector.transform.localPosition.y);
     }
 
     public void InitRoomTiles()
@@ -107,7 +114,7 @@ public class Room : MonoBehaviour, IHasCoords
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
-        Vector3 pos = transform.position;
+        var pos = transform.position;
         Gizmos.DrawLine(pos.OffsetBy(0.5f), (pos + (transform.up * Dims)).OffsetBy(0.5f));
         Gizmos.DrawLine(pos.OffsetBy(0.5f), (pos + (transform.right * Dims)).OffsetBy(0.5f));
         Gizmos.DrawLine((pos + (transform.up * Dims)).OffsetBy(0.5f), (pos + (transform.up * Dims + transform.right * Dims)).OffsetBy(0.5f));

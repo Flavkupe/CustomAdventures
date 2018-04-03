@@ -10,6 +10,8 @@ public class TreasureCardData : DungeonCardData
 
     public int NumTreasures = 1;
 
+    public LootCardType[] LootTypes;
+
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Treasure; } }
     public override Type BackingCardType { get { return typeof(TreasureCard); } }
 }

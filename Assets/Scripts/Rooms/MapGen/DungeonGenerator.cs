@@ -44,7 +44,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         _roomGrid = new Room[NumRooms, NumRooms];
 
         // First room needs both a down and either a right or an up
-        Room firstRoom = Instantiate(PossibleRoomTemplates.Where(a => !a.BossRoom).FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down) &&
+        Room firstRoom = Instantiate(PossibleRoomTemplates.Where(a => a.EntranceRoom).FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down) &&
           (a.HasConnectorToDirection(Direction.Right) || a.HasConnectorToDirection(Direction.Up))));
         firstRoom.InitRoomTiles();
         firstRoom.XCoord = 0;
@@ -83,12 +83,12 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
             foreach (GridTile connectorToCheck in _openConnectors.ToList())
             {
                 Room room = connectorToCheck.GetRoom();
-                if (_roomGrid.IsAdjacentOffBoundsOrFull(room.XCoord, room.YCoord, connectorToCheck.ConnectsTo.Value))
+                if (connectorToCheck.ConnectsTo.HasValue && _roomGrid.IsAdjacentOffBoundsOrFull(room.XCoord, room.YCoord, connectorToCheck.ConnectsTo.Value))
                 {
                     _toClearLater.Add(connectorToCheck);
                     _openConnectors.Remove(connectorToCheck);
                 }
-                else if (!PossibleRoomTemplates.Where(a => a.BossRoom == bossTime).Any(a => a.HasExactMatchingConnector(connectorToCheck)))
+                else if (!PossibleRoomTemplates.Where(a => bossTime ? a.BossRoom : a.IsNormalRoom).Any(a => a.HasExactMatchingConnector(connectorToCheck)))
                 {
                     // No possible connectors for this
                     _toClearLater.Add(connectorToCheck);
@@ -161,7 +161,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
 
         _openConnectors.Remove(connector);
         Room currRoom = connector.GetRoom();
-        List<Room> possibleRooms = PossibleRoomTemplates.Where(a => a.BossRoom == bossRoom && a.HasExactMatchingConnector(connector)).ToList();
+        List<Room> possibleRooms = PossibleRoomTemplates.Where(a => bossRoom ? a.BossRoom : a.IsNormalRoom && a.HasExactMatchingConnector(connector)).ToList();
         if (possibleRooms.Count == 0)
         {
             // No rooms for this connector; try again

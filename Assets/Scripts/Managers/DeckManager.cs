@@ -87,7 +87,7 @@ public class DeckManager : SingletonObject<DeckManager>
         return card;
     }
 
-    private List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, Func<TCardType, bool> drawConditionFunc = null) where TCardType : class, ICard
+    public List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, Func<TCardType, bool> drawConditionFunc = null) where TCardType : class, ICard
     {
         List<TCardType> cards = new List<TCardType>();
         List<TCardType> invalidCards = new List<TCardType>();
@@ -114,26 +114,6 @@ public class DeckManager : SingletonObject<DeckManager>
         deck.PushToBottom(invalidCards);
 
         return cards;
-    }
-
-    public List<IDungeonCard> DrawDungeonCards(int numDrawn)
-    {
-        return DrawCards(numDrawn, DungeonDeck);
-    }
-
-    public List<ILootCard> DrawLootCards(int numDrawn)
-    {
-        return DrawCards(numDrawn, LootDeck);
-    }
-
-    public List<IAbilityCard> DrawAbilityCards(int numDrawn)
-    {
-        return DrawCards(numDrawn, AbilityDeck);
-    }
-
-    public List<ICharacterCard> DrawCharacterCards(int numDrawn)
-    {
-        return DrawCards(numDrawn, CharacterDeck);
     }
 
     public IEnumerator MoveDeckToPosition(GameObject deckHolder, Vector3 target, float sizeChange, float deckMoveSpeed = 10.0f)

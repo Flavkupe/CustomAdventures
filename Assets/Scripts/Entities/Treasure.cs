@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -44,7 +45,14 @@ public class Treasure : TileEntity
     {
         var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
         yield return Game.Player.TwitchTowards(playerDirection);
-        Game.CardDraw.PerformLootCardDrawing(this.Data.NumTreasures);
+
+        var filter = this.Data.LootTypes != null && this.Data.LootTypes.Length > 0 ? new LootCardFilter() : null;
+        if (filter != null)
+        {
+            this.Data.LootTypes.ToList().ForEach(a => filter.PossibleTypes.Add(a));
+        }
+
+        Game.CardDraw.PerformLootCardDrawing(this.Data.NumTreasures, filter);
         _canInteractWith = false;
         Destroy(gameObject, 1.0f);
     }

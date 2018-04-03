@@ -2,7 +2,7 @@
 {
     public override void ExecuteTileSpawnEvent(GridTile tile)
     {
-        Treasure treasure = InstantiateTreasure();        
+        Treasure treasure = InstantiateTreasure();
         Game.Dungeon.SpawnTreasure(treasure, tile);
     }
 

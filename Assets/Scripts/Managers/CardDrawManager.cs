@@ -21,27 +21,34 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     public Routine PerformDungeonEvents(RoomArea roomArea)
     {
         int draws = roomArea.NumDraws;
-        if (roomArea.BossArea)
+        DungeonCardData[] specialCards = null;
+        if (roomArea.IsBossArea)
         {
-            foreach (var bossCardData in Game.Dungeon.PossibleBossCards)
-            {
-                var bossCard = Game.Decks.CreateCardFromData<IDungeonCard, DungeonCardData>(bossCardData);
-                Game.Decks.DungeonDeck.PushCard(bossCard);
-            }
-
-            draws = Game.Dungeon.PossibleBossCards.Length;
+            specialCards = Game.Dungeon.PossibleBossCards;
+        }
+        else if (roomArea.IsEntranceArea)
+        {
+            specialCards = Game.Player.GetEntranceCards();
         }
 
         // TODO: empty deck?
-        Func<IDungeonCard, Routine> cardExecuteRoutine = card =>
+        Func<IDungeonCard, Routine> cardExecuteRoutine = card => GetDungeonCardRoutine(roomArea, card);
+
+        if (specialCards != null)
         {
-            return GetDungeonCardRoutine(roomArea, card);
-        };
+            foreach (var cardData in specialCards)
+            {
+                var specialCard = Game.Decks.CreateCardFromData<IDungeonCard, DungeonCardData>(cardData);
+                Game.Decks.DungeonDeck.PushCard(specialCard);
+            }
+
+            draws = specialCards.Length;
+        }
 
         roomArea.gameObject.SetActive(false);
         Game.Dungeon.PostGroupEventCleanup();
 
-        return DoCardDraw(new DrawCoroutineProps<IDungeonCard>(Game.Decks.DrawDungeonCards, draws, Game.Decks.DungeonDeck, cardExecuteRoutine, !roomArea.BossArea));
+        return DoCardDraw(new DrawCoroutineProps<IDungeonCard>(draws, Game.Decks.DungeonDeck, cardExecuteRoutine, roomArea.IsNormalArea));
     }
 
     private Routine GetDungeonCardRoutine(RoomArea roomArea, IDungeonCard card)
@@ -115,7 +122,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         yield return card.Object.transform.MoveToSpotCoroutine(target, speed);
     }
 
-    public Routine PerformLootCardDrawing(int cardNum)
+    public Routine PerformLootCardDrawing(int cardNum, LootCardFilter filter = null)
     {
         Func<ILootCard, Routine> func = card =>
         {
@@ -129,9 +136,23 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
                         card.DestroyCard();
                     });
             }
-        };      
+        };
 
-        return DoCardDraw(Game.Decks.DrawLootCards, cardNum, Game.Decks.LootDeck, func);
+        Func<ILootCard, bool> drawConditionFunc = null;
+        if (filter != null && filter.PossibleTypes.Count > 0)
+        {
+            drawConditionFunc = card =>
+            {
+                if (filter.PossibleTypes.Contains(card.LootCardType))
+                {
+                    return true;
+                }
+
+                return false;
+            };
+        }
+
+        return DoCardDraw(new DrawCoroutineProps<ILootCard>(cardNum, Game.Decks.LootDeck, func, true, drawConditionFunc));
     }
 
     public Routine PerformAbilityCardDrawing(int cardNum)
@@ -144,7 +165,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             });
         };
 
-        var routine = Routine.Create(QuickDrawCoroutine, new DrawCoroutineProps<IAbilityCard>(Game.Decks.DrawAbilityCards, cardNum, Game.Decks.AbilityDeck, func));
+        var routine = Routine.Create(QuickDrawCoroutine, new DrawCoroutineProps<IAbilityCard>(cardNum, Game.Decks.AbilityDeck, func));
         // Game.States.EnqueueIfNotState(GameState.CharacterMoving, () => routine);
         StartCoroutine(routine);
         return routine;
@@ -166,7 +187,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             }
         };
 
-        return DoCardDraw(Game.Decks.DrawCharacterCards, cardNum, Game.Decks.CharacterDeck, func);
+        return DoCardDraw(cardNum, Game.Decks.CharacterDeck, func);
     }
 
     private Routine DoCardDraw<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
@@ -177,23 +198,24 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         return drawRoutine;
     }
 
-    private Routine DoCardDraw<TCardType>(Func<int, List<TCardType>> cardDrawFunc, int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine) where TCardType : class, ICard
+    private Routine DoCardDraw<TCardType>(int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine) where TCardType : class, ICard
     {
-        return DoCardDraw(new DrawCoroutineProps<TCardType>(cardDrawFunc, numDraws, deck, cardRoutine));
+        return DoCardDraw(new DrawCoroutineProps<TCardType>(numDraws, deck, cardRoutine));
     }
 
     private class DrawCoroutineProps<TCardType> where TCardType : class, ICard
     {
-        public DrawCoroutineProps(Func<int, List<TCardType>> cardDrawFunc, int numDraws, Deck<TCardType> deck, Func<TCardType, Routine> cardRoutine, bool allowMulligan = true)
+        public DrawCoroutineProps(int numDraws, Deck<TCardType> deck, 
+            Func<TCardType, Routine> cardRoutine, bool allowMulligan = true, Func<TCardType, bool> drawConditionFunc = null)
         {
-            CardDrawFunc = cardDrawFunc;
             NumDraws = numDraws;
             Deck = deck;
             CardRoutine = cardRoutine;
             AllowMulligan = allowMulligan;
+            DrawConditionFunc = drawConditionFunc;
         }
 
-        public Func<int, List<TCardType>> CardDrawFunc { get; set; }
+        public Func<TCardType, bool> DrawConditionFunc { get; private set; }
 
         public int NumDraws { get; private set; }
 
@@ -206,9 +228,9 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     private IEnumerator QuickDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
     {
-        List<TCardType> cards;
+        List<TCardType> cards = Game.Decks.DrawCards(props.NumDraws, props.Deck).ToList();
         var fullSize = Game.Decks.DeckBigSize;
-        cards = props.CardDrawFunc(props.NumDraws).ToList();
+
         foreach (var card in cards)
         {
             yield return SlideCardUp(card, 1.5f, 20.0f);
@@ -227,7 +249,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         List<TCardType> cards;
         while (true)
         {
-            cards = props.CardDrawFunc(props.NumDraws).ToList();
+            cards = Game.Decks.DrawCards(props.NumDraws, props.Deck, props.DrawConditionFunc).ToList();
             yield return Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), props.Deck.DeckHolder);
             if (props.AllowMulligan && Game.Player.Stats.Mulligans > 0)
             {
@@ -241,7 +263,8 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
                 {
                     break;
                 }
-                else if ((pressEvent.Activated && pressEvent.KeyPressed == MulliganKey) ||
+
+                if ((pressEvent.Activated && pressEvent.KeyPressed == MulliganKey) ||
                          (triggerEvent.Activated && triggerEvent.EventValue == UIEvent.MulliganPressed))
                 {
                     yield return MulliganCardsIntoDeck(props.Deck, cards);
