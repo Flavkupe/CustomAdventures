@@ -44,7 +44,7 @@ public class DeckManager : SingletonObject<DeckManager>
 
         // Make each deck
         CreateDeck(30, DungeonDeck, DungeonDeckHolder, allDungeonCardData);
-        CreateDeck(30, LootDeck, LootDeckHolder, allLootCardData);
+        CreateDeck(60, LootDeck, LootDeckHolder, allLootCardData);
         CreateDeck(30, CharacterDeck, CharDeckHolder, allCharCardData);
         CreateDeck(10, AbilityDeck, AbilityDeckHolder, allAbilityCardData);
     }
@@ -52,10 +52,12 @@ public class DeckManager : SingletonObject<DeckManager>
     private void CreateDeck<TCardType, TCardDataType>(int numCards, Deck<TCardType> deck, GameObject deckHolder, 
         List<TCardDataType> cardData) where TCardType : class, ICard where TCardDataType : CardData
     {
+        var distribution = new ProbabilityContainer<TCardDataType>();
+        cardData.ForEach(a => distribution.AddItem(a, a.GetRarityRating()));
         deck.DeckHolder = deckHolder;
         for (int i = 0; i < numCards; i++)
         {
-            TCardDataType data = cardData.GetRandom();
+            TCardDataType data = distribution.GetRandom();
             TCardType card = CreateCardFromData<TCardType, TCardDataType>(data);
             deck.PushCard(card);
         }

@@ -5,9 +5,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{82E2CD2E-578B-501B-8D4E-DE1C372C8E3D}</ProjectGuid>
+    <ProjectGuid>{85DB4FCF-B2E0-0FCE-DF01-47478F5749AF}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>Assembly-CSharp-Editor-firstpass</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
@@ -16,7 +16,7 @@
     </TargetFrameworkProfile>
     <CompilerResponseFile>
     </CompilerResponseFile>
-    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityProjectType>EditorPlugins:7</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.3.1f1</UnityVersion>
     <RootNamespace>
@@ -293,115 +293,62 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark01.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark01_UGUI.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark02.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark03.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark04.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\CameraController.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\ChatController.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\ObjectSpin.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\ShaderPropAnimator.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\SimpleScript.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\SkewTextExample.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TeleType.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TextConsoleSimulator.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TextMeshProFloatingText.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TextMeshSpawner.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_DigitValidator.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_ExampleScript_01.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_FrameRateCounter.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextEventCheck.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextEventHandler.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextInfoDebugTool.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextSelector_A.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextSelector_B.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_UiFrameRateCounter.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMPro_InstructionOverlay.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexColorCycler.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexJitter.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexShakeA.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexShakeB.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexZoom.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\WarpTextExample.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\AbilityCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\AttackCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\AttackCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\SelfBuffCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\SelfBuffCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\Card.cs" />
-    <Compile Include="Assets\Scripts\Cards\CardMesh.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\AbilityGainCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\AbilityGainCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\AttributeGainCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\AttributeGainCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\CharacterCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\Deck.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\DungeonCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\EnemyCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\EnemyCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\MultiEventCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\MultiEventCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\TreasureCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\TreasureCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\EarnGoldCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\EarnGoldCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\GeneralItemCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\ItemCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\ItemCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\LootCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCardData.cs" />
-    <Compile Include="Assets\Scripts\Effects\AnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffectData.cs" />
-    <Compile Include="Assets\Scripts\Effects\ProjectileAnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\ProjectileAnimationEffectData.cs" />
-    <Compile Include="Assets\Scripts\Effects\TargetedAnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\TargetedAnimationEffectData.cs" />
-    <Compile Include="Assets\Scripts\Entities\Enemy.cs" />
-    <Compile Include="Assets\Scripts\Entities\TileEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\Treasure.cs" />
-    <Compile Include="Assets\Scripts\Game.cs" />
-    <Compile Include="Assets\Scripts\Inventory\InventoryItem.cs" />
-    <Compile Include="Assets\Scripts\Managers\CardDrawManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\DebugManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\DeckManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\DungeonManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\EffectsManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\StateManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\TextManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\UIManager.cs" />
-    <Compile Include="Assets\Scripts\Misc\FloatyText.cs" />
-    <Compile Include="Assets\Scripts\MonoBehaviourEx.cs" />
-    <Compile Include="Assets\Scripts\Player.cs" />
-    <Compile Include="Assets\Scripts\Rooms\MapGen\DungeonGenerator.cs" />
-    <Compile Include="Assets\Scripts\Rooms\Room.cs" />
-    <Compile Include="Assets\Scripts\Rooms\RoomArea.cs" />
-    <Compile Include="Assets\Scripts\Rooms\RoomGrid.cs" />
-    <Compile Include="Assets\Scripts\Status\StatusEffect.cs" />
-    <Compile Include="Assets\Scripts\Tests\UtilsTest.cs" />
-    <Compile Include="Assets\Scripts\Tiles\GridTile.cs" />
-    <Compile Include="Assets\Scripts\Tiles\RuleTile.cs" />
-    <Compile Include="Assets\Scripts\Tiles\TileGrid.cs" />
-    <Compile Include="Assets\Scripts\UI\Ability\AbilityPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\Ability\AbilityPanelSlot.cs" />
-    <Compile Include="Assets\Scripts\UI\EntityPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\Inventory\InventoryItemButton.cs" />
-    <Compile Include="Assets\Scripts\UI\Inventory\InventoryPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\MulliganPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\PlayerPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\UIEventButton.cs" />
-    <Compile Include="Assets\Scripts\Utils\CooldownTimer.cs" />
-    <Compile Include="Assets\Scripts\Utils\ProbabilityContainer.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\ParallelRoutineSet.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\Routine.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\RoutineChain.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\WaitForEvents.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\WaitForSecondsSpeedable.cs" />
-    <Compile Include="Assets\Scripts\Utils\Utils.cs" />
-    <Compile Include="Assets\TestObj.cs" />
-    <Compile Include="Assets\TestThing.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\Editor\Scripts\Window\DraggablePopupWindow.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\ElementAdderMenuBuilder.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\ElementAdderMenuCommandAttribute.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\ElementAdderMeta.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\GenericElementAdderMenu.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\GenericElementAdderMenuBuilder.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\IElementAdder.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\IElementAdderMenu.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\IElementAdderMenuBuilder.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Element Adder Menu\IElementAdderMenuCommand.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\GenericListAdaptor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Internal\GUIHelper.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Internal\ReorderableListResources.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\Internal\SerializedPropertyUtility.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\IReorderableListAdaptor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\IReorderableListDropTarget.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\ReorderableListControl.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\ReorderableListEvents.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\ReorderableListFlags.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\ReorderableListGUI.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\ReorderableListStyles.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\!Core\ReorderableList\Editor\SerializedPropertyAdaptor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Helpers\RainbowFoldersEditorUtility.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Info\AssetInfo.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Colors\FolderColor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Colors\FolderColorDrawer.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Colors\FolderColorName.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Colors\FolderColorsStorage.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Colors\FolderColorsStorageEditor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\FolderIconPair.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Platforms\FolderPlatform.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Platforms\FolderPlatformDrawer.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Platforms\FolderPlatformName.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Platforms\FolderPlatformsStorage.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Platforms\FolderPlatformsStorageEditor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\RainbowFoldersBackgroundsMenu.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\RainbowFoldersContextMenu.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\RainbowFoldersIconsMenu.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Tags\FolderTag.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Tags\FolderTagDrawer.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Tags\FolderTagName.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Tags\FolderTagsStorage.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Tags\FolderTagsStorageEditor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Types\FolderType.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Types\FolderTypeDrawer.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Types\FolderTypeName.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Types\FolderTypesStorage.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Menu\Types\FolderTypesStorageEditor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Prefs\RainbowFoldersPreferences.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\RainbowFoldersBrowserIcons.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Settings\RainbowFolder.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Settings\RainbowFolderDrawer.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Settings\RainbowFoldersSettings.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Settings\RainbowFoldersSettingsEditor.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Windows\RainbowFoldersPopup.cs" />
+    <Compile Include="Assets\Plugins\RainbowAssets\RainbowFolders\Editor\Scripts\Windows\RainbowFoldersWelcome.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\ExternalAssets\25 cards\Readme.txt" />

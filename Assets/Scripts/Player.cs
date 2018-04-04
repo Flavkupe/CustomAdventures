@@ -390,7 +390,7 @@ public class PlayerInventory
 
     public List<InventoryItem> InventoryItems = new List<InventoryItem>();
 
-    public int MaxItems = 3;
+    public int MaxItems = 6;
 }
 
 public enum PlayerInteraction

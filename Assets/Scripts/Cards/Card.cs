@@ -93,8 +93,11 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
 
 public abstract class CardData : ScriptableObject
 {
-    public Rarity Rarity = Rarity.Basic;
+    public Rarity CardRarity = Rarity.Basic;
     public Sprite CardArt;
+
+    [Tooltip("Custom value of rarity for this card, with 1000 being basic, 100 unusual, 10 exceptional and 1 being master. Use 0 to use default rarity numbers.")]
+    public int CustomRarityRating = 0;
 
     public string Name;
 
@@ -107,6 +110,26 @@ public abstract class CardData : ScriptableObject
     public bool IncludeCard = true;
 
     public abstract Type BackingCardType { get; }
+
+    public int GetRarityRating()
+    {
+        if (CustomRarityRating > 0)
+        {
+            return CustomRarityRating;
+        }
+
+        switch (CardRarity)
+        {
+            case Rarity.Basic:
+                return 1000;
+            case Rarity.Unusual:
+                return 100;
+            case Rarity.Exceptional:
+                return 10;
+            default:
+                return 1;
+        }
+    }
 }
 
 public enum CardType
@@ -120,6 +143,7 @@ public enum CardType
 public enum Rarity
 {
     Basic,
-    Rare,
+    Unusual,
+    Exceptional,
     Master
 }
