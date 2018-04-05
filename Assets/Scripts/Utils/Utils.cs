@@ -334,6 +334,14 @@ public static class EnumUtils
 
         return default(T);
     }
+
+    public static void DoForeachEnumValue<T>(Action<T> action) where T : struct
+    {
+        foreach (T item in Enum.GetValues(typeof(T)))
+        {
+            action(item);
+        }
+    }
 }
 
 public class EnumFlagsAttribute : PropertyAttribute { }

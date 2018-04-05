@@ -248,104 +248,6 @@ public class Player : TileEntity
         return damage;
     }
 
-    public bool Unequip(InventoryItem item)
-    {
-        PlayerInventory inv = Stats.Inventory;
-        if (TryMoveToInventory(item, false))
-        {
-            if (item.Type == InventoryItemType.Weapon)
-            {
-                inv.EquippedWeapon = null;
-            }
-            else if (item.Type == InventoryItemType.Armor)
-            {
-                inv.EquippedArmor = null;
-            } 
-            else if (item.Type == InventoryItemType.Accessory)
-            {
-                inv.EquippedAccessory = null;
-            }
-
-            Game.UI.UpdateInventory();
-            Game.UI.UpdateUI();
-            return true;
-        }
-        
-        return false;        
-    }
-
-    public void Equip(InventoryItem item)
-    {
-        PlayerInventory inv = Stats.Inventory;
-        InventoryItem temp = null;
-        if (item.Type == InventoryItemType.Weapon)
-        {
-            temp = inv.EquippedWeapon;
-            inv.EquippedWeapon = item as InventoryItem<WeaponCardData>;
-        }
-        else if (item.Type == InventoryItemType.Armor)
-        {
-            // TODO
-            temp = inv.EquippedArmor;
-            inv.EquippedArmor = item as InventoryItem<WeaponCardData>;
-        }
-        else if (item.Type == InventoryItemType.Accessory)
-        {
-            // TODO
-            temp = inv.EquippedAccessory;
-            inv.EquippedAccessory = item as InventoryItem<WeaponCardData>; ;
-        }
-
-        if (inv.InventoryItems.Contains(item))
-        {
-            inv.InventoryItems.Remove(item);
-        }
-
-        TryMoveToInventory(temp, false);
-        Game.UI.UpdateInventory();
-        Game.UI.UpdateUI();
-    }
-
-    public bool TryMoveToInventory(InventoryItem item, bool updateUI)
-    {
-        if (item == null)
-        {
-            return false;
-        }
-
-        bool madeChanges = false;
-        PlayerInventory inv = Stats.Inventory;
-        foreach (InventoryItem current in inv.InventoryItems)
-        {
-            if (current.ItemCanStack(item))
-            {
-                current.StackItems(item);
-                madeChanges = true;
-                if (item.CurrentStackSize == 0)
-                {
-                    break;
-                }
-            }
-        }
-
-        if (item.CurrentStackSize > 0 && inv.InventoryItems.Count < inv.MaxItems)
-        {
-            madeChanges = true;
-            inv.InventoryItems.Add(item);
-            if (updateUI)
-            {
-                Game.UI.UpdateInventory();
-            }
-        }
-
-        if (madeChanges && updateUI)
-        {
-            Game.UI.UpdateInventory();
-        }
-
-        return madeChanges;
-    }
-
     public override IEnumerator TwitchTowards(Direction direction, float speed = 5.0f)
     {
         Camera.main.transform.SetParent(null);
@@ -377,20 +279,6 @@ public class PlayerStats
     public int EXP = 0;
 
     public PlayerInventory Inventory;
-}
-
-[Serializable]
-public class PlayerInventory
-{
-    public InventoryItem<WeaponCardData> EquippedWeapon;
-
-    // TODO
-    public InventoryItem<WeaponCardData> EquippedArmor;
-    public InventoryItem<WeaponCardData> EquippedAccessory;
-
-    public List<InventoryItem> InventoryItems = new List<InventoryItem>();
-
-    public int MaxItems = 6;
 }
 
 public enum PlayerInteraction

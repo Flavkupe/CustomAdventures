@@ -3,7 +3,7 @@
     public override void ExecuteLootGetEvent()
     {
         InventoryItem item = Data.BackingItem.CloneInstance();
-        if (Game.Player.TryMoveToInventory(item, true))
+        if (Game.Player.Stats.Inventory.TryMoveToInventory(item, true))
         {
             // TODO: message?
         }

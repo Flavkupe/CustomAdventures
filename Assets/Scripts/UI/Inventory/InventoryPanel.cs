@@ -9,36 +9,31 @@ public class InventoryPanel : MonoBehaviour
 
     public InventoryItemButton InventorySlotTemplate;
 
-    private InventoryItemButton weaponButton;
-
-    private InventoryItemButton armorButton;
-
-    private InventoryItemButton accessoryButton;
-
     private List<InventoryItemButton> inventoryButtons;
+    private List<InventoryItemButton> equipmentButtons;
 
     private void Awake()
     {
-        weaponButton = GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Weapon);
-        armorButton = GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Armor);
-        accessoryButton = GetComponentsInChildren<InventoryItemButton>().FirstOrDefault(a => a.Type == InventoryItemButtonType.Accessory);
+        equipmentButtons = GetComponentsInChildren<InventoryItemButton>(true).Where(a => a.Type != InventoryItemButtonType.Inventory).ToList();
         RefreshInventoryButtons();
     }
 
     private void RefreshInventoryButtons()
     {
-        inventoryButtons = GetComponentsInChildren<InventoryItemButton>().Where(a => a.Type == InventoryItemButtonType.Inventory).ToList();
+        inventoryButtons = GetComponentsInChildren<InventoryItemButton>(true).Where(a => a.Type == InventoryItemButtonType.Inventory).ToList();        
     }
 
-    // Use this for initialization
-    private void Start ()
+    public InventoryItemButton GetInventoryItemButton(InventoryItemButtonType type)
     {
-    }
+        if (type == InventoryItemButtonType.Inventory)
+        {
+            return inventoryButtons.FirstOrDefault(a => !a.IsOccupied);
+        }
 
-    // Update is called once per frame
-    private void Update ()
-    {
-	}
+        var item = equipmentButtons.FirstOrDefault(a => a.Type == type);
+        Debug.Assert(item != null, "Inventory slot not found!");
+        return item;
+    }
 
     public void UpdateInventory()
     {
@@ -56,9 +51,17 @@ public class InventoryPanel : MonoBehaviour
             RefreshInventoryButtons();
         }
 
-        weaponButton.UpdateItem(inv.EquippedWeapon);
-        armorButton.UpdateItem(inv.EquippedArmor);
-        accessoryButton.UpdateItem(inv.EquippedAccessory);
+        EnumUtils.DoForeachEnumValue<InventoryItemButtonType>(slotType =>
+        {
+            if (slotType != InventoryItemButtonType.Inventory)
+            {
+                InventoryItemType itemType = (InventoryItemType)slotType;
+                var item = inv.GetEquipmentItem(itemType);
+                var slot = GetInventoryItemButton(slotType);
+                slot.UpdateItem(item);
+            }
+        });
+       
         for (int i = 0; i < inventoryButtons.Count; ++i)
         {
             if (inv.InventoryItems.Count > i && inv.InventoryItems[i] != null)

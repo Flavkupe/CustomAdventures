@@ -11,7 +11,7 @@ public class EarnGoldCard : LootCard<EarnGoldCardData>
         InventoryItem item = Data.BackingItem.CloneInstance();
         item.CurrentStackSize = stackSize;
 
-        if (Game.Player.TryMoveToInventory(item, true))
+        if (Game.Player.Stats.Inventory.TryMoveToInventory(item, true))
         {
             // TODO: message?
         }

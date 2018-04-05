@@ -23,6 +23,8 @@ public enum LootCardType
     Gold,
     Item,
     Weapon,
+    Armor,
+    Accessory,
 }
 
 public enum LootEventType

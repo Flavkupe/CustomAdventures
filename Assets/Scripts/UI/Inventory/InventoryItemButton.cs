@@ -12,6 +12,8 @@ public class InventoryItemButton : MonoBehaviour
 
     public Image subImage;
 
+    public bool IsOccupied { get { return BackingItem != null; } }
+
     // Use this for initialization
     private void Start ()
     {
@@ -19,33 +21,24 @@ public class InventoryItemButton : MonoBehaviour
         StackCount.gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    private void Update ()
-    {
-	}
-
     public void OnButtonClicked()
     {
         if (BackingItem != null)
         {
             PlayerInventory inv = Game.Player.Stats.Inventory;
-            if (BackingItem == inv.EquippedWeapon ||
-                BackingItem == inv.EquippedArmor ||
-                BackingItem == inv.EquippedAccessory)
+            if (BackingItem.IsEquipment)
             {
-                if (Game.Player.Unequip(BackingItem))
+                if (BackingItem == inv.GetEquipmentItem(BackingItem.Type))
                 {
-                    BackingItem = null;
+                    if (Game.Player.Stats.Inventory.Unequip(BackingItem.Type))
+                    {
+                        BackingItem = null;
+                    }
                 }
-            }
-            else
-            {
-                if ((BackingItem.Type == InventoryItemType.Weapon) ||
-                    (BackingItem.Type == InventoryItemType.Armor) ||
-                    (BackingItem.Type == InventoryItemType.Accessory))
+                else
                 {
-                    Game.Player.Equip(BackingItem);
-                } 
+                    Game.Player.Stats.Inventory.Equip(BackingItem);
+                }
             }
         }
     }
@@ -84,8 +77,12 @@ public class InventoryItemButton : MonoBehaviour
 
 public enum InventoryItemButtonType
 {
-    Inventory,
-    Weapon,
-    Armor,
-    Accessory,
+    Inventory = 1,
+    Weapon = 2,
+    Armor = 3,
+    Accessory = 4,
+    Boots = 5,
+    Shield = 6,
+    Helmet = 7,
+    Ring = 8,
 }

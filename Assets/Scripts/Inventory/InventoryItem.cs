@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 public abstract class InventoryItem
 {
@@ -10,18 +11,28 @@ public abstract class InventoryItem
 
     public abstract InventoryItem CloneInstance();
 
+    public bool IsEquipment { get { return Type != InventoryItemType.Misc; } }
+
     public virtual bool ItemCanStack(InventoryItem other)
     {
-        return other.ItemData.Name == ItemData.Name;
+        return other.ItemData.Name == ItemData.Name && SpaceLeft > 0;
     }
+
+    public TDataType GetData<TDataType>() where TDataType : ItemCardData
+    {
+        Debug.Assert(this.ItemData as TDataType, "Performing wrong data cast!");
+        return this.ItemData as TDataType;
+    }
+
+    private int SpaceLeft { get { return ItemData.MaxStack - CurrentStackSize; } }
 
     /// <summary>
     /// Adds other item to stack, changing CurrentStackSize for each
     /// </summary>
     public virtual void StackItems(InventoryItem other)
     {
-        int spaceLeft = ItemData.MaxStack - CurrentStackSize;
-        int newItems = Math.Min(spaceLeft, other.CurrentStackSize);
+        
+        int newItems = Math.Min(SpaceLeft, other.CurrentStackSize);
         int leftOver = other.CurrentStackSize - newItems;
         CurrentStackSize += newItems;
         other.CurrentStackSize = leftOver;
@@ -56,8 +67,12 @@ public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : 
 
 public enum InventoryItemType
 {
-    Misc,
-    Weapon,
-    Armor,
-    Accessory,
+    Misc = 1,    
+    Weapon = 2,
+    Armor = 3,
+    Accessory = 4,
+    Boots = 5,
+    Shield = 6,
+    Helmet = 7,
+    Ring = 8,
 }
