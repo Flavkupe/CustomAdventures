@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Linq;
 using UnityEngine.Tilemaps;
+using System.Collections;
+using System.Collections.Generic;
 
 public class GridTile : MonoBehaviour, IHasCoords
 {
@@ -92,6 +94,12 @@ public class GridTile : MonoBehaviour, IHasCoords
     {
         var contents = Game.Dungeon.Grid.Get(XCoord, YCoord);
         return contents.TileObject;
+    }
+
+    public List<TileEntity> GetPassableEntities()
+    {
+        var contents = Game.Dungeon.Grid.Get(XCoord, YCoord);
+        return contents.PassableObjects;
     }
 
     public void RemoveConnector()

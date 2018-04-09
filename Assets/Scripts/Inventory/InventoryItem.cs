@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
+using UnityEngine;
 
 public abstract class InventoryItem
 {
-    public int CurrentStackSize = 1;
+    public int CurrentStackSize = 1;    
 
     public virtual InventoryItemType Type { get { return InventoryItemType.Misc; } }
 
@@ -36,6 +36,15 @@ public abstract class InventoryItem
         int leftOver = other.CurrentStackSize - newItems;
         CurrentStackSize += newItems;
         other.CurrentStackSize = leftOver;
+    }
+
+    public PassableTileItem AsPassableTileItem()
+    {
+        var obj = new GameObject(ItemData.Name);
+        var component = obj.AddComponent<PassableTileItem>();
+        component.Item = this;
+        obj.transform.localScale *= this.ItemData.ScaleOnGround;
+        return component;
     }
 }
 

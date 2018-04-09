@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 [Serializable]
 public class PlayerInventory
@@ -93,6 +94,52 @@ public class PlayerInventory
             Game.UI.UpdateInventory();
             Game.UI.UpdateUI();
             return true;
+        }
+
+        return false;
+    }
+
+    public bool DiscardItem(InventoryItem item)
+    {
+        if (item == null)
+        {
+            return false;
+        }
+
+        InventoryItems.Remove(item);
+
+        var grid = Game.Dungeon.Grid;
+        var playerX = Game.Player.XCoord;
+        var playerY = Game.Player.YCoord;
+        grid.PutPassableObject(playerX, playerY, item.AsPassableTileItem(), true);
+        Game.UI.UpdateInventory();
+        return true;
+    }
+
+    public bool TryLootItem(InventoryItem item)
+    {
+        if (item == null)
+        {
+            return false;
+        }
+
+        if (TryMoveToInventory(item, false))
+        {
+            var grid = Game.Dungeon.Grid;
+            var playerX = Game.Player.XCoord;
+            var playerY = Game.Player.YCoord;
+            var tileItems = grid.Get(playerX, playerY).PassableObjects.OfType<PassableTileItem>();
+            var tileItem = tileItems.FirstOrDefault(a => a.Item == item);
+            if (tileItem != null)
+            {
+                grid.ClearPassableTileEntity(tileItem);
+                Game.UI.UpdateInventory();
+                return true;
+            }
+            else
+            {
+                Debug.Assert(false, "Trying to loot item not in tile!");
+            }
         }
 
         return false;

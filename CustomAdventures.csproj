@@ -365,6 +365,7 @@
     <Compile Include="Assets\Scripts\Effects\TargetedAnimationEffectData.cs" />
     <Compile Include="Assets\Scripts\Entities\Enemy.cs" />
     <Compile Include="Assets\Scripts\Entities\TileEntity.cs" />
+    <Compile Include="Assets\Scripts\Entities\PassableTileItem.cs" />
     <Compile Include="Assets\Scripts\Entities\Treasure.cs" />
     <Compile Include="Assets\Scripts\Game.cs" />
     <Compile Include="Assets\Scripts\Inventory\InventoryItem.cs" />

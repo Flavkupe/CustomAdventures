@@ -18,7 +18,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     public void RemoveEnemy(Enemy enemy)
     {
         _enemies.Remove(enemy);
-        Grid.ClearTile(enemy.XCoord, enemy.YCoord);
+        Grid.ClearTileEntity(enemy.XCoord, enemy.YCoord);
     }
 
     public void AfterPlayerTurn()
@@ -189,6 +189,12 @@ public class DungeonManager : SingletonObject<DungeonManager>
             default:
                 throw new NotImplementedException();
         }
+    }
+
+    public List<PassableTileItem> GetGroundItems()
+    {
+        var entities = Grid.GetTile(Game.Player.XCoord, Game.Player.YCoord).GetPassableEntities();
+        return entities.OfType<PassableTileItem>().ToList();
     }
 }
 

@@ -1,8 +1,9 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItemButton : MonoBehaviour
+public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
 {
     public InventoryItem BackingItem;
 
@@ -14,6 +15,8 @@ public class InventoryItemButton : MonoBehaviour
 
     public bool IsOccupied { get { return BackingItem != null; } }
 
+    public bool IsEquipmentType { get { return Type != InventoryItemButtonType.Inventory && Type != InventoryItemButtonType.Ground; } }
+
     // Use this for initialization
     private void Start ()
     {
@@ -21,25 +24,49 @@ public class InventoryItemButton : MonoBehaviour
         StackCount.gameObject.SetActive(false);
     }
 
-    public void OnButtonClicked()
+    public void OnPointerClick(PointerEventData e)
     {
         if (BackingItem != null)
-        {
-            PlayerInventory inv = Game.Player.Stats.Inventory;
-            if (BackingItem.IsEquipment)
+        {            
+            if (e.button == PointerEventData.InputButton.Left)
             {
-                if (BackingItem == inv.GetEquipmentItem(BackingItem.Type))
+                LeftClickItem();
+            }
+            else if (e.button == PointerEventData.InputButton.Right)
+            {
+                RightClickItem();
+            }
+        }
+    }
+
+    private void LeftClickItem()
+    {
+        PlayerInventory inv = Game.Player.Stats.Inventory;
+        if (this.Type == InventoryItemButtonType.Ground)
+        {
+            Game.Player.Stats.Inventory.TryLootItem(BackingItem);
+        }
+        else if (BackingItem.IsEquipment)
+        {
+            if (BackingItem == inv.GetEquipmentItem(BackingItem.Type))
+            {
+                if (Game.Player.Stats.Inventory.Unequip(BackingItem.Type))
                 {
-                    if (Game.Player.Stats.Inventory.Unequip(BackingItem.Type))
-                    {
-                        BackingItem = null;
-                    }
-                }
-                else
-                {
-                    Game.Player.Stats.Inventory.Equip(BackingItem);
+                    BackingItem = null;
                 }
             }
+            else
+            {
+                Game.Player.Stats.Inventory.Equip(BackingItem);
+            }
+        }
+    }
+
+    private void RightClickItem()
+    {
+        if (this.Type == InventoryItemButtonType.Inventory)
+        {
+            Game.Player.Stats.Inventory.DiscardItem(BackingItem);
         }
     }
 
@@ -48,6 +75,7 @@ public class InventoryItemButton : MonoBehaviour
         BackingItem = null;
         subImage.sprite = null;
         subImage.gameObject.SetActive(false);
+        StackCount.gameObject.SetActive(false);
     }
 
     public void UpdateItem(InventoryItem item)
@@ -85,4 +113,6 @@ public enum InventoryItemButtonType
     Shield = 6,
     Helmet = 7,
     Ring = 8,
+
+    Ground = 9,
 }

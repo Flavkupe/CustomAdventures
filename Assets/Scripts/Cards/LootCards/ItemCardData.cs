@@ -9,6 +9,9 @@ public class ItemCardData : LootCardData
     public int Value = 0;
     public int MaxStack = 1;
 
+    [Tooltip("How scaled the object will be when dropped on ground")]
+    public float ScaleOnGround = 0.50f;
+
     public InventoryItemType ItemType = InventoryItemType.Misc;
 
     public override LootCardType LootCardType { get { return LootCardType.Item; } }

@@ -9,11 +9,15 @@ public class TileGrid : MonoBehaviour
     [Serializable]
     public class TileContents
     {
+        public List<TileEntity> _passableObjects = new List<TileEntity>();
+
         public GridTile Tile;
         public TileEntity TileObject;
+        public List<TileEntity> PassableObjects { get { return _passableObjects; } }
 
         public bool HasTile { get { return Tile != null; } }
-        public bool IsEmpty { get { return HasTile && TileObject == null; } }
+        public bool IsPassable { get { return HasTile && TileObject == null; } }
+        public bool IsEmpty { get { return HasTile && TileObject == null && _passableObjects.Count == 0; } }
     }
 
     public TileContents[,] grid;
@@ -102,10 +106,20 @@ public class TileGrid : MonoBehaviour
         return neighbors;
     }
 
-    public void ClearTile(int x, int y)
+    public void ClearTileEntity(int x, int y)
     {
         grid[x, y].TileObject = null;
         grid[x, y].Tile.IsReserved = false;
+    }
+
+    public void ClearPassableTileEntity(TileEntity entity)
+    {
+        var objects = grid[entity.XCoord, entity.YCoord].PassableObjects;
+        if (objects.Contains(entity))
+        {
+            objects.Remove(entity);
+            Destroy(entity.gameObject);
+        }
     }
 
     public void PutObject<T>(GridTile tile, T obj, bool moveObj = false) where T : TileEntity
@@ -123,6 +137,18 @@ public class TileGrid : MonoBehaviour
             GridTile tile = grid[x, y].Tile;
             obj.transform.position = tile.transform.position;
             tile.IsReserved = false;
+        }
+    }
+
+    public void PutPassableObject<T>(int x, int y, T obj, bool moveObj = false) where T : TileEntity
+    {
+        grid[x, y].PassableObjects.Add(obj);
+        obj.XCoord = x;
+        obj.YCoord = y;
+        if (moveObj)
+        {
+            GridTile tile = grid[x, y].Tile;
+            obj.transform.position = tile.transform.position;
         }
     }
 
@@ -146,7 +172,7 @@ public class TileGrid : MonoBehaviour
     {
         TileContents contents = GetAdjacent(x, y, direction);
         Debug.Assert(CanOccupyContents(contents), "Trying to occupy tile that cannot be occupied!");
-        ClearTile(x, y);
+        ClearTileEntity(x, y);
         PutObject(contents.Tile.XCoord, contents.Tile.YCoord, obj);
     }
 
@@ -251,16 +277,6 @@ public class TileGrid : MonoBehaviour
 
         return true;
     }
-
-    // Use this for initialization
-    private void Start ()
-    {		
-	}
-
-    // Update is called once per frame
-    private void Update () {
-		
-	}
 
     private bool FitsOccupancyRule(OccupancyRule rule, OccupancyRule flag)
     {

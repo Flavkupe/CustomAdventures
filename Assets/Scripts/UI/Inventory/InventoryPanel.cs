@@ -11,10 +11,12 @@ public class InventoryPanel : MonoBehaviour
 
     private List<InventoryItemButton> inventoryButtons;
     private List<InventoryItemButton> equipmentButtons;
+    private List<InventoryItemButton> groundButtons;
 
     private void Awake()
     {
-        equipmentButtons = GetComponentsInChildren<InventoryItemButton>(true).Where(a => a.Type != InventoryItemButtonType.Inventory).ToList();
+        equipmentButtons = GetComponentsInChildren<InventoryItemButton>(true).Where(a => a.IsEquipmentType).ToList();
+        groundButtons = GetComponentsInChildren<InventoryItemButton>(true).Where(a => a.Type == InventoryItemButtonType.Ground).ToList();
         RefreshInventoryButtons();
     }
 
@@ -53,7 +55,7 @@ public class InventoryPanel : MonoBehaviour
 
         EnumUtils.DoForeachEnumValue<InventoryItemButtonType>(slotType =>
         {
-            if (slotType != InventoryItemButtonType.Inventory)
+            if (slotType != InventoryItemButtonType.Inventory && slotType != InventoryItemButtonType.Ground)
             {
                 InventoryItemType itemType = (InventoryItemType)slotType;
                 var item = inv.GetEquipmentItem(itemType);
@@ -61,7 +63,7 @@ public class InventoryPanel : MonoBehaviour
                 slot.UpdateItem(item);
             }
         });
-       
+
         for (int i = 0; i < inventoryButtons.Count; ++i)
         {
             if (inv.InventoryItems.Count > i && inv.InventoryItems[i] != null)
@@ -72,6 +74,24 @@ public class InventoryPanel : MonoBehaviour
             {
                 inventoryButtons[i].ClearItem();
             }
+        }
+
+        groundButtons.ForEach(a => {
+            a.ClearItem();
+            a.gameObject.SetActive(false);
+        });
+
+        var groundItems = Game.Dungeon.GetGroundItems();
+        for (int i = 0; i < groundItems.Count; ++i)
+        {
+            if (i >= groundButtons.Count)
+            {
+                break;
+            }
+
+            var button = groundButtons[i];
+            button.gameObject.SetActive(true);
+            button.UpdateItem(groundItems[i].Item);
         }
     }
 }

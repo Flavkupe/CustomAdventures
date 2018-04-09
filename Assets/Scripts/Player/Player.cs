@@ -89,7 +89,7 @@ public class Player : TileEntity
 
     private void Update ()
     {
-        if (Game.States.IsPaused)
+        if (Game.States.IsPaused || Game.UI.IsMenuActive)
         {
             return;
         }

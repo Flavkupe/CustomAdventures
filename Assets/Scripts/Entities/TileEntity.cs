@@ -67,6 +67,12 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
         Game.States.RevertState();
     }
 
+    public virtual void RemoveFromGrid()
+    {
+        TileGrid grid = Game.Dungeon.Grid;
+        grid.ClearTileEntity(this.XCoord, this.YCoord);
+    }
+
     private void OnMouseUp()
     {
         if (Game.States.State == GameState.AwaitingSelection)
@@ -83,4 +89,5 @@ public enum TileEntityType
     Player = 1,
     Enemy = 2,
     Environment = 4,
+    Item = 8,
 }
