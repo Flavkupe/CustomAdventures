@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class InventoryPanel : MonoBehaviour
 {
     public GridLayoutGroup InventorySlots;
+    public GridLayoutGroup GroundSlots;
 
     public InventoryItemButton InventorySlotTemplate;
 
@@ -16,8 +17,13 @@ public class InventoryPanel : MonoBehaviour
     private void Awake()
     {
         equipmentButtons = GetComponentsInChildren<InventoryItemButton>(true).Where(a => a.IsEquipmentType).ToList();
-        groundButtons = GetComponentsInChildren<InventoryItemButton>(true).Where(a => a.Type == InventoryItemButtonType.Ground).ToList();
+        RefreshGroundbuttons();
         RefreshInventoryButtons();
+    }
+
+    private void RefreshGroundbuttons()
+    {
+        groundButtons = GetComponentsInChildren<InventoryItemButton>(true).Where(a => a.Type == InventoryItemButtonType.Ground).ToList();
     }
 
     private void RefreshInventoryButtons()
@@ -66,9 +72,9 @@ public class InventoryPanel : MonoBehaviour
 
         for (int i = 0; i < inventoryButtons.Count; ++i)
         {
-            if (inv.InventoryItems.Count > i && inv.InventoryItems[i] != null)
+            if (inv.InventoryItems.Count > i && inv.InventoryItems.Get(i) != null)
             {
-                inventoryButtons[i].UpdateItem(inv.InventoryItems[i]);
+                inventoryButtons[i].UpdateItem(inv.InventoryItems.Get(i));
             }
             else
             {
@@ -76,7 +82,15 @@ public class InventoryPanel : MonoBehaviour
             }
         }
 
-        groundButtons.ForEach(a => {
+        UpdateGroundItemSlots();
+    }
+
+    private void UpdateGroundItemSlots()
+    {
+        RefreshGroundbuttons();
+
+        groundButtons.ForEach(a =>
+        {
             a.ClearItem();
             a.gameObject.SetActive(false);
         });
@@ -86,12 +100,24 @@ public class InventoryPanel : MonoBehaviour
         {
             if (i >= groundButtons.Count)
             {
-                break;
+                // Create new buttons as needed
+                var newButton = Instantiate(InventorySlotTemplate);
+                newButton.transform.SetParent(GroundSlots.transform);
+                newButton.Type = InventoryItemButtonType.Ground;
+                groundButtons.Add(newButton);
             }
 
             var button = groundButtons[i];
             button.gameObject.SetActive(true);
             button.UpdateItem(groundItems[i].Item);
         }
+
+        // Destroy extra buttons
+        for (int i = groundButtons.Count - 1; i > groundItems.Count - 1; i--)
+        {
+            var button = groundButtons[i];
+            groundButtons.Remove(button);
+            Destroy(button.gameObject);    
+        }        
     }
 }

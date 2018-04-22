@@ -368,6 +368,7 @@
     <Compile Include="Assets\Scripts\Entities\PassableTileItem.cs" />
     <Compile Include="Assets\Scripts\Entities\Treasure.cs" />
     <Compile Include="Assets\Scripts\Game.cs" />
+    <Compile Include="Assets\Scripts\Inventory\Inventory.cs" />
     <Compile Include="Assets\Scripts\Inventory\InventoryItem.cs" />
     <Compile Include="Assets\Scripts\Managers\CardDrawManager.cs" />
     <Compile Include="Assets\Scripts\Managers\DebugManager.cs" />

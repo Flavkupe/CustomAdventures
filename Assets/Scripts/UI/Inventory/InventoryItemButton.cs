@@ -20,8 +20,8 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
     // Use this for initialization
     private void Start ()
     {
-        subImage.gameObject.SetActive(false);
-        StackCount.gameObject.SetActive(false);
+        // subImage.gameObject.SetActive(false);
+        // StackCount.gameObject.SetActive(false);
     }
 
     public void OnPointerClick(PointerEventData e)

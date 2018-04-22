@@ -7,12 +7,18 @@ using System.Linq;
 public class PlayerInventory
 {
     public InventoryItem<WeaponCardData> EquippedWeapon { get { return this.GetInventoryItem<WeaponCardData>(InventoryItemType.Weapon); } }
+    
+    public int MaxItems
+    {
+        get { return InventoryItems.MaxItems; }
+        set { InventoryItems.MaxItems = value; }
+    } 
 
     // TODO
     public InventoryItem<WeaponCardData> EquippedArmor;
     public InventoryItem<WeaponCardData> EquippedAccessory;
 
-    public List<InventoryItem> InventoryItems = new List<InventoryItem>();
+    public Inventory InventoryItems = new Inventory();
     public Dictionary<InventoryItemType, InventoryItem> EquipmentItems = new Dictionary<InventoryItemType, InventoryItem>();
 
     public PlayerInventory()
@@ -62,10 +68,7 @@ public class PlayerInventory
         }
         
         EquipInventoryItem(item);
-        if (InventoryItems.Contains(item))
-        {
-            InventoryItems.Remove(item);
-        }
+        InventoryItems.TryRemoveItem(item);
 
         if (current != null)
         {
@@ -106,7 +109,7 @@ public class PlayerInventory
             return false;
         }
 
-        InventoryItems.Remove(item);
+        InventoryItems.TryRemoveItem(item);
 
         var grid = Game.Dungeon.Grid;
         var playerX = Game.Player.XCoord;
@@ -159,25 +162,8 @@ public class PlayerInventory
             madeChanges = true;
         }
         else
-        {            
-            foreach (InventoryItem current in InventoryItems)
-            {
-                if (current.ItemCanStack(item))
-                {
-                    current.StackItems(item);
-                    madeChanges = true;
-                    if (item.CurrentStackSize == 0)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (item.CurrentStackSize > 0 && InventoryItems.Count < MaxItems)
-            {
-                madeChanges = true;
-                InventoryItems.Add(item);
-            }
+        {
+            madeChanges = InventoryItems.TryAddItem(item);
         }
 
         if (madeChanges && updateUI)
@@ -186,7 +172,5 @@ public class PlayerInventory
         }
 
         return madeChanges;
-    }
-
-    public int MaxItems = 6;
+    }    
 }
