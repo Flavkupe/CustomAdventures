@@ -17,7 +17,7 @@ public class Player : TileEntity
 
     public List<IAbilityCard> Abilities { get { return abilities; } }
 
-    public PlayerStats Stats;
+    public PlayerStats Stats;    
 
     private List<StatusEffect> Effects = new List<StatusEffect>();
 
@@ -25,13 +25,22 @@ public class Player : TileEntity
 
     public DungeonCardData[] EntranceCards;
 
+    private int _fullActions;
+    private int _freeMoves;
+
     // Stuff like the decks and such
     public GameObject InterfaceObjects;
 
     // Use this for initialization
     private void Awake()
     {
-        Instance = this;
+        Instance = this;        
+    }
+
+    public void InitializeCombatTurn()
+    {
+        _fullActions = Stats.FullActions;
+        _freeMoves = Stats.FreeMoves;
     }
 
     public void EquipAbility(IAbilityCard ability)
@@ -48,11 +57,17 @@ public class Player : TileEntity
         AbilityPanel.Instance.SyncSlotsWithPlayer();
     }
 
+    public void AfterAbilityUsed(IAbilityCard ability)
+    {
+        ProcessEffects(EffectDurationType.Attacks);
+        OnAfterPlayerAction(true);
+    }
+
     public void UseAbility(IAbilityCard ability)
     {
         // TODO: targetted abilities
         Debug.Assert(abilities.Contains(ability));
-        ability.ActivateAbility();        
+        ability.ActivateAbility();
     }
 
     public void ApplyEffect(StatusEffect effect)
@@ -61,14 +76,14 @@ public class Player : TileEntity
         Effects.Add(effect);
     }
 
-    public void TakeDamage(int attack)
+    public override void DoDamage(int damage)
     {
-        Stats.HP -= attack;
-        ShowFloatyText("-" + attack);
+        Stats.HP -= damage;
+        ShowFloatyText("-" + damage);
         if (Stats.HP <= 0)
         {
             Die();
-        }        
+        }
     }
 
     private void Die()
@@ -81,10 +96,6 @@ public class Player : TileEntity
     {
         effect.Expire(this);
         Effects.Remove(effect);
-    }
-
-    private void Start()
-    {
     }
 
     private void Update ()
@@ -112,6 +123,10 @@ public class Player : TileEntity
             {
                 PlayerMoveCommand(Direction.Right);
             }
+            else if (Input.GetKey(KeyCode.Space))
+            {
+                PlayerSkipTurn();
+            }
         }
 
         if (!drawingAbilities && Abilities.Count < AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
@@ -120,6 +135,13 @@ public class Player : TileEntity
             numToDraw = Mathf.Min(Game.Decks.AbilityDeck.CardCount, numToDraw);
             DrawAbilities(numToDraw);
         }
+    }
+
+    private void PlayerSkipTurn()
+    {
+        _freeMoves = 0;
+        _fullActions = 0;
+        OnAfterPlayerMove();
     }
 
     private bool drawingAbilities = false;
@@ -172,35 +194,65 @@ public class Player : TileEntity
     private void OnAfterPlayerInteract()
     {
         ProcessEffects(EffectDurationType.Steps);
-        Game.Dungeon.AfterPlayerTurn();
+        OnAfterPlayerAction(true);
     }
 
     private void OnAfterPlayerMove()
-    {
+    {        
         ProcessEffects(EffectDurationType.Steps);
+        OnAfterPlayerAction(false);
     }
 
     private void OnAfterPlayerAttack()
     {
         ProcessEffects(EffectDurationType.Attacks);
-        Game.Dungeon.AfterPlayerTurn();
+        OnAfterPlayerAction(true);
+    }
+
+    private void OnAfterPlayerAction(bool isFullAction)
+    {        
+        if (Game.Dungeon.IsCombat)
+        {
+            if (!isFullAction && _freeMoves > 0) _freeMoves--;
+            else _fullActions--;
+        }
+
+        Game.Dungeon.AfterPlayerTurn();        
     }
 
     private IEnumerator TryPlayerMove(Direction direction)
     {
-        yield return TryMove(direction);
-        OnAfterPlayerMove();
-        Game.Dungeon.AfterPlayerTurn();
+        if (Game.Dungeon.IsCombat)
+        {
+            var adjacentEnemies = Game.Dungeon.GetEntitiesNearPlayer(TileRangeType.Sides, 1, TileEntityType.Enemy);
+            yield return ActivateOpportunityAttacks(adjacentEnemies.OfType<Enemy>());
+        }
+
+        yield return TryMove(direction);        
+        OnAfterPlayerMove();        
     }
+
+    private IEnumerator ActivateOpportunityAttacks(IEnumerable<Enemy> enemies)
+    {
+        foreach (var enemy in enemies)
+        {
+            yield return enemy.AttackPlayer();
+        }
+    }
+
+    public bool PlayerCanAct { get { return !Game.Dungeon.IsCombat || _fullActions > 0; } }
+    public bool PlayerCanMove { get { return PlayerCanAct || _freeMoves > 0; } }
 
     public void PlayerMoveCommand(Direction direction)
     {
         TileGrid grid = Game.Dungeon.Grid;
-        if (CanMove(direction))
-        {            
+        if (PlayerCanMove && CanMove(direction))
+        {
+            // Set state to ensure we don't queue multiple moves
+            Game.States.SetState(GameState.CharacterMoving);
             Game.States.EnqueueCoroutine(() => TryPlayerMove(direction));
         }
-        else
+        else if (PlayerCanAct)
         {
             TileEntity obj = grid.GetAdjacentObject(XCoord, YCoord, direction);
             if (obj != null)
@@ -275,6 +327,9 @@ public class PlayerStats
     public int BaseStrength = 1;
 
     public int Mulligans = 2;
+
+    public int FullActions = 1;
+    public int FreeMoves = 1;
 
     public int EXP = 0;
 

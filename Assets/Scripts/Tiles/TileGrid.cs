@@ -9,15 +9,22 @@ public class TileGrid : MonoBehaviour
     [Serializable]
     public class TileContents
     {
-        public List<TileEntity> _passableObjects = new List<TileEntity>();
+        public TileContents()
+        {
+            _tileItems.UnlimittedItems = true;
+        }
+
+        private Inventory<PassableTileItem> _tileItems = new Inventory<PassableTileItem>();
+        private List<PassableTileEntity> _passableEntities = new List<PassableTileEntity>();
 
         public GridTile Tile;
         public TileEntity TileObject;
-        public List<TileEntity> PassableObjects { get { return _passableObjects; } }
+        public Inventory<PassableTileItem> TileItems { get { return _tileItems; } }
+        public List<PassableTileEntity> PassableEntities { get { return _passableEntities; } }
 
         public bool HasTile { get { return Tile != null; } }
         public bool IsPassable { get { return HasTile && TileObject == null; } }
-        public bool IsEmpty { get { return HasTile && TileObject == null && _passableObjects.Count == 0; } }
+        public bool IsEmpty { get { return HasTile && TileObject == null && _tileItems.Count == 0; } }
     }
 
     public TileContents[,] grid;
@@ -112,9 +119,18 @@ public class TileGrid : MonoBehaviour
         grid[x, y].Tile.IsReserved = false;
     }
 
-    public void ClearPassableTileEntity(TileEntity entity)
+    public void ClearPassableTileItem(PassableTileItem entity)
     {
-        var objects = grid[entity.XCoord, entity.YCoord].PassableObjects;
+        var objects = grid[entity.XCoord, entity.YCoord].TileItems;
+        if (objects.TryRemoveItem(entity))
+        {
+            Destroy(entity.gameObject);
+        }
+    }
+
+    public void ClearPassableTileEntitiy(PassableTileEntity entity)
+    {
+        var objects = grid[entity.XCoord, entity.YCoord].PassableEntities;
         if (objects.Contains(entity))
         {
             objects.Remove(entity);
@@ -140,15 +156,45 @@ public class TileGrid : MonoBehaviour
         }
     }
 
-    public void PutPassableObject<T>(int x, int y, T obj, bool moveObj = false) where T : TileEntity
+    public void PutPassableEntity(int x, int y, PassableTileEntity obj, bool moveObj = false)           
     {
-        grid[x, y].PassableObjects.Add(obj);
-        obj.XCoord = x;
-        obj.YCoord = y;
-        if (moveObj)
+        var objects = grid[x, y].PassableEntities;
+        if (!objects.Contains(obj))
         {
-            GridTile tile = grid[x, y].Tile;
-            obj.transform.position = tile.transform.position;
+            objects.Add(obj);
+            if (moveObj)
+            {
+                GridTile tile = grid[x, y].Tile;
+                obj.transform.position = tile.transform.position;
+            }
+        }
+    }
+
+    public void PutPassableItem<T>(int x, int y, T obj, bool moveObj = false) where T : PassableTileItem
+    {
+        if (grid[x, y].TileItems.TryAddItem(obj))
+        {
+            if (obj.StackSize > 0)
+            {
+                // Still some item left; add to tile
+                obj.XCoord = x;
+                obj.YCoord = y;
+                if (moveObj)
+                {
+                    GridTile tile = grid[x, y].Tile;
+                    obj.transform.position = tile.transform.position;
+                }
+            }
+            else
+            {
+                // Item merged into other item; destroy this tile representation
+                obj.DestroyItem();
+            }
+        }
+        else
+        {
+            // TODO: what if we cannot add the item to the tile?
+            obj.DestroyItem();
         }
     }
 
@@ -203,10 +249,22 @@ public class TileGrid : MonoBehaviour
     /// <summary>
     /// Get all entities of type filter (or all for null) within radius "range" of center point x,y.
     /// </summary>
-    public List<TileEntity> GetRadialEntities(int x, int y, int range, TileEntityType? filter = null)
+    public List<TileEntity> GetEntities(TileRangeType rangeType, int x, int y, int range, TileEntityType? filter = null)
     {
         List<TileEntity> entities = new List<TileEntity>();
-        List<TileContents> contents = GetRadialTileContents(x, y, range);
+        List<TileContents> contents = null;
+        switch (rangeType)
+        {
+            case TileRangeType.Radial:
+                contents = GetRadialTileContents(x, y, range);
+                break;
+            case TileRangeType.Sides:
+                contents = GetSideTileContents(x, y, range);
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+
         entities = contents.Where(a => a.TileObject != null).Select(b => b.TileObject).ToList();
         if (filter != null)
         {
@@ -216,7 +274,25 @@ public class TileGrid : MonoBehaviour
         return entities;
     }
 
+    public List<TileContents> GetSideTileContents(int x, int y, int range)
+    {
+        return GetTileContentsByCondition(x, y, range, (currX, currY) =>
+        {
+            // Adjacent to the sides (outwards)
+            return (x == currX || y == currY) && !(x == currX && y == currY);
+        });
+    }
+
     public List<TileContents> GetRadialTileContents(int x, int y, int range)
+    {
+        return GetTileContentsByCondition(x, y, range, (currX, currY) =>
+        {
+            // Radial around center
+            return Vector2.Distance(new Vector2(x, y), new Vector2(currX, currY)) <= (float)range;
+        });
+    }
+
+    private List<TileContents> GetTileContentsByCondition(int x, int y, int range, Func<int, int, bool> condition)
     {
         List<TileContents> tilesInArea = new List<TileContents>();
         Utils.DoFromXYToXY(x - range, y - range, x + range, y + range, (currX, currY) =>
@@ -224,8 +300,8 @@ public class TileGrid : MonoBehaviour
             if (!IsOffBounds(currX, currY))
             {
                 TileContents contents = Get(currX, currY);
-                if (contents.HasTile && Vector2.Distance(new Vector2(x, y), new Vector2(currX, currY)) <= (float)range)
-                {                   
+                if (contents.HasTile && condition(currX, currY))                
+                {
                     if (contents != null && contents.Tile != null)
                     {
                         tilesInArea.Add(contents);
@@ -295,6 +371,8 @@ public enum OccupancyRule
 
 public interface IDungeonActor
 {
+    int FreeMoves { get; set; }
+    int FullActions { get; set; }
     IEnumerator ProcessCharacterTurn();
 }
 

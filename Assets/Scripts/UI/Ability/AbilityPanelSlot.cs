@@ -60,7 +60,7 @@ public class AbilityPanelSlot : MonoBehaviour
 
     public void OnClick()
     {
-        if (ability != null)
+        if (ability != null && Game.Player.PlayerCanAct)
         {
             Game.Player.UseAbility(ability);
         }

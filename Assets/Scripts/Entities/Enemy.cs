@@ -13,43 +13,88 @@ public class Enemy : TileEntity, IDungeonActor
 
     private int HP;
 
+    public int FullActions { get; set; } 
+    public int FreeMoves { get; set; }
+
     public IEnumerator ProcessCharacterTurn()
     {
-        if (Game.Dungeon.Grid.GetNeighbors(XCoord, YCoord).Where(t => t != null && t.GetTileEntity() != null)
-                                                                    .Select(a => a.GetTileEntity()).Any(b => b == Game.Player))
-        {
-            yield return AttackPlayer();
-            yield break;
-        }
+        FullActions = Data.FullActions;
+        FreeMoves = Data.FreeMoves;
 
-        // Basic move
-        if (Game.Player.XCoord > XCoord)
+        while (FullActions > 0 || FreeMoves > 0)
         {
-            yield return TryMove(Direction.Right);
-        }
-        else if (Game.Player.XCoord < XCoord)
-        {
-            yield return TryMove(Direction.Left);
-        }
-        else if (Game.Player.YCoord > YCoord)
-        {
-            yield return TryMove(Direction.Up);
-        }
-        else if (Game.Player.YCoord < YCoord)
-        {
-            yield return TryMove(Direction.Down);
+            var performedMove = false;
+
+            // Full actions
+            if (FullActions > 0)
+            {                
+                if (Game.Dungeon.Grid.GetNeighbors(XCoord, YCoord).Where(t => t != null && t.GetTileEntity() != null)
+                                                                            .Select(a => a.GetTileEntity()).Any(b => b == Game.Player))
+                {
+                    FullActions--;
+                    performedMove = true;
+                    yield return AttackPlayer();
+                }
+            }
+
+            // Move actions
+            if (!performedMove && (FullActions > 0 || FreeMoves > 0))
+            {
+                // Basic move
+                Direction? dir = null;
+                if (Game.Player.XCoord > XCoord && CanMove(Direction.Right))
+                {
+                    dir = Direction.Right;
+                }
+                else if (Game.Player.XCoord < XCoord && CanMove(Direction.Left))
+                {
+                    dir = Direction.Left;
+                }
+                else if (Game.Player.YCoord > YCoord && CanMove(Direction.Up))
+                {
+                    dir = Direction.Up;
+                }
+                else if (Game.Player.YCoord < YCoord && CanMove(Direction.Down))
+                {
+                    dir = Direction.Down;
+                }
+
+                if (dir != null)
+                {
+                    if (FreeMoves > 0) FreeMoves--;
+                    else FullActions--;
+                    performedMove = true;
+                    yield return TryMove(dir.Value);
+                }
+            }
+
+            if (!performedMove)
+            {
+                // No moves; skip turn
+                FullActions = 0;
+                FreeMoves = 0;
+                yield break;
+            }
         }
     }
 
-    private IEnumerator AttackPlayer()
+    public IEnumerator AttackPlayer()
     {
         yield return TwitchTowards(Game.Player.transform.position);
-        Game.Player.TakeDamage(Data.Attack);
+        Game.Player.DoDamage(Data.Attack);
     }
 
     public override void DoDamage(int damage)
     {
-        TakeDamage(damage);
+        if (HP > 0)
+        {
+            HP -= damage;
+            ShowFloatyText("-" + damage.ToString());
+            if (HP <= 0)
+            {
+                Die();
+            }
+        }
     }
 
     protected override void OnClicked()
@@ -64,19 +109,6 @@ public class Enemy : TileEntity, IDungeonActor
         HP = Data.MaxHP;
         GetComponent<SpriteRenderer>().sprite = Data.Sprite;
         GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
-    }
-
-    public void TakeDamage(int damage)
-    {
-        if (HP > 0)
-        {
-            HP -= damage;
-            ShowFloatyText(damage.ToString());
-            if (HP <= 0)
-            {
-                Die();
-            }
-        }
     }
 
     private void Die()
@@ -101,6 +133,6 @@ public class Enemy : TileEntity, IDungeonActor
         var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
         yield return Game.Player.TwitchTowards(playerDirection);
         int damage = Game.Player.GetAttackStrength();
-        TakeDamage(damage);        
+        DoDamage(damage);
     }
 }

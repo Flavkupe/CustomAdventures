@@ -17,7 +17,7 @@ public class EarnGoldCard : LootCard<EarnGoldCardData>
         }
         else
         {
-            // TODO: full inventory
+            Game.Player.Stats.Inventory.DiscardItem(item, false);
         }
     }
 

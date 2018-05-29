@@ -96,10 +96,16 @@ public class GridTile : MonoBehaviour, IHasCoords
         return contents.TileObject;
     }
 
-    public List<TileEntity> GetPassableEntities()
+    public List<PassableTileEntity> GetPassableTileEntities()
     {
         var contents = Game.Dungeon.Grid.Get(XCoord, YCoord);
-        return contents.PassableObjects;
+        return contents.PassableEntities;
+    }
+
+    public Inventory<PassableTileItem> GetTileItems()
+    {
+        var contents = Game.Dungeon.Grid.Get(XCoord, YCoord);
+        return contents.TileItems;
     }
 
     public void RemoveConnector()

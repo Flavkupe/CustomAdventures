@@ -1,22 +1,15 @@
 ﻿using System;
 using UnityEngine;
 
-public abstract class InventoryItem
-{
-    public int CurrentStackSize = 1;    
-
+public abstract class InventoryItem : StackableItem
+{   
     public virtual InventoryItemType Type { get { return InventoryItemType.Misc; } }
 
     public abstract ItemCardData ItemData { get; }
 
     public abstract InventoryItem CloneInstance();
 
-    public bool IsEquipment { get { return Type != InventoryItemType.Misc; } }
-
-    public virtual bool ItemCanStack(InventoryItem other)
-    {
-        return other.ItemData.Name == ItemData.Name && SpaceLeft > 0;
-    }
+    public bool IsEquipment { get { return Type != InventoryItemType.Misc; } }   
 
     public TDataType GetData<TDataType>() where TDataType : ItemCardData
     {
@@ -24,19 +17,8 @@ public abstract class InventoryItem
         return this.ItemData as TDataType;
     }
 
-    private int SpaceLeft { get { return ItemData.MaxStack - CurrentStackSize; } }
-
-    /// <summary>
-    /// Adds other item to stack, changing CurrentStackSize for each
-    /// </summary>
-    public virtual void StackItems(InventoryItem other)
-    {
-        
-        int newItems = Math.Min(SpaceLeft, other.CurrentStackSize);
-        int leftOver = other.CurrentStackSize - newItems;
-        CurrentStackSize += newItems;
-        other.CurrentStackSize = leftOver;
-    }
+    public override string Identifier { get { return ItemData.Name; } }
+    public override int MaxStack { get { return ItemData.MaxStack; } }    
 
     public PassableTileItem AsPassableTileItem()
     {

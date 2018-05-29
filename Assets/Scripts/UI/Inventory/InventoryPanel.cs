@@ -54,6 +54,7 @@ public class InventoryPanel : MonoBehaviour
             {
                 var slot = Instantiate(InventorySlotTemplate);
                 slot.transform.SetParent(InventorySlots.transform);
+                slot.transform.localScale = new Vector3(1.0f, 1.0f);
             }
 
             RefreshInventoryButtons();
@@ -103,13 +104,14 @@ public class InventoryPanel : MonoBehaviour
                 // Create new buttons as needed
                 var newButton = Instantiate(InventorySlotTemplate);
                 newButton.transform.SetParent(GroundSlots.transform);
+                newButton.transform.localScale = new Vector3(1.0f, 1.0f);
                 newButton.Type = InventoryItemButtonType.Ground;
                 groundButtons.Add(newButton);
             }
 
             var button = groundButtons[i];
             button.gameObject.SetActive(true);
-            button.UpdateItem(groundItems[i].Item);
+            button.UpdateItem(groundItems.Get(i).Item);
         }
 
         // Destroy extra buttons

@@ -15,14 +15,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
 
     public bool IsOccupied { get { return BackingItem != null; } }
 
-    public bool IsEquipmentType { get { return Type != InventoryItemButtonType.Inventory && Type != InventoryItemButtonType.Ground; } }
-
-    // Use this for initialization
-    private void Start ()
-    {
-        // subImage.gameObject.SetActive(false);
-        // StackCount.gameObject.SetActive(false);
-    }
+    public bool IsEquipmentType { get { return Type != InventoryItemButtonType.Inventory && Type != InventoryItemButtonType.Ground; } }    
 
     public void OnPointerClick(PointerEventData e)
     {

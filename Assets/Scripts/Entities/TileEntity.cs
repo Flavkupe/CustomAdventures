@@ -64,7 +64,17 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
         grid.MoveTo(XCoord, YCoord, direction, this);
         GridTile newTile = grid.GetTile(XCoord, YCoord);
         yield return transform.MoveToSpotCoroutine(newTile.transform.position, TileSlideSpeed, false);
+
+        yield return AfterMove(newTile);
         Game.States.RevertState();
+    }
+
+    public IEnumerator AfterMove(GridTile newTile)
+    {
+        foreach (var passable in newTile.GetPassableTileEntities())
+        {
+            yield return passable.ProcessEntitySteppedOver(this);
+        }
     }
 
     public virtual void RemoveFromGrid()
@@ -90,4 +100,5 @@ public enum TileEntityType
     Enemy = 2,
     Environment = 4,
     Item = 8,
+    Trap = 16,
 }

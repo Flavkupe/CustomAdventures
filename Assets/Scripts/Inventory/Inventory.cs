@@ -4,15 +4,28 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class Inventory
+public class Inventory<T> where T : class, IStackable
 {
-    private List<InventoryItem> _items = new List<InventoryItem>();
+    public Inventory() { }
 
+    public Inventory(IEnumerable<T> items)
+    {
+        _items.AddRange(items);
+    }
+
+    private List<T> _items = new List<T>();
+
+    public bool UnlimittedItems = false;
     public int MaxItems = 6;
 
-    public bool TryRemoveItem(InventoryItem item)
+    public bool Contains(T item)
     {
-        if (_items.Contains(item))
+        return _items.Contains(item);
+    }
+
+    public bool TryRemoveItem(T item)
+    {
+        if (Contains(item))
         {
             _items.Remove(item);
             return true;
@@ -21,23 +34,23 @@ public class Inventory
         return false;
     }
 
-    public bool TryAddItem(InventoryItem item)
+    public bool TryAddItem(T item)
     {
         bool madeChanges = false;
-        foreach (InventoryItem current in _items)
+        foreach (T current in _items)
         {
             if (current.ItemCanStack(item))
             {
                 current.StackItems(item);
                 madeChanges = true;
-                if (item.CurrentStackSize == 0)
+                if (item.StackSize == 0)
                 {
                     break;
                 }
             }
         }
 
-        if (item.CurrentStackSize > 0 && _items.Count < MaxItems)
+        if (item.StackSize > 0 && (UnlimittedItems || _items.Count < MaxItems))
         {
             madeChanges = true;
             _items.Add(item);
@@ -48,7 +61,12 @@ public class Inventory
 
     public int Count { get { return _items.Count; } }
 
-    public InventoryItem Get(int index)
+    public T GetFirstOrDefault(Func<T, bool> condition)
+    {
+        return _items.FirstOrDefault(condition);
+    }
+
+    public T Get(int index)
     {        
         if (index < 0 || index >= _items.Count)
         {

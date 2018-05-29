@@ -11,14 +11,34 @@ public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCa
         return Data as TDataType;
     }
 
+    public int GetNumberOfExecutions()
+    {
+        if (Data.EffectRepeatMinTimes == 0 || Data.EffectRepeatMaxTimes == 0 ||
+            Data.EffectRepeatMinTimes >= Data.EffectRepeatMaxTimes)
+        {
+            return 1;
+        }
+        else
+        {
+            int repeats = Random.Range(Data.EffectRepeatMinTimes, Data.EffectRepeatMaxTimes + 1);
+            return repeats + 1;
+        }
+    }
+
     public DungeonEventType DungeonEventType { get { return Data.DungeonEventType; } }
+
+    public virtual bool RequiresFullTile { get { return true; } }
 }
 
 public interface IDungeonCard : ICard
 {
     DungeonEventType DungeonEventType { get; }
 
+    bool RequiresFullTile { get; }
+
     void ExecuteTileSpawnEvent(GridTile tile);
+
+    int GetNumberOfExecutions();
 
     TDataType GetData<TDataType>() where TDataType : DungeonCardData;
 }
@@ -45,4 +65,10 @@ public abstract class DungeonCardData : CardData
 {
     public abstract DungeonCardType DungeonCardType { get; }
     public DungeonEventType DungeonEventType;
+
+    [Tooltip("If more than 1, will repeat at least that many times, bounded by EffectRepeatMaxTimes")]
+    public int EffectRepeatMinTimes = 0;
+
+    [Tooltip("Upper bound for EffectRepeatMinTimes")]
+    public int EffectRepeatMaxTimes = 0;
 }

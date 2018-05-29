@@ -28,8 +28,7 @@ public class AttackCard : AbilityCard<AttackCardData>
         cardUseRoutine.Then(damageRoutine);
         cardUseRoutine.Then(() => 
         {
-            AfterCardUsed();
-            Game.Dungeon.AfterPlayerTurn();
+            AfterCardUsed();            
         });
 
         cardUseRoutine.Finally(() => 

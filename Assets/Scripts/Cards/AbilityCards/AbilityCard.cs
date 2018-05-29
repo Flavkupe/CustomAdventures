@@ -22,6 +22,7 @@ public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCa
 
     protected void AfterCardUsed()
     {
+        Game.Player.AfterAbilityUsed(this);
         if (ForgetOnUse)
         {
             Game.Player.ForgetAbility(this);

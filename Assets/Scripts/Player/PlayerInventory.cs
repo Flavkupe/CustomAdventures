@@ -18,7 +18,7 @@ public class PlayerInventory
     public InventoryItem<WeaponCardData> EquippedArmor;
     public InventoryItem<WeaponCardData> EquippedAccessory;
 
-    public Inventory InventoryItems = new Inventory();
+    public Inventory<InventoryItem> InventoryItems = new Inventory<InventoryItem>();
     public Dictionary<InventoryItemType, InventoryItem> EquipmentItems = new Dictionary<InventoryItemType, InventoryItem>();
 
     public PlayerInventory()
@@ -102,19 +102,22 @@ public class PlayerInventory
         return false;
     }
 
-    public bool DiscardItem(InventoryItem item)
+    public bool DiscardItem(InventoryItem item, bool fromInventory = true)
     {
         if (item == null)
         {
             return false;
         }
 
-        InventoryItems.TryRemoveItem(item);
+        if (fromInventory)
+        {
+            InventoryItems.TryRemoveItem(item);
+        }
 
         var grid = Game.Dungeon.Grid;
         var playerX = Game.Player.XCoord;
         var playerY = Game.Player.YCoord;
-        grid.PutPassableObject(playerX, playerY, item.AsPassableTileItem(), true);
+        grid.PutPassableItem(playerX, playerY, item.AsPassableTileItem(), true);
         Game.UI.UpdateInventory();
         return true;
     }
@@ -131,11 +134,11 @@ public class PlayerInventory
             var grid = Game.Dungeon.Grid;
             var playerX = Game.Player.XCoord;
             var playerY = Game.Player.YCoord;
-            var tileItems = grid.Get(playerX, playerY).PassableObjects.OfType<PassableTileItem>();
-            var tileItem = tileItems.FirstOrDefault(a => a.Item == item);
+            var tileItems = grid.Get(playerX, playerY).TileItems;
+            var tileItem = tileItems.GetFirstOrDefault(a => a.Item == item);
             if (tileItem != null)
             {
-                grid.ClearPassableTileEntity(tileItem);
+                grid.ClearPassableTileItem(tileItem);
                 Game.UI.UpdateInventory();
                 return true;
             }

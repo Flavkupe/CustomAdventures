@@ -21,14 +21,17 @@ public class DungeonManager : SingletonObject<DungeonManager>
         Grid.ClearTileEntity(enemy.XCoord, enemy.YCoord);
     }
 
+    public bool IsCombat { get { return _enemies.Count > 0; } }
+
     public void AfterPlayerTurn()
     {
-        if (_enemies.Count > 0)
+        if (IsCombat && !Game.Player.PlayerCanMove)
         {
-            Game.States.SetState(GameState.EnemyTurn);
+            Game.States.SetState(GameState.EnemyTurn);            
             RoutineChain enemyTurns = new RoutineChain(_enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
             enemyTurns.Then(() =>
             {
+                Game.Player.InitializeCombatTurn();
                 Game.States.SetState(GameState.AwaitingCommand);
             });
 
@@ -103,41 +106,64 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     public void PerformSpawnEvent(RoomArea roomArea, IDungeonCard card) 
     {
-        TileGrid grid = Grid;
-        GridTile tile = null;
-        if (card.DungeonEventType == DungeonEventType.SpawnNear)
-        {
-            List<GridTile> tiles = roomArea.GetAreaTiles();
-            tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();
-        }
-        else if (card.DungeonEventType == DungeonEventType.SpawnOnCorner)
-        {
-            List<GridTile> tiles = roomArea.GetCornerTiles();
-            tile = tiles.GetRandom();
-        }
-        else if (card.DungeonEventType == DungeonEventType.SpawnOnWideOpen)
-        {
-            List<GridTile> tiles = roomArea.GetWideOpenTiles();
-            tile = tiles.GetRandom();
+        int numTimes = card.GetNumberOfExecutions();   
 
-            if (tile == null)
+        bool wasCombatActive = IsCombat;
+        TileGrid grid = Grid;
+
+        for (int i = 0; i < numTimes; i++)
+        {
+            GridTile tile = null;
+            if (card.DungeonEventType == DungeonEventType.SpawnNear)
             {
-                // Fall back to corner tiles
-                tiles = roomArea.GetCornerTiles();
+                List<GridTile> tiles = roomArea.GetAreaTiles();
+                tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();
+            }
+            else if (card.DungeonEventType == DungeonEventType.SpawnOnCorner)
+            {
+                List<GridTile> tiles = roomArea.GetCornerTiles();
                 tile = tiles.GetRandom();
+            }
+            else if (card.DungeonEventType == DungeonEventType.SpawnOnWideOpen)
+            {
+                List<GridTile> tiles = roomArea.GetWideOpenTiles();
+                tile = tiles.GetRandom();
+
+                if (tile == null)
+                {
+                    // Fall back to corner tiles
+                    tiles = roomArea.GetCornerTiles();
+                    tile = tiles.GetRandom();
+                }
+            }
+
+            if (tile != null)
+            {                
+                if (card.RequiresFullTile)
+                {
+                    // TODO: I don't think the IsReserved system is needed....
+                    tile.IsReserved = true;
+                }
+
+                card.ExecuteTileSpawnEvent(tile);
+            }
+            else
+            {
+                // TODO: no tile chosen? What do?
             }
         }
 
-        if (tile != null)
+        if (!wasCombatActive && IsCombat)
         {
-            tile.IsReserved = true;
-            card.ExecuteTileSpawnEvent(tile);
-            card.DestroyCard();
+            InitializeCombat();
         }
-        else
-        {
-            // TODO: no tile chosen? What do?
-        }
+
+        card.DestroyCard();
+    }
+
+    private void InitializeCombat()
+    {
+        Game.Player.InitializeCombatTurn();
     }
 
     public void SpawnEnemy(Enemy enemy, GridTile tile)
@@ -150,6 +176,11 @@ public class DungeonManager : SingletonObject<DungeonManager>
     {
         Grid.PutObject(tile, treasure, true);
     }
+
+    public void SpawnTrap(TileTrap trap, GridTile tile)
+    {
+        Grid.PutPassableEntity(tile.XCoord, tile.YCoord, trap, true);
+    }    
 
     [UsedImplicitly]
     private void Awake()
@@ -176,6 +207,8 @@ public class DungeonManager : SingletonObject<DungeonManager>
         {
             case TileRangeType.Radial:
                 return Grid.GetRadialTileContents(Game.Player.XCoord, Game.Player.YCoord, range).Select(a => a.Tile).ToList();
+            case TileRangeType.Sides:
+                return Grid.GetSideTileContents(Game.Player.XCoord, Game.Player.YCoord, range).Select(a => a.Tile).ToList();
             default:
                 throw new NotImplementedException();
         }
@@ -183,18 +216,13 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
     public List<TileEntity> GetEntitiesNearPlayer(TileRangeType rangeType, int range, TileEntityType? filter = null)
     {
-        switch (rangeType) {
-            case TileRangeType.Radial:
-                return Grid.GetRadialEntities(Game.Player.XCoord, Game.Player.YCoord, range, filter);
-            default:
-                throw new NotImplementedException();
-        }
+        return Grid.GetEntities(rangeType, Game.Player.XCoord, Game.Player.YCoord, range, filter);        
     }
 
-    public List<PassableTileItem> GetGroundItems()
+    public Inventory<PassableTileItem> GetGroundItems()
     {
-        var entities = Grid.GetTile(Game.Player.XCoord, Game.Player.YCoord).GetPassableEntities();
-        return entities.OfType<PassableTileItem>().ToList();
+        var entities = Grid.GetTile(Game.Player.XCoord, Game.Player.YCoord).GetTileItems();
+        return entities;
     }
 }
 
