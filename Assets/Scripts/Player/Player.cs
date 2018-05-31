@@ -206,6 +206,11 @@ public class Player : TileEntity
     private void OnAfterPlayerAttack()
     {
         ProcessEffects(EffectDurationType.Attacks);
+        if (Stats.Inventory.IsSlotOccupied(InventoryItemType.Weapon))
+        {
+            Stats.Inventory.EquippedWeapon.ItemUsed();
+        }
+
         OnAfterPlayerAction(true);
     }
 
@@ -314,6 +319,15 @@ public class Player : TileEntity
     {
         // TODO: other classes
         return EntranceCards;
+    }
+
+    public void DestroyItem(InventoryItem item)
+    {
+        Stats.Inventory.DestroyInventoryItem(item);
+        if (item.ItemData.ItemType == InventoryItemType.Weapon)
+        {
+            ShowFloatyText("Weapon broke!", Color.white, 5);
+        }
     }
 }
 

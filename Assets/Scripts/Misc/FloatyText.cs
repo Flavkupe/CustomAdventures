@@ -5,9 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(TextMeshPro))]
 public class FloatyText : MonoBehaviour
 {
+    private TextMeshPro _tmp;
     private float _speed;
     public void Init(Vector3 startingPlace, string text, float duration = 0.5f, float speed = 1.0f)
     {
+        _tmp = GetComponent<TextMeshPro>();
         _speed = speed;
         Destroy(gameObject, duration);
         transform.position = startingPlace;
@@ -16,9 +18,18 @@ public class FloatyText : MonoBehaviour
 
     public void SetText(string text)
     {
-        GetComponent<TextMeshPro>().text = text;
+        _tmp.text = text;
     }
 
+    public void SetColor(Color color)
+    {
+        _tmp.color = color;
+    }
+
+    public void SetSize(float size)
+    {
+        _tmp.fontSize = size;
+    }
 
     [UsedImplicitly]
 

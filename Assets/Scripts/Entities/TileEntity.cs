@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using UnityEngine;
 
 public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 {
@@ -12,10 +13,20 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 
     public abstract TileEntityType EntityType { get; }
 
-    public void ShowFloatyText(string text)
+    public void ShowFloatyText(string text, Color? color = null, float? size = null)
     {
         FloatyText damageText = Instantiate(TextManager.Instance.DamageTextTemplate);
         damageText.Init(transform.position, text);
+
+        if (color != null)
+        {
+            damageText.SetColor(color.Value);
+        }
+
+        if (size != null)
+        {
+            damageText.SetSize(size.Value);
+        }
     }
 
     protected virtual void OnClicked()

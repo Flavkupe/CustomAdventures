@@ -7,7 +7,14 @@ public abstract class InventoryItem : StackableItem
 
     public abstract ItemCardData ItemData { get; }
 
-    public abstract InventoryItem CloneInstance();
+    public abstract InventoryItem CreateClone();
+
+    public virtual bool ShowDurability { get { return false; } }
+
+    public virtual float DurabilityRatio
+    {
+        get { return 1.0f; }
+    }
 
     public bool IsEquipment { get { return Type != InventoryItemType.Misc; } }   
 
@@ -28,6 +35,13 @@ public abstract class InventoryItem : StackableItem
         obj.transform.localScale *= this.ItemData.ScaleOnGround;
         return component;
     }
+
+    /// <summary>
+    /// Such as using consumable or attacking with weapon
+    /// </summary>
+    public virtual void ItemUsed()
+    {
+    }
 }
 
 public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : ItemCardData
@@ -44,7 +58,7 @@ public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : 
         _data = data;
     }
 
-    public override InventoryItem CloneInstance()
+    public override InventoryItem CreateClone()
     {
         return new InventoryItem<TCardDataType>(_data);
     }

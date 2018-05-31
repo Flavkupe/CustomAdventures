@@ -13,6 +13,8 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
 
     public Image subImage;
 
+    public Image DurabilitySlider;
+
     public bool IsOccupied { get { return BackingItem != null; } }
 
     public bool IsEquipmentType { get { return Type != InventoryItemButtonType.Inventory && Type != InventoryItemButtonType.Ground; } }    
@@ -69,6 +71,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
         subImage.sprite = null;
         subImage.gameObject.SetActive(false);
         StackCount.gameObject.SetActive(false);
+        DurabilitySlider.gameObject.SetActive(false);
     }
 
     public void UpdateItem(InventoryItem item)
@@ -87,6 +90,13 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
             else
             {
                 StackCount.gameObject.SetActive(false);
+            }
+
+            DurabilitySlider.gameObject.SetActive(false);
+            if (item.ShowDurability)
+            {
+                DurabilitySlider.gameObject.SetActive(true);
+                DurabilitySlider.transform.localScale = new Vector3(item.DurabilityRatio, 1.0f, 1.0f);
             }
         }        
         else

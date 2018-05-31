@@ -8,7 +8,7 @@ public class EarnGoldCard : LootCard<EarnGoldCardData>
 
     public override void ExecuteLootGetEvent()
     {
-        InventoryItem item = Data.BackingItem.CloneInstance();
+        InventoryItem item = Data.BackingItem.CreateClone();
         item.CurrentStackSize = stackSize;
 
         if (Game.Player.Stats.Inventory.TryMoveToInventory(item, true))

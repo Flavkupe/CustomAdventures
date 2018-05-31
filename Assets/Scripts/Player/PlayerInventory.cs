@@ -102,6 +102,25 @@ public class PlayerInventory
         return false;
     }
 
+    public void DestroyInventoryItem(InventoryItem item)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        if (!InventoryItems.TryRemoveItem(item))
+        {
+            if (EquipmentItems.ContainsKey(item.Type) && EquipmentItems[item.Type] == item)
+            {
+                UnequipInventoryItem(item.Type);
+            }
+        }
+
+        Game.UI.UpdateInventory();
+        Game.UI.UpdateUI();
+    }
+
     public bool DiscardItem(InventoryItem item, bool fromInventory = true)
     {
         if (item == null)
