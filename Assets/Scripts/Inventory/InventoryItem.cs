@@ -42,6 +42,11 @@ public abstract class InventoryItem : StackableItem
     public virtual void ItemUsed()
     {
     }
+
+    public virtual int DefenseValue
+    {
+        get { return 0; }
+    }
 }
 
 public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : ItemCardData

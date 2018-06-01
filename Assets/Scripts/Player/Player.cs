@@ -78,11 +78,32 @@ public class Player : TileEntity
 
     public override void DoDamage(int damage)
     {
-        Stats.HP -= damage;
-        ShowFloatyText("-" + damage);
-        if (Stats.HP <= 0)
+        var defensiveItems = Stats.Inventory.GetDefensiveItems();
+        defensiveItems.Shuffle(); // randomize order for mitigation order
+
+        foreach (var item in defensiveItems)
         {
-            Die();
+            damage -= item.DefenseValue;
+            item.ItemUsed();
+            if (damage <= 0)
+            {
+                damage = 0;
+                break;
+            }
+        }
+
+        if (damage > 0)
+        {
+            Stats.HP -= damage;
+            ShowFloatyText("-" + damage);
+            if (Stats.HP <= 0)
+            {
+                Die();
+            }
+        }
+        else
+        {
+            ShowFloatyText("Blocked!", Color.white, 4.0f);
         }
     }
 
@@ -327,6 +348,10 @@ public class Player : TileEntity
         if (item.ItemData.ItemType == InventoryItemType.Weapon)
         {
             ShowFloatyText("Weapon broke!", Color.white, 5);
+        }
+        else if (item.DefenseValue > 0)
+        {
+            ShowFloatyText("Armor broke!", Color.white, 5);
         }
     }
 }

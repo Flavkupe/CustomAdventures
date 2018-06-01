@@ -59,22 +59,22 @@ public class PlayerInventory
         return EquipmentItems.ContainsKey(type) ? EquipmentItems[type] : null;
     }
 
+    public List<InventoryItem> GetDefensiveItems()
+    {
+        return EquipmentItems.Values.Where(a => a != null && a.DefenseValue > 0).ToList();
+    }
+
     public void Equip(InventoryItem item)
     {
-        InventoryItem current = null;
+        InventoryItems.TryRemoveItem(item);
         if (IsSlotOccupied(item.Type))
         {
-            current = GetEquipmentItem(item.Type);            
+            var current = GetEquipmentItem(item.Type);
+            TryMoveToInventory(current, false);
         }
         
         EquipInventoryItem(item);
-        InventoryItems.TryRemoveItem(item);
-
-        if (current != null)
-        {
-            TryMoveToInventory(item, false);
-        }
-
+        
         Game.UI.UpdateInventory();
         Game.UI.UpdateUI();
     }
