@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Item/Armor Card", order = 1)]
-public class ArmorCardData : ItemCardData
+public class ArmorCardData : EquippableItemCardData
 {
     public int Blocking = 1;
     public int Durability = 5;

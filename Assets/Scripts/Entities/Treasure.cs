@@ -4,9 +4,12 @@ using JetBrains.Annotations;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(SoundGenerator))]
 public class Treasure : TileEntity
 {
     public TreasureCardData Data { get; set; }
+
+    private SoundGenerator _soundGen;
 
     public override TileEntityType EntityType
     {
@@ -29,6 +32,7 @@ public class Treasure : TileEntity
     {
         GetComponent<SpriteRenderer>().sprite = Data.Sprite;
         GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
+        _soundGen = GetComponent<SoundGenerator>();
     }
 
     public override bool PlayerCanInteractWith()
@@ -52,6 +56,7 @@ public class Treasure : TileEntity
             this.Data.LootTypes.ToList().ForEach(a => filter.PossibleTypes.Add(a));
         }
 
+        _soundGen.PlayRandomFrom(Data.OpenSounds);
         Game.CardDraw.PerformLootCardDrawing(this.Data.NumTreasures, filter);
         _canInteractWith = false;
         Destroy(gameObject, 1.0f);

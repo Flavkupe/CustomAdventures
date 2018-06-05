@@ -5,7 +5,8 @@ using UnityEngine;
 public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectData>
 {
     protected override IEnumerator RunEffectParallel()
-    {       
+    {
+        OnBeforeExecute();
         float duration = Data.Duration;
         foreach (var particle in Data.Particles)
         {
@@ -25,6 +26,7 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
 
     protected override IEnumerator RunEffectSequence()
     {
+        OnBeforeExecute();
         // TODO: duration-based
         Debug.Assert(Data.DurationType != AnimationEffectDurationType.FixedDuration, "FixedDuration not supported here");        
 

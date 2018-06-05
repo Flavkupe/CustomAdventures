@@ -34,5 +34,15 @@ public class Weapon : InventoryItem<WeaponCardData>
     {
         get { return true; }
     }
+
+    public override void ItemEquipped()
+    {
+        Game.Sounds.PlayFromClips(Data.EquipSounds, Game.Sounds.DefaultItemPickupSounds.GetRandom());
+    }
+
+    public override void ItemBroken()
+    {
+        Game.Sounds.PlayFromClips(Data.BreakSounds);
+    }
 }
 

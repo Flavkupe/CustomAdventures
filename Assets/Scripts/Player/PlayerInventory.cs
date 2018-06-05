@@ -14,10 +14,6 @@ public class PlayerInventory
         set { InventoryItems.MaxItems = value; }
     } 
 
-    // TODO
-    public InventoryItem<WeaponCardData> EquippedArmor;
-    public InventoryItem<WeaponCardData> EquippedAccessory;
-
     public Inventory<InventoryItem> InventoryItems = new Inventory<InventoryItem>();
     public Dictionary<InventoryItemType, InventoryItem> EquipmentItems = new Dictionary<InventoryItemType, InventoryItem>();
 

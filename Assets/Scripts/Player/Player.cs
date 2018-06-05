@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine.SceneManagement;
 
 public class Player : TileEntity
@@ -25,8 +26,15 @@ public class Player : TileEntity
 
     public DungeonCardData[] EntranceCards;
 
+    private SoundGenerator _soundGen;
+
     private int _fullActions;
     private int _freeMoves;
+
+    // Sounds
+    public AudioClip[] DamagedSounds;
+    public AudioClip[] UnarmedHitSounds;
+    public AudioClip LevelupSound;
 
     // Stuff like the decks and such
     public GameObject InterfaceObjects;
@@ -34,7 +42,8 @@ public class Player : TileEntity
     // Use this for initialization
     private void Awake()
     {
-        Instance = this;        
+        Instance = this;
+        _soundGen = GetComponent<SoundGenerator>();
     }
 
     public void InitializeCombatTurn()
@@ -85,6 +94,7 @@ public class Player : TileEntity
         {
             damage -= item.DefenseValue;
             item.ItemUsed();
+
             if (damage <= 0)
             {
                 damage = 0;
@@ -99,6 +109,10 @@ public class Player : TileEntity
             if (Stats.HP <= 0)
             {
                 Die();
+            }
+            else
+            {
+                _soundGen.PlayRandomFrom(DamagedSounds);
             }
         }
         else
@@ -195,6 +209,7 @@ public class Player : TileEntity
                .Then(() => Game.CardDraw.PerformCharacterCardDrawing(2))
                .Then(() => Game.UI.UpdateUI());
         Game.States.EnqueueIfNotState(GameState.CharacterMoving, routine);
+        _soundGen.PlayClip(LevelupSound);
     }
 
     private void ProcessEffects(EffectDurationType actionTaken)
@@ -239,8 +254,15 @@ public class Player : TileEntity
     {        
         if (Game.Dungeon.IsCombat)
         {
-            if (!isFullAction && _freeMoves > 0) _freeMoves--;
-            else _fullActions--;
+            if (!isFullAction && _freeMoves > 0)
+            {
+                _freeMoves--;
+            }
+            else
+            {
+                _fullActions--;
+                _freeMoves = 0;
+            }
         }
 
         Game.Dungeon.AfterPlayerTurn();        
@@ -305,6 +327,7 @@ public class Player : TileEntity
         
         if (interaction == PlayerInteraction.Attack)
         {
+            MakeAttackSound();
             routine.Then(() => OnAfterPlayerAttack());
         }
         else if (interaction == PlayerInteraction.InteractWithObject)
@@ -313,6 +336,21 @@ public class Player : TileEntity
         }
         
         Game.States.EnqueueCoroutine(routine);
+    }
+
+    private void MakeAttackSound()
+    {
+        var weapon = Stats.Inventory.EquippedWeapon;
+        if (weapon != null)
+        {
+            if (weapon.Data.HitSounds.Length > 0)
+            {
+                _soundGen.PlayRandomFrom(weapon.Data.HitSounds);
+                return;
+            }
+        }
+
+        _soundGen.PlayRandomFrom(UnarmedHitSounds);
     }
 
     public int GetAttackStrength()
@@ -336,6 +374,16 @@ public class Player : TileEntity
         
     }
 
+    public void PlayClip(AudioClip clip)
+    {
+        _soundGen.PlayClip(clip);
+    }
+
+    public void PlaySounds(IEnumerable<AudioClip> clips, AudioClip defaultClip = null)
+    {
+        _soundGen.PlayRandomFrom(clips, defaultClip);
+    }
+
     public DungeonCardData[] GetEntranceCards()
     {
         // TODO: other classes
@@ -347,10 +395,12 @@ public class Player : TileEntity
         Stats.Inventory.DestroyInventoryItem(item);
         if (item.ItemData.ItemType == InventoryItemType.Weapon)
         {
+            item.ItemBroken();
             ShowFloatyText("Weapon broke!", Color.white, 5);
         }
         else if (item.DefenseValue > 0)
         {
+            item.ItemBroken();
             ShowFloatyText("Armor broke!", Color.white, 5);
         }
     }

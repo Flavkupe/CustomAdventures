@@ -17,4 +17,13 @@ public class ItemCardData : LootCardData
     public override LootCardType LootCardType { get { return LootCardType.Item; } }
 
     public override Type BackingCardType { get { return typeof(GeneralItemCard); } }
+
+    public AudioClip CustomPickupSound;
+    public AudioClip CustomDropSound;
+}
+
+public class EquippableItemCardData : ItemCardData
+{
+    public AudioClip[] EquipSounds;
+    public AudioClip[] BreakSounds;
 }

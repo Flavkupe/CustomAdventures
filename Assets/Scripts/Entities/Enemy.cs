@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
+[RequireComponent(typeof(SoundGenerator))]
 public class Enemy : TileEntity, IDungeonActor
 {
     public EnemyCardData Data { get; set; }
@@ -12,6 +13,8 @@ public class Enemy : TileEntity, IDungeonActor
     public override TileEntityType EntityType { get { return TileEntityType.Enemy; } }
 
     private int HP;
+
+    private SoundGenerator _soundGen;
 
     public int FullActions { get; set; } 
     public int FreeMoves { get; set; }
@@ -92,7 +95,12 @@ public class Enemy : TileEntity, IDungeonActor
             ShowFloatyText("-" + damage.ToString());
             if (HP <= 0)
             {
+                _soundGen.PlayRandomFrom(Data.DeathSounds);
                 Die();
+            }
+            else
+            {
+                _soundGen.PlayRandomFrom(Data.DamagedSounds);
             }
         }
     }
@@ -109,13 +117,16 @@ public class Enemy : TileEntity, IDungeonActor
         HP = Data.MaxHP;
         GetComponent<SpriteRenderer>().sprite = Data.Sprite;
         GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
+        _soundGen = GetComponent<SoundGenerator>();
+        GetComponent<BoxCollider2D>().size = new Vector3(1.0f, 1.0f);
     }
 
     private void Die()
     {
         Game.Dungeon.RemoveEnemy(this);
-        Destroy(gameObject, 0.5f);
         Game.Player.GainXP(Data.EXP);
+        GetComponent<SpriteRenderer>().enabled = false;
+        Destroy(gameObject, 1.0f);
     }
 
     public override bool PlayerCanInteractWith()

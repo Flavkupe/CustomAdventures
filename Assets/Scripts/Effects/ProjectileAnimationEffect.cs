@@ -33,6 +33,7 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
 
     private IEnumerator Execute(IRoutineSet emptyRoutineSet)
     {
+        OnBeforeExecute();
         transform.position = Source;
         IRoutineSet routines = GenerateRoutines(emptyRoutineSet);
         StartCoroutine(routines);

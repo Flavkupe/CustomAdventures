@@ -22,6 +22,10 @@ public class Armor : InventoryItem<ArmorCardData>
         {
             Game.Player.DestroyItem(this);
         }
+        else
+        {
+            Game.Sounds.PlayFromClips(Data.BreakSounds);
+        }
     }
 
     public override float DurabilityRatio
@@ -40,5 +44,15 @@ public class Armor : InventoryItem<ArmorCardData>
         {
             return Data.Blocking;
         }
+    }
+
+    public override void ItemEquipped()
+    {
+        Game.Sounds.PlayFromClips(Data.EquipSounds, Game.Sounds.DefaultItemPickupSounds.GetRandom());
+    }
+
+    public override void ItemBroken()
+    {
+        Game.Sounds.PlayFromClips(Data.BreakSounds);
     }
 }

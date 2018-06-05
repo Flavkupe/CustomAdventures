@@ -30,6 +30,8 @@ public class DeckManager : SingletonObject<DeckManager>
 
     public float CardMoveSpeed = 15.0f;
 
+    public AudioClip[] DrawSounds;
+
     private List<TCardDataType> LoadCards<TCardDataType>(string path) where TCardDataType : CardData
     {
         return Resources.LoadAll<TCardDataType>(path).Where(a => a.IncludeCard).ToList();
@@ -149,12 +151,14 @@ public class DeckManager : SingletonObject<DeckManager>
         yield return MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed);
 
         ParallelRoutineSet routineSet = new ParallelRoutineSet();
-            
+
         foreach (ICard card in cards)
         {
             targetX += 3.0f;
             routineSet.AddRoutine(Routine.Create(AnimateIndividualCardDraw, card, targetX));
         }
+
+        Game.Sounds.PlayFromClips(DrawSounds);
 
         yield return routineSet;
 

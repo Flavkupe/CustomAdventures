@@ -5,10 +5,11 @@
         InventoryItem item = Data.BackingItem.CreateClone();
         if (Game.Player.Stats.Inventory.TryMoveToInventory(item, true))
         {
-            // TODO: message?
+            item.ItemLooted();
         }
         else
         {
+            item.ItemDropped();
             Game.Player.Stats.Inventory.DiscardItem(item, false);
         }
     }

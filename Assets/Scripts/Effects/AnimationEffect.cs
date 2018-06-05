@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(SoundGenerator))]
 public abstract class AnimationEffect : MonoBehaviourEx
 {
     public abstract Routine Execute();
@@ -58,6 +59,14 @@ public abstract class AnimationEffect<TDataType> : AnimationEffect where TDataTy
         Debug.Assert(data is TDataType, "Data must be of type " + typeof(TDataType));
         Data = data as TDataType;
     }
+
+    protected virtual void OnBeforeExecute()
+    {
+        if (Data.InitSound != null)
+        {
+            GetComponent<SoundGenerator>().PlayClip(Data.InitSound);
+        }
+    }
 }
 
 public abstract class AnimationEffectData : ScriptableObject
@@ -75,6 +84,8 @@ public abstract class AnimationEffectData : ScriptableObject
     public AnimationEffectSequenceType SequenceType;
 
     public AnimationEffectDurationType DurationType;
+
+    public AudioClip InitSound;
 }
 
 public enum AnimationEffectSequenceType

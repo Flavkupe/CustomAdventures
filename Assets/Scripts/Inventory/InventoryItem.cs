@@ -47,6 +47,22 @@ public abstract class InventoryItem : StackableItem
     {
         get { return 0; }
     }
+
+    public virtual void ItemEquipped()
+    {
+    }
+
+    public virtual void ItemLooted()
+    {
+    }
+
+    public virtual void ItemDropped()
+    {
+    }
+
+    public virtual void ItemBroken()
+    {
+    }
 }
 
 public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : ItemCardData
@@ -73,6 +89,30 @@ public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : 
     public TCardDataType Data { get { return _data; } }
 
     public override ItemCardData ItemData { get { return _data; } }
+
+    public override void ItemLooted()
+    {
+        if (Data.CustomPickupSound != null)
+        {
+            Game.Sounds.PlayClip(Data.CustomPickupSound);
+        }
+        else
+        {
+            Game.Sounds.PlayFromClips(Game.Sounds.DefaultItemPickupSounds);
+        }
+    }
+
+    public override void ItemDropped()
+    {
+        if (Data.CustomDropSound != null)
+        {
+            Game.Sounds.PlayClip(Data.CustomDropSound);
+        }
+        else
+        {
+            Game.Sounds.PlayFromClips(Game.Sounds.DefaultItemDropSounds);
+        }
+    }
 }
 
 public enum InventoryItemType

@@ -12,6 +12,8 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     public string TakeKey = " ";
     public string MulliganKey = "q";
 
+    public AudioClip MulliganSound;
+
     [UsedImplicitly]
     private void Awake()
     {
@@ -290,6 +292,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     private IEnumerator MulliganCardsIntoDeck<TCardType>(Deck<TCardType> deck, List<TCardType> cards) where TCardType : class, ICard
     {
+        Game.Sounds.PlayClip(MulliganSound);
         Game.Player.Stats.Mulligans--;
         ParallelRoutineSet routines = new ParallelRoutineSet();
         foreach (var card in cards)

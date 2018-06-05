@@ -14,4 +14,6 @@ public class TreasureCardData : DungeonCardData
 
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Treasure; } }
     public override Type BackingCardType { get { return typeof(TreasureCard); } }
+
+    public AudioClip[] OpenSounds;
 }

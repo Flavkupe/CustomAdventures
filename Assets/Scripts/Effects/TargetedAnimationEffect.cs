@@ -9,6 +9,7 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
 
     protected override IEnumerator RunEffectParallel()
     {
+        OnBeforeExecute();
         ParallelRoutineSet routines = new ParallelRoutineSet();
         foreach (var data in Data.SubEffects)
         {
@@ -24,6 +25,7 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
 
     protected override IEnumerator RunEffectSequence()
     {
+        OnBeforeExecute();
         foreach (var data in Data.SubEffects)
         {
             var effect = Game.Effects.GenerateAnimationEffect(data);

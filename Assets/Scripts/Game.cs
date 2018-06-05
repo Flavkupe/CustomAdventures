@@ -17,5 +17,7 @@ public static class Game
     public static EffectsManager Effects { get { return EffectsManager.Instance; } }
 
     public static DebugManager Debug { get { return DebugManager.Instance; } }
+
+    public static SoundManager Sounds {get { return SoundManager.Instance; } }
 }
 
