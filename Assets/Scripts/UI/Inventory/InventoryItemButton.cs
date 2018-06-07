@@ -57,7 +57,6 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
             }
             else
             {
-                item.ItemEquipped();
                 Game.Player.Stats.Inventory.Equip(BackingItem);
             }
         }

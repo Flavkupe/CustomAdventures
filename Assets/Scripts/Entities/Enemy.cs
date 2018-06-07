@@ -3,7 +3,6 @@ using UnityEngine;
 using System.Linq;
 using JetBrains.Annotations;
 
-[RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(SoundGenerator))]
 public class Enemy : TileEntity, IDungeonActor
@@ -92,7 +91,7 @@ public class Enemy : TileEntity, IDungeonActor
         if (HP > 0)
         {
             HP -= damage;
-            ShowFloatyText("-" + damage.ToString());
+            ShowFloatyText("-" + damage.ToString(), null, FloatyTextSize.Small);
             if (HP <= 0)
             {
                 _soundGen.PlayRandomFrom(Data.DeathSounds);
@@ -100,6 +99,7 @@ public class Enemy : TileEntity, IDungeonActor
             }
             else
             {
+                BlinkColor(Color.red);
                 _soundGen.PlayRandomFrom(Data.DamagedSounds);
             }
         }

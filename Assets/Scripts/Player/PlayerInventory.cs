@@ -70,7 +70,8 @@ public class PlayerInventory
         }
         
         EquipInventoryItem(item);
-        
+        item.ItemEquipped();
+
         Game.UI.UpdateInventory();
         Game.UI.UpdateUI();
     }
@@ -90,6 +91,7 @@ public class PlayerInventory
         if (TryMoveToInventory(item, false))
         {
             UnequipInventoryItem(item.Type);
+            item.ItemUnequipped();
             Game.UI.UpdateInventory();
             Game.UI.UpdateUI();
             return true;

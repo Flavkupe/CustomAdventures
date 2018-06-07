@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+[RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(FloatyTextGenerator))]
 public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 {
@@ -14,7 +16,9 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 
     public abstract TileEntityType EntityType { get; }
 
-    public void ShowFloatyText(string text, Color? color = null, float? size = null)
+    private bool _blinking = false;
+
+    public void ShowFloatyText(string text, Color? color = null, FloatyTextSize? size = null)
     {
         var generator = GetComponent<FloatyTextGenerator>();
         generator.ShowFloatyText(text, color, size);
@@ -46,6 +50,42 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
     public virtual IEnumerator PlayerInteractWith()
     {
         yield return null;
+    }
+
+    public virtual void BlinkColor(Color color, float blinkSpeed = 20.0f)
+    {
+        if (!_blinking)
+        {
+            StartCoroutine(BlinkColorCoroutine(color, blinkSpeed));
+        }
+    }
+
+    private IEnumerator BlinkColorCoroutine(Color targetColor, float blinkSpeed)
+    {
+        if (_blinking)
+        {
+            yield break;
+        }
+
+        _blinking = true;
+        var sprite = GetComponent<SpriteRenderer>();
+        var startingColor = sprite.color;
+        var t = 0.0f;
+        while (t < 1.0f)
+        {
+            t += blinkSpeed * Time.deltaTime;
+            sprite.color = Color.Lerp(startingColor, targetColor, t);
+            yield return null;
+        }
+
+        while (t > 0.0f)
+        {
+            t -= blinkSpeed * Time.deltaTime;
+            sprite.color = Color.Lerp(startingColor, targetColor, t);
+            yield return null;
+        }
+
+        _blinking = false;
     }
 
     public bool CanMove(Direction direction)

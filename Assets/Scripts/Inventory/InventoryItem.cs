@@ -52,6 +52,10 @@ public abstract class InventoryItem : StackableItem
     {
     }
 
+    public virtual void ItemUnequipped()
+    {
+    }
+
     public virtual void ItemLooted()
     {
     }

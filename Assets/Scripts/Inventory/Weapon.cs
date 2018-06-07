@@ -38,11 +38,18 @@ public class Weapon : InventoryItem<WeaponCardData>
     public override void ItemEquipped()
     {
         Game.Sounds.PlayFromClips(Data.EquipSounds, Game.Sounds.DefaultItemPickupSounds.GetRandom());
+        Game.Player.SetAnimatedWeapon(Data.AnimatedObject);
+    }
+
+    public override void ItemUnequipped()
+    {
+        Game.Player.SetAnimatedWeapon(null);
     }
 
     public override void ItemBroken()
     {
         Game.Sounds.PlayFromClips(Data.BreakSounds);
+        Game.Player.SetAnimatedWeapon(null);
     }
 }
 

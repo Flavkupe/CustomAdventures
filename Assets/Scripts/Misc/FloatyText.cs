@@ -3,6 +3,13 @@ using System;
 using TMPro;
 using UnityEngine;
 
+public enum FloatyTextSize
+{
+    Small,
+    Medium,
+    Large,
+}
+
 [RequireComponent(typeof(TextMeshPro))]
 public class FloatyText : MonoBehaviour
 {
@@ -58,6 +65,22 @@ public class FloatyText : MonoBehaviour
     public void SetSize(float size)
     {
         _tmp.fontSize = size;
+    }
+
+    public void SetSize(FloatyTextSize size)
+    {
+        SetSize(FloatyTextSizeToFloat(size));
+    }
+
+    public static float FloatyTextSizeToFloat(FloatyTextSize size)
+    {
+        switch (size)
+        {
+            case FloatyTextSize.Small: return 5.0f;
+            case FloatyTextSize.Medium: return 6.0f;
+            case FloatyTextSize.Large: return 8.0f;
+            default: return 1.0f;
+        }
     }
 
     [UsedImplicitly]

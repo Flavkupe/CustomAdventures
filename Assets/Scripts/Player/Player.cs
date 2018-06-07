@@ -16,6 +16,8 @@ public class Player : TileEntity
 
     public static Player Instance { get { return instance; } private set { instance = value; } }
 
+    private AnimatedEquipment _animatedWeapon = null;
+
     public List<IAbilityCard> Abilities { get { return abilities; } }
 
     public PlayerStats Stats;    
@@ -27,6 +29,8 @@ public class Player : TileEntity
     public DungeonCardData[] EntranceCards;
 
     private SoundGenerator _soundGen;
+
+    private Direction _facingDirection = Direction.Right;
 
     private int _fullActions;
     private int _freeMoves;
@@ -105,19 +109,20 @@ public class Player : TileEntity
         if (damage > 0)
         {
             Stats.HP -= damage;
-            ShowFloatyText("-" + damage);
+            ShowFloatyText("-" + damage, null, FloatyTextSize.Small);
             if (Stats.HP <= 0)
             {
                 Die();
             }
             else
             {
+                BlinkColor(Color.red);
                 _soundGen.PlayRandomFrom(DamagedSounds);
             }
         }
         else
         {
-            ShowFloatyText("Blocked!", Color.white, 4.0f);
+            ShowFloatyText("Blocked!", Color.white, FloatyTextSize.Medium);
         }
     }
 
@@ -191,21 +196,20 @@ public class Player : TileEntity
 
     public void GainXP(int exp)
     {
-        ShowFloatyText(exp.ToString() + " XP");
+        ShowFloatyText(exp.ToString() + " XP", Color.white, FloatyTextSize.Medium);
         Stats.EXP += exp;
 
         if ((Stats.EXP / 10) + 1 > Stats.Level)
         {
             LevelUp();
         }
-        
     }
 
     public void LevelUp()
     {
         Stats.Level++;
         Routine routine = Routine.Create(() => Routine.WaitForSeconds(0.5f));
-        routine.Then(() => ShowFloatyText("LEVEL UP!"))
+        routine.Then(() => ShowFloatyText("LEVEL UP!", Color.yellow, FloatyTextSize.Large))
                .Then(() => Game.CardDraw.PerformCharacterCardDrawing(2))
                .Then(() => Game.UI.UpdateUI());
         Game.States.EnqueueIfNotState(GameState.CharacterMoving, routine);
@@ -293,6 +297,11 @@ public class Player : TileEntity
 
     public void PlayerMoveCommand(Direction direction)
     {
+        if (direction == Direction.Left || direction == Direction.Right)
+        {
+            FaceDirection(direction);
+        }
+
         TileGrid grid = Game.Dungeon.Grid;
         if (PlayerCanMove && CanMove(direction))
         {
@@ -327,7 +336,7 @@ public class Player : TileEntity
         
         if (interaction == PlayerInteraction.Attack)
         {
-            MakeAttackSound();
+            PlayAttackEffects();
             routine.Then(() => OnAfterPlayerAttack());
         }
         else if (interaction == PlayerInteraction.InteractWithObject)
@@ -338,11 +347,16 @@ public class Player : TileEntity
         Game.States.EnqueueCoroutine(routine);
     }
 
-    private void MakeAttackSound()
+    private void PlayAttackEffects()
     {
         var weapon = Stats.Inventory.EquippedWeapon;
         if (weapon != null)
         {
+            if (_animatedWeapon != null)
+            {
+                _animatedWeapon.AnimateOnce();
+            }
+
             if (weapon.Data.HitSounds.Length > 0)
             {
                 _soundGen.PlayRandomFrom(weapon.Data.HitSounds);
@@ -371,7 +385,6 @@ public class Player : TileEntity
         yield return base.TwitchTowards(direction, speed);
         InterfaceObjects.transform.SetParent(transform);
         Camera.main.transform.SetParent(transform);
-        
     }
 
     public void PlayClip(AudioClip clip)
@@ -396,12 +409,46 @@ public class Player : TileEntity
         if (item.ItemData.ItemType == InventoryItemType.Weapon)
         {
             item.ItemBroken();
-            ShowFloatyText("Weapon broke!", Color.white, 5);
+            ShowFloatyText("Weapon broke!", Color.white, FloatyTextSize.Medium);
         }
         else if (item.DefenseValue > 0)
         {
             item.ItemBroken();
-            ShowFloatyText("Armor broke!", Color.white, 5);
+            ShowFloatyText("Armor broke!", Color.white, FloatyTextSize.Medium);
+        }
+    }
+
+    public void SetAnimatedWeapon(AnimatedEquipment equipment)
+    {
+        if (_animatedWeapon == equipment)
+        {
+            return;
+        }
+
+        if (_animatedWeapon != null)
+        {
+            Destroy(_animatedWeapon.gameObject);
+        }
+
+        if (equipment == null)
+        {
+            _animatedWeapon = null;
+            return;
+        }
+
+        _animatedWeapon = Instantiate(equipment);
+        _animatedWeapon.transform.SetParent(this.transform);
+        _animatedWeapon.transform.localPosition = new Vector3();
+        _animatedWeapon.FaceDirection(_facingDirection);
+    }
+
+    private void FaceDirection(Direction direction)
+    {
+        GetComponent<SpriteRenderer>().flipX = direction == Direction.Left;
+        _facingDirection = direction;
+        if (_animatedWeapon != null)
+        {
+            _animatedWeapon.FaceDirection(direction);
         }
     }
 }
