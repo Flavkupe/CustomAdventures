@@ -196,6 +196,8 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     {
         Game.States.IsPaused = true;
         Routine drawRoutine = Routine.Create(InternalDrawCoroutine, props);
+
+        // This is where the routine is executed!
         Game.States.EnqueueIfNotState(GameState.CharacterMoving, () => drawRoutine);
         return drawRoutine;
     }
@@ -315,6 +317,6 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             routineChain.AddRoutine(cardRoutine(card));
         }
 
-        yield return StartCoroutine(routineChain.AsRoutine());
+        yield return routineChain.AsRoutine();
     }
 }

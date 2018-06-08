@@ -2,9 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class ParallelRoutineSet : IEnumerator, IRoutineSet
 {
+    public static Func<IEnumerator, Coroutine> CoroutineRunner = null;
+
+    private Func<IEnumerator, Coroutine> Runner
+    {
+        get { return CoroutineRunner ?? Game.States.StartCoroutine; }
+    }
+
     private HashSet<Routine> _routines = new HashSet<Routine>();
     private IEnumerator _func = null;
     private int _running = 0;
@@ -58,12 +66,11 @@ public class ParallelRoutineSet : IEnumerator, IRoutineSet
         _running = _routines.Count;
         foreach (var routine in _routines)
         {
-            // TODO: this replaces the current finally!!
             routine.Finally(() => {
                 _running--;
             });
 
-            Game.States.StartCoroutine(routine);
+            Runner(routine);
         }
 
         while (_running > 0)

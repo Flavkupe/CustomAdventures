@@ -19,7 +19,7 @@ public class StateManager : SingletonObject<StateManager>
     private readonly Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>> _onTriggeredEventCoroutineQueues = new Dictionary<TriggeredEvent, Queue<Func<IEnumerator>>>();
     private readonly Dictionary<TriggeredEvent, Queue<Action>> _onTriggeredEventActionQueues = new Dictionary<TriggeredEvent, Queue<Action>>();
 
-    private readonly Queue<Func<IEnumerator>> _coroutineQueue = new Queue<Func<IEnumerator>>();
+    private readonly Queue<Func<Routine>> _routineQueue = new Queue<Func<Routine>>();
 
     public HashSet<Routine> CoroutineTraces = new HashSet<Routine>();
 
@@ -37,7 +37,7 @@ public class StateManager : SingletonObject<StateManager>
 
     public void EnqueueRoutine(Routine routine)
     {
-        _coroutineQueue.Enqueue(() => routine);
+        _routineQueue.Enqueue(() => routine);
     }
 
     public void EnqueueCoroutine(IEnumerator enumerator)
@@ -47,7 +47,12 @@ public class StateManager : SingletonObject<StateManager>
 
     public void EnqueueCoroutine(Func<IEnumerator> action)
     {
-        _coroutineQueue.Enqueue(action);
+        _routineQueue.Enqueue(() => Routine.Create(action));
+    }
+
+    public void EnqueueCoroutine(Func<Routine> action)
+    {
+        _routineQueue.Enqueue(action);
     }
 
     public void EnqueueIfNotState(GameState afterStateChangedFrom, Routine routine)
@@ -179,10 +184,9 @@ public class StateManager : SingletonObject<StateManager>
     /// </summary>
     private IEnumerator InvokeNextQueuedCoroutine()
     {
-        if (_coroutineQueue.Count > 0)
+        if (_routineQueue.Count > 0)
         {
-            // TODO: How to handle thrown exceptions from action?
-            Func<IEnumerator> action = _coroutineQueue.Dequeue();                       
+            Func<Routine> action = _routineQueue.Dequeue();
             _processingCoroutine = true;
             yield return action();
             _processingCoroutine = false;
@@ -220,9 +224,9 @@ public class StateManager : SingletonObject<StateManager>
     [UsedImplicitly]
     private void Update ()
     {
-        if (!_processingCoroutine && _coroutineQueue.Count > 0)
+        if (!_processingCoroutine && _routineQueue.Count > 0)
         {
-            StartCoroutine(InvokeNextQueuedCoroutine());
+            StartRoutine(InvokeNextQueuedCoroutine());
         }
 	}
 

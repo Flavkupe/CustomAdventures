@@ -4,7 +4,7 @@ using System.Linq;
 using JetBrains.Annotations;
 
 [RequireComponent(typeof(BoxCollider2D))]
-public class RoomArea : MonoBehaviour
+public class RoomArea : MonoBehaviourEx
 {
     private Room parentRoom;
     private BoxCollider2D col;
@@ -45,9 +45,14 @@ public class RoomArea : MonoBehaviour
         {
             if (OnPlayerEnter == OnPlayerEnterEvents.DungeonEvents)
             {
-                Game.CardDraw.PerformDungeonEvents(this);
+                this.DoDungeonEvents();
             }
         }
+    }
+
+    private void DoDungeonEvents()
+    {
+        Game.CardDraw.PerformDungeonEvents(this);
     }
 
     public List<GridTile> GetAreaTiles()

@@ -69,13 +69,23 @@ public class MonoBehaviourEx : MonoBehaviour
         return newObj;
     }
 
-    // Use this for initialization
-    private void Start ()
-    {		
-	}
+    protected void StartRoutine(IEnumerator routine)
+    {
+        StartRoutine(Routine.Create(routine));
+    }
 
-    // Update is called once per frame
-    private void Update () {
-		
-	}
+    protected void StartRoutine(Routine routine)
+    {
+        if (routine == null)
+        {
+            return;
+        }
+
+        routine.Catch(OnRoutineException);
+        StartCoroutine(routine);
+    }
+
+    protected virtual void OnRoutineException(Exception ex)
+    {
+    }
 }

@@ -20,6 +20,16 @@ public class Routine : IEnumerator
     private Routine _next = null;
     private IEnumerator _current = null;
 
+    /// <summary>
+    /// Behavior that happens if an exception is thrown
+    /// </summary>
+    private List<Action<Exception>> _catch = new List<Action<Exception>>();
+
+    public List<Action<Exception>> CatchHandlers
+    {
+        get { return _catch; }
+    }
+
     private List<Action> _reject = new List<Action>();
 
     protected bool _rejected = false;
@@ -62,7 +72,8 @@ public class Routine : IEnumerator
     {
         get
         {
-            return _current ?? (_next != null ? _next.Current : null);
+            IEnumerator enumerator = _current ?? (_next != null ? (IEnumerator)_next.Current : null);
+            return RunSafe(enumerator);
         }
     }
 
@@ -74,68 +85,177 @@ public class Routine : IEnumerator
         }
 
         return _func();
-    }
+    } 
 
     public bool MoveNext()
     {
-        if (_rejected)
+        try
         {
-            foreach (var doReject in _reject)
+            if (_rejected)
             {
-                doReject();
+                foreach (var doReject in _reject)
+                {
+                    doReject();
+                }
+
+                foreach (var doFinally in _finally)
+                {
+                    doFinally();
+                }
+
+                return false;
+            }
+
+            if (!_executed)
+            {
+                _executed = true;
+                _current = Execute();
+                if (_current != null)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                _current = null;
+            }
+
+            if (_next != null)
+            {
+                if (_next._catch.Count == 0)
+                {
+                    // Inherit catch block if not overriden.
+                    _next._catch = _catch;
+                }
+
+                if (_next.MoveNext())
+                {
+                    return true;
+                }
+            }
+
+            foreach (var doCompleted in _completed)
+            {
+                doCompleted();
             }
 
             foreach (var doFinally in _finally)
             {
-                doFinally();
+                try
+                {
+                    // try/catch the finally individually to avoid running finallies
+                    // twice if exceptions are thrown
+                    doFinally();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex);
+                }
+            }
+
+            if (Game.States.DebugEnabled)
+            {
+                try
+                {
+                    Game.States.CoroutineTraces.Remove(this);
+                }
+                catch
+                {
+                    // do nothing if this fails
+                }
             }
 
             return false;
         }
-
-        if (!_executed)
+        catch (Exception ex)
         {
-            _executed = true;
-            _current = Execute();
-            if (_current != null)
-            {
-                return true;
-            }
+            HandleException(ex);
+            return false;
         }
-        else
-        {
-            _current = null;
-        }
-
-        if (_next != null)
-        {
-            if (_next.MoveNext())
-            {
-                return true;
-            }
-        }
-
-        foreach (var doCompleted in _completed)
-        {
-            doCompleted();
-        }
-
-        foreach (var doFinally in _finally)
-        {
-            doFinally();
-        }
-
-        if (Game.States.DebugEnabled)
-        {
-            Game.States.CoroutineTraces.Remove(this);
-        }
-
-        return false;
     }
 
     public void Reset()
     {
         // TODO
+    }
+
+    private void HandleException(Exception ex)
+    {
+        // Catch any exceptions and run the finally blocks
+        Log.Error("Caught exception in Routine!");
+        Log.Error(ex);
+        foreach (var doFinally in _finally)
+        {
+            try
+            {
+                doFinally();
+            }
+            catch (Exception ex2)
+            {
+                Log.Error(ex2);
+            }
+        }
+
+        foreach (var doCatch in _catch)
+        {
+            try
+            {
+                doCatch(ex);
+            }
+            catch (Exception ex2)
+            {
+                Log.Error(ex2);
+            }
+        }
+    }
+
+    private IEnumerator RunSafe(IEnumerator enumerator)
+    {
+        if (enumerator == null)
+        {
+            yield break;
+        }
+
+        while (true)
+        {
+            object current;
+            try
+            {
+                if (enumerator.MoveNext() == false)
+                {
+                    break;
+                }
+
+                current = enumerator.Current;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                yield break;
+            }
+
+            yield return current;
+        }
+    }
+
+    public IEnumerator RunSafe()
+    {
+        yield return RunSafe(this);
+    }
+
+    public IEnumerator RunSafe(Routine routine)
+    {
+        IEnumerator enumerator = routine.Execute();
+        yield return RunSafe(enumerator);
+    }
+
+    /// <summary>
+    /// For when an exception is thrown from within
+    /// </summary>
+    public Routine Catch(Action<Exception> action)
+    {
+        _catch.Add(action);
+        return this;
     }
 
     public void OnReject(Action action)
@@ -221,6 +341,11 @@ public class Routine : IEnumerator
     public static Routine CreateAction<T>(Action<T> action, T arg1)
     {
         return Routine.Create(() => DoActionQuick(action, arg1));
+    }
+
+    public static Routine Create(IEnumerator coroutine)
+    {
+        return Create(() => coroutine);
     }
 
     public static Routine Create(Func<IEnumerator> func)
@@ -386,3 +511,18 @@ public class CancellableRoutine<T1, T2> : Routine<Action, T1, T2>
         _arg1 = CancellationCallback;
     }
 }
+
+public static class RoutineExtensionFunctions
+{
+    public static Routine ToRoutine(this IEnumerator enumerator)
+    {
+        if (enumerator == null)
+        {
+            Log.Warning("Converting empty routine!");
+            return Routine.Empty;
+        }
+
+        return Routine.Create(enumerator);
+    }
+}
+

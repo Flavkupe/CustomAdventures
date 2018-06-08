@@ -123,6 +123,13 @@ public class Enemy : TileEntity, IDungeonActor
 
     private void Die()
     {
+        if (Data.DeathEffect != null)
+        {
+            var effect = Game.Effects.GenerateAnimationEffect(Data.DeathEffect);
+            effect.transform.position = this.transform.position;
+            effect.Execute();
+        }
+
         Game.Dungeon.RemoveEnemy(this);
         Game.Player.GainXP(Data.EXP);
         GetComponent<SpriteRenderer>().enabled = false;

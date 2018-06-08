@@ -20,6 +20,8 @@ public class EnemyCardData : DungeonCardData
     public AudioClip[] DamagedSounds;
     public AudioClip[] DeathSounds;
 
+    public AnimationEffectData DeathEffect;
+
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Enemy; } }
 
     public override Type BackingCardType { get { return typeof(EnemyCard); } }
