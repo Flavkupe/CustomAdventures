@@ -22,6 +22,9 @@ public class EnemyCardData : DungeonCardData
 
     public AnimationEffectData DeathEffect;
 
+    [Tooltip("List of possible sprites to leave on death, such as skeletons or blood.")]
+    public Sprite[] LeaveOnDeath;
+
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Enemy; } }
 
     public override Type BackingCardType { get { return typeof(EnemyCard); } }

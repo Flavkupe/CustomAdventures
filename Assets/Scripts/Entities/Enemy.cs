@@ -130,6 +130,14 @@ public class Enemy : TileEntity, IDungeonActor
             effect.Execute();
         }
 
+        if (Data.LeaveOnDeath.Length > 0)
+        {
+            var deathSprite = Data.LeaveOnDeath.GetRandom();
+            var remains = InstantiateOfType<DecorativeTileEntity>(this.name + "_remains");
+            remains.SetSprite(deathSprite);
+            Game.Dungeon.Grid.PutPassableEntity(this.XCoord, this.YCoord, remains, true);
+        }
+
         Game.Dungeon.RemoveEnemy(this);
         Game.Player.GainXP(Data.EXP);
         GetComponent<SpriteRenderer>().enabled = false;
