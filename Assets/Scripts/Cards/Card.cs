@@ -8,6 +8,11 @@ public interface ICard
     CardMesh CardMesh { get; set; }
     void SetData(CardData data);
     void DestroyCard();
+
+    /// <summary>
+    /// Toggle whether or not the card mesh is hidden
+    /// </summary>
+    void ToggleHideCard(bool hide);
     MonoBehaviourEx Object { get; }
 
     void SetFaceUp();
@@ -72,6 +77,14 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
             CardMesh.SetCardArt(Data.CardArt);
             CardMesh.SetCardName(Data.Name);
             CardMesh.SetCardText(this.GetCardText());
+        }
+    }
+
+    public virtual void ToggleHideCard(bool hide)
+    {
+        if (CardMesh != null)
+        {
+            CardMesh.gameObject.SetActive(!hide);
         }
     }
 

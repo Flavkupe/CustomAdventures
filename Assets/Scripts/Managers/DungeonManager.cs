@@ -9,6 +9,9 @@ public class DungeonManager : SingletonObject<DungeonManager>
 {
     public DungeonCardData[] PossibleBossCards;
 
+    public AnimationEffectData CardTriggerEffect;
+    public TargetedAnimationEffectData CardMoveToEffect;
+
     public GridTile GenericTileTemplate;
     public TileGrid Grid;
     public Room[,] RoomGrid;
@@ -104,8 +107,14 @@ public class DungeonManager : SingletonObject<DungeonManager>
         Grid.UnreserveAll();
     }
 
-    public void PerformSpawnEvent(RoomArea roomArea, IDungeonCard card) 
+    public IEnumerator PerformSpawnEvent(RoomArea roomArea, IDungeonCard card) 
     {
+        // Card trigger effect
+        var cardTriggerEffect = CardTriggerEffect.CreateEffect();
+        cardTriggerEffect.transform.position = card.Object.transform.position;
+        card.ToggleHideCard(true);
+        yield return cardTriggerEffect.CreateRoutine();
+
         int numTimes = card.GetNumberOfExecutions();   
 
         bool wasCombatActive = IsCombat;
@@ -138,7 +147,11 @@ public class DungeonManager : SingletonObject<DungeonManager>
             }
 
             if (tile != null)
-            {                
+            {
+                // Card travel effect
+                var cardTravelEffect = CardMoveToEffect.CreateTargetedEffect(tile.transform.position, card.Object.transform.position);
+                yield return cardTravelEffect.CreateRoutine();
+
                 if (card.RequiresFullTile)
                 {
                     // TODO: I don't think the IsReserved system is needed....
@@ -159,6 +172,8 @@ public class DungeonManager : SingletonObject<DungeonManager>
         }
 
         card.DestroyCard();
+
+        yield return null;
     }
 
     private void InitializeCombat()
@@ -198,7 +213,6 @@ public class DungeonManager : SingletonObject<DungeonManager>
     private void StartDungeon()
     {
         Game.States.SetState(GameState.AwaitingCommand);
-        //Game.States.EnqueueRoutine(Routine.CreateAction(Game.CardDraw.PerformCharacterCardDrawing, 2));
     }
 
     public List<GridTile> GetTilesNearPlayer(TileRangeType rangeType, int range)

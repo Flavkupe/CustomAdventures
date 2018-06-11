@@ -14,6 +14,12 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
             obj.Play();
         }
 
+        if (Data.DurationType == AnimationEffectDurationType.Loop)
+        {
+            // If set to loop, this will never complete
+            yield break;
+        }
+
         if (Data.DurationType == AnimationEffectDurationType.AllInnerEffects)
         {
             duration = Data.Particles.Max(a => a.main.duration);
@@ -27,8 +33,9 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
     protected override IEnumerator RunEffectSequence()
     {
         OnBeforeExecute();
-        // TODO: duration-based
-        Debug.Assert(Data.DurationType != AnimationEffectDurationType.FixedDuration, "FixedDuration not supported here");        
+        
+        Debug.Assert(Data.DurationType != AnimationEffectDurationType.FixedDuration, "FixedDuration not supported here; use parallel");
+        Debug.Assert(Data.DurationType != AnimationEffectDurationType.Loop, "Loop not supported here; use parallel");
 
         foreach (var particle in Data.Particles)
         {

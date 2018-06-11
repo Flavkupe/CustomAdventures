@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class EffectsManager : SingletonObject<EffectsManager>
 {
-    public AnimationEffect CreateTargetedAnimationEffect(TargetedAnimationEffectData data, Vector3 target, Vector3 source)
+    public AnimationEffect GenerateTargetedAnimationEffect(TargetedAnimationEffectData data, Vector3 target, Vector3 source)
     {
         
         if (data is ProjectileAnimationEffectData)

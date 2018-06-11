@@ -10,7 +10,10 @@ public abstract class AnimationEffect : MonoBehaviourEx
 
     protected virtual void OnComplete()
     {
-        Destroy(gameObject);
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
     }
 
     /// <summary>
@@ -105,4 +108,27 @@ public enum AnimationEffectDurationType
     /// Wait until AnimationEffectData.Duration completes
     /// </summary>
     FixedDuration,
+
+    /// <summary>
+    /// Where applicable, this effect has no duration, looping until destroyed from elsewhere.
+    /// </summary>
+    Loop,
+}
+
+public static class AnimationEffectExtensionFunctions
+{
+    public static AnimationEffect CreateEffect(this AnimationEffectData data)
+    {
+        return Game.Effects.GenerateAnimationEffect(data);
+    }
+
+    public static Routine CreateEffectRoutine(this AnimationEffectData data)
+    {
+        return Game.Effects.GenerateAnimationEffectRoutine(data);
+    }
+
+    public static AnimationEffect CreateTargetedEffect(this TargetedAnimationEffectData data, Vector3 target, Vector3 source)
+    {
+        return Game.Effects.GenerateTargetedAnimationEffect(data, target, source);
+    }
 }

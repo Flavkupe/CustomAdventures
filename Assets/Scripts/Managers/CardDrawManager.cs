@@ -60,7 +60,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             case DungeonEventType.SpawnNear:
             case DungeonEventType.SpawnOnCorner:
             case DungeonEventType.SpawnOnWideOpen:
-                return Routine.CreateAction(() => { Game.Dungeon.PerformSpawnEvent(roomArea, card); });
+                return Game.Dungeon.PerformSpawnEvent(roomArea, card).ToRoutine();
             case DungeonEventType.MultiEvent:
                 return GenerateMultiEventRoutines(roomArea, card);
             default:
