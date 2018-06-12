@@ -19,6 +19,7 @@ public class Routine : IEnumerator
     private Func<IEnumerator> _func;
     private Routine _next = null;
     private IEnumerator _current = null;
+    private bool _executedFinallies = false;
 
     /// <summary>
     /// Behavior that happens if an exception is thrown
@@ -98,10 +99,7 @@ public class Routine : IEnumerator
                     doReject();
                 }
 
-                foreach (var doFinally in _finally)
-                {
-                    doFinally();
-                }
+                RunFinallies();
 
                 return false;
             }
@@ -139,19 +137,7 @@ public class Routine : IEnumerator
                 doCompleted();
             }
 
-            foreach (var doFinally in _finally)
-            {
-                try
-                {
-                    // try/catch the finally individually to avoid running finallies
-                    // twice if exceptions are thrown
-                    doFinally();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex);
-                }
-            }
+            RunFinallies();
 
             if (Game.States != null && Game.States.DebugEnabled)
             {
@@ -174,6 +160,30 @@ public class Routine : IEnumerator
         }
     }
 
+    private void RunFinallies()
+    {
+        if (_executedFinallies)
+        {
+            return;
+        }
+
+        _executedFinallies = true;
+
+        foreach (var doFinally in _finally)
+        {
+            try
+            {
+                // try/catch the finally individually to avoid running finallies
+                // twice if exceptions are thrown
+                doFinally();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+        }        
+    }
+
     public void Reset()
     {
         // TODO
@@ -184,17 +194,8 @@ public class Routine : IEnumerator
         // Catch any exceptions and run the finally blocks
         Log.Error("Caught exception in Routine!");
         Log.Error(ex);
-        foreach (var doFinally in _finally)
-        {
-            try
-            {
-                doFinally();
-            }
-            catch (Exception ex2)
-            {
-                Log.Error(ex2);
-            }
-        }
+
+        RunFinallies();
 
         foreach (var doCatch in _catch)
         {

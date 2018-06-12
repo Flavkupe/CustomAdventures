@@ -14,13 +14,13 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
             obj.Play();
         }
 
-        if (Data.DurationType == AnimationEffectDurationType.Loop)
+        if (Data.DurationType == ParticleAnimationEffectData.AnimationDurationType.Loop)
         {
             // If set to loop, this will never complete
             yield break;
         }
 
-        if (Data.DurationType == AnimationEffectDurationType.AllInnerEffects)
+        if (Data.DurationType == ParticleAnimationEffectData.AnimationDurationType.AllInnerEffects)
         {
             duration = Data.Particles.Max(a => a.main.duration);
         }
@@ -28,14 +28,14 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
         yield return Routine.WaitForSeconds(duration);
 
         OnComplete();
-    }    
+    }
 
     protected override IEnumerator RunEffectSequence()
     {
         OnBeforeExecute();
         
-        Debug.Assert(Data.DurationType != AnimationEffectDurationType.FixedDuration, "FixedDuration not supported here; use parallel");
-        Debug.Assert(Data.DurationType != AnimationEffectDurationType.Loop, "Loop not supported here; use parallel");
+        Debug.Assert(Data.DurationType != ParticleAnimationEffectData.AnimationDurationType.FixedDuration, "FixedDuration not supported here; use parallel");
+        Debug.Assert(Data.DurationType != ParticleAnimationEffectData.AnimationDurationType.Loop, "Loop not supported here; use parallel");
 
         foreach (var particle in Data.Particles)
         {

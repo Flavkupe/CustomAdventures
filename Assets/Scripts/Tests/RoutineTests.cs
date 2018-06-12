@@ -2,8 +2,7 @@
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
-
-
+using System;
 
 public class RoutineTests : IPrebuildSetup
 {
@@ -15,6 +14,7 @@ public class RoutineTests : IPrebuildSetup
     private class ValContainer
     {
         public int Val = 0;
+        public string StrVal;
     }
 
     private IEnumerator AddTimes(int times, ValContainer container)
@@ -25,14 +25,22 @@ public class RoutineTests : IPrebuildSetup
         }
     }
 
-	[UnityTest]
-	public IEnumerator RoutineBasic_CallsInnerCoroutine_StopsExecution()
-	{
-	    var container = new ValContainer();
-	    var routine = new Routine(() => AddTimes(3, container));
+    private IEnumerator IncrementThenThrowsException(ValContainer container)
+    {
+        yield return null;
+        container.Val++;
+        yield return null;
+        throw new Exception("Ex");
+    }
+
+    [UnityTest]
+    public IEnumerator RoutineBasic_CallsInnerCoroutine_StopsExecution()
+    {
+        var container = new ValContainer();
+        var routine = new Routine(() => AddTimes(3, container));
         yield return routine;
-	    Assert.AreEqual(3, container.Val);
-	}
+        Assert.AreEqual(3, container.Val);
+    }
 
     [UnityTest]
     public IEnumerator Then_RunsThenAction()
@@ -88,5 +96,88 @@ public class RoutineTests : IPrebuildSetup
         yield return routine;
         Assert.AreEqual(12, container.Val);
         Assert.AreEqual(4, count);
+    }
+
+    [UnityTest]
+    public IEnumerator Finally_TriggersWithoutThens()
+    {
+        var container = new ValContainer();
+        var routine = new Routine(() => AddTimes(3, container));
+        routine.Finally(() => container.Val++);
+        yield return routine;
+        Assert.AreEqual(4, container.Val);
+    }
+
+    [UnityTest]
+    public IEnumerator Finally_MultipleStack()
+    {
+        var container = new ValContainer();
+        var routine = new Routine(() => AddTimes(3, container));
+        routine.Finally(() => container.Val++);
+        routine.Finally(() => container.Val++);
+        routine.Finally(() => container.Val++);
+        yield return routine;
+        Assert.AreEqual(6, container.Val);
+    }
+
+    [UnityTest]
+    public IEnumerator OnCompleted_TriggersAtEnd()
+    {
+        var container = new ValContainer();
+        var routine = new Routine(() => AddTimes(3, container));
+        routine.OnCompleted(() => container.Val++);
+        yield return routine;
+        Assert.AreEqual(4, container.Val);
+    }
+
+    [UnityTest]
+    public IEnumerator OnCompleted_TriggersWithFinallyAndThen()
+    {
+        var container = new ValContainer();
+        var routine = new Routine(() => AddTimes(3, container));
+        routine.OnCompleted(() => container.Val++);
+        routine.Finally(() => container.Val++);
+        routine.Then(() => container.Val++);
+        yield return routine;
+        Assert.AreEqual(6, container.Val);
+    }
+
+    [UnityTest]
+    public IEnumerator OnCatch_ExceptionCaught()
+    {
+        LogAssert.ignoreFailingMessages = true;
+        var container = new ValContainer();
+        var routine = new Routine(() => IncrementThenThrowsException(container));
+        Exception exception = null;
+        routine.Catch((ex) =>
+        {
+            exception = ex;
+        });
+
+        yield return routine;
+
+        Assert.AreEqual(1, container.Val);
+        Assert.AreEqual("Ex", exception.Message);
+    }
+
+    [UnityTest]
+    public IEnumerator Finally_HappensOnException()
+    {
+        LogAssert.ignoreFailingMessages = true;
+        var container = new ValContainer();
+        var routine = new Routine(() => IncrementThenThrowsException(container));
+        routine.Finally(() => container.Val++);
+        routine.Finally(() => container.Val++);
+        routine.Finally(() => container.Val++);
+        Exception exception = null;
+        routine.Catch((ex) =>
+        {
+            exception = ex;
+        });
+
+        yield return routine;
+
+        Assert.AreEqual(4, container.Val);
+        Assert.AreEqual("Ex", exception.Message);
     }
 }

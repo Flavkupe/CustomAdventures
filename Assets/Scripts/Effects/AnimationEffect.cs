@@ -86,8 +86,6 @@ public abstract class AnimationEffectData : ScriptableObject
 
     public AnimationEffectSequenceType SequenceType;
 
-    public AnimationEffectDurationType DurationType;
-
     public AudioClip InitSound;
 }
 
@@ -95,24 +93,6 @@ public enum AnimationEffectSequenceType
 {
     Sequence,
     Parallel
-}
-
-public enum AnimationEffectDurationType
-{
-    /// <summary>
-    /// Wait until each inner animation is done, including particles etc
-    /// </summary>
-    AllInnerEffects,
-
-    /// <summary>
-    /// Wait until AnimationEffectData.Duration completes
-    /// </summary>
-    FixedDuration,
-
-    /// <summary>
-    /// Where applicable, this effect has no duration, looping until destroyed from elsewhere.
-    /// </summary>
-    Loop,
 }
 
 public static class AnimationEffectExtensionFunctions

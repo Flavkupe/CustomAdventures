@@ -7,31 +7,28 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
 
     public Vector3 Source { get; set; }
 
+
     protected override IEnumerator RunEffectParallel()
     {
-        OnBeforeExecute();
-        ParallelRoutineSet routines = new ParallelRoutineSet();
-        foreach (var data in Data.SubEffects)
-        {
-            var effect = Game.Effects.GenerateAnimationEffect(data);
-            effect.transform.position = GetTarget();
-            routines.AddRoutine(effect.CreateRoutine());
-        }
-
-        yield return routines;
-
-        OnComplete();
+        yield return Execute(new ParallelRoutineSet());
     }
 
     protected override IEnumerator RunEffectSequence()
     {
+        yield return Execute(new RoutineChain());
+    }
+
+    private IEnumerator Execute(IRoutineSet emptyRoutineSet)
+    {
         OnBeforeExecute();
         foreach (var data in Data.SubEffects)
         {
             var effect = Game.Effects.GenerateAnimationEffect(data);
             effect.transform.position = GetTarget();
-            yield return effect.CreateRoutine();
+            emptyRoutineSet.AddRoutine(effect.CreateRoutine());
         }
+
+        yield return emptyRoutineSet;
 
         OnComplete();
     }
