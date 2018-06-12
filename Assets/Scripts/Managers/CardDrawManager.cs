@@ -60,7 +60,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             case DungeonEventType.SpawnNear:
             case DungeonEventType.SpawnOnCorner:
             case DungeonEventType.SpawnOnWideOpen:
-                return Game.Dungeon.PerformSpawnEvent(roomArea, card).ToRoutine();
+                return Game.Dungeon.CreateSpawnEventRoutine(roomArea, card);
             case DungeonEventType.MultiEvent:
                 return GenerateMultiEventRoutines(roomArea, card);
             default:
@@ -311,12 +311,12 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
 
     private IEnumerator DoCardEvents<TCardType>(List<TCardType> cards, Func<TCardType, Routine> cardRoutine) where TCardType : ICard
     {
-        var routineChain = new RoutineChain();
+        var routineSet = new ParallelRoutineSet();
         foreach (TCardType card in cards)
         {
-            routineChain.AddRoutine(cardRoutine(card));
+            routineSet.AddRoutine(cardRoutine(card));
         }
 
-        yield return routineChain.AsRoutine();
+        yield return routineSet.AsRoutine();
     }
 }

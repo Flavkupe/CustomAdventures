@@ -107,35 +107,38 @@ public class DungeonManager : SingletonObject<DungeonManager>
         Grid.UnreserveAll();
     }
 
-    public IEnumerator PerformSpawnEvent(RoomArea roomArea, IDungeonCard card) 
+    public Routine CreateSpawnEventRoutine(RoomArea roomArea, IDungeonCard card)
     {
+        var routines = new RoutineChain();
+
         // Card trigger effect
         var cardTriggerEffect = CardTriggerEffect.CreateEffect();
         cardTriggerEffect.transform.position = card.Object.transform.position;
         card.ToggleHideCard(true);
-        yield return cardTriggerEffect.CreateRoutine();
+        routines.AddRoutine(cardTriggerEffect.CreateRoutine());
 
-        int numTimes = card.GetNumberOfExecutions();   
+        var numTimes = card.GetNumberOfExecutions();   
 
-        bool wasCombatActive = IsCombat;
-        TileGrid grid = Grid;
+        var wasCombatActive = IsCombat;
+        var grid = Grid;
 
-        for (int i = 0; i < numTimes; i++)
+        var routineSet = new ParallelRoutineSet();
+        for (var i = 0; i < numTimes; i++)
         {
             GridTile tile = null;
             if (card.DungeonEventType == DungeonEventType.SpawnNear)
             {
-                List<GridTile> tiles = roomArea.GetAreaTiles();
+                var tiles = roomArea.GetAreaTiles();
                 tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();
             }
             else if (card.DungeonEventType == DungeonEventType.SpawnOnCorner)
             {
-                List<GridTile> tiles = roomArea.GetCornerTiles();
+                var tiles = roomArea.GetCornerTiles();
                 tile = tiles.GetRandom();
             }
             else if (card.DungeonEventType == DungeonEventType.SpawnOnWideOpen)
             {
-                List<GridTile> tiles = roomArea.GetWideOpenTiles();
+                var tiles = roomArea.GetWideOpenTiles();
                 tile = tiles.GetRandom();
 
                 if (tile == null)
@@ -150,15 +153,19 @@ public class DungeonManager : SingletonObject<DungeonManager>
             {
                 // Card travel effect
                 var cardTravelEffect = CardMoveToEffect.CreateTargetedEffect(tile.transform.position, card.Object.transform.position);
-                yield return cardTravelEffect.CreateRoutine();
-
-                if (card.RequiresFullTile)
+                var routine = cardTravelEffect.CreateRoutine();
+                routine.Finally(() =>
                 {
-                    // TODO: I don't think the IsReserved system is needed....
-                    tile.IsReserved = true;
-                }
+                    if (card.RequiresFullTile)
+                    {
+                        // TODO: I don't think the IsReserved system is needed....
+                        tile.IsReserved = true;
+                    }
 
-                card.ExecuteTileSpawnEvent(tile);
+                    card.ExecuteTileSpawnEvent(tile);
+                });
+
+                routineSet.AddRoutine(routine);
             }
             else
             {
@@ -166,14 +173,19 @@ public class DungeonManager : SingletonObject<DungeonManager>
             }
         }
 
-        if (!wasCombatActive && IsCombat)
+        routines.AddRoutine(routineSet.AsRoutine());
+        var finalRoutine = routines.ToRoutine();
+        finalRoutine.Finally(() =>
         {
-            InitializeCombat();
-        }
+            if (!wasCombatActive && IsCombat)
+            {
+                InitializeCombat();
+            }
 
-        card.DestroyCard();
+            card.DestroyCard();
+        });
 
-        yield return null;
+        return finalRoutine;
     }
 
     private void InitializeCombat()

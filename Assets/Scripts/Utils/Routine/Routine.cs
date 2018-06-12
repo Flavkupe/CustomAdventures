@@ -61,7 +61,7 @@ public class Routine : IEnumerator
 
     protected void TrackDebugTrace()
     {
-        if (Game.States.DebugEnabled)
+        if (Game.States != null && Game.States.DebugEnabled)
         {
             System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
             Trace = t.ToString();
@@ -79,7 +79,7 @@ public class Routine : IEnumerator
 
     protected virtual IEnumerator Execute()
     {
-        if (Game.States.DebugEnabled)
+        if (Game.States != null && Game.States.DebugEnabled)
         {
             Game.States.CoroutineTraces.Add(this);
         }
@@ -153,7 +153,7 @@ public class Routine : IEnumerator
                 }
             }
 
-            if (Game.States.DebugEnabled)
+            if (Game.States != null && Game.States.DebugEnabled)
             {
                 try
                 {
