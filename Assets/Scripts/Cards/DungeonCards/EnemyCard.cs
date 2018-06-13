@@ -2,14 +2,7 @@
 {
     public override void ExecuteTileSpawnEvent(GridTile tile)
     {
-        Enemy enemy = InstantiateEnemy();
+        Enemy enemy = Data.InstantiateEntity();
         Game.Dungeon.SpawnEnemy(enemy, tile);
-    }
-
-    public Enemy InstantiateEnemy()
-    {
-        Enemy enemy = InstantiateOfType<Enemy>();
-        enemy.Data = Data;
-        return enemy;
     }
 }

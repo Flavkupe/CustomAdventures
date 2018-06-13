@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Dungeon/Enemy Card", order = 1)]
-public class EnemyCardData : DungeonCardData
+public class EnemyCardData : EntityCardData<Enemy>
 {
     public Sprite Sprite;
 
@@ -28,4 +28,11 @@ public class EnemyCardData : DungeonCardData
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Enemy; } }
 
     public override Type BackingCardType { get { return typeof(EnemyCard); } }
+
+    public override Enemy InstantiateEntity()
+    {
+        var enemy = Utils.InstantiateOfType<Enemy>();
+        enemy.Data = this;
+        return enemy;
+    }
 }

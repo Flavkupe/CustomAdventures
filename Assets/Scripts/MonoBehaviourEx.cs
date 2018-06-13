@@ -51,9 +51,7 @@ public class MonoBehaviourEx : MonoBehaviour
 
     public T InstantiateOfType<T>(string name = null) where T : MonoBehaviour
     {
-        GameObject obj = new GameObject(name ?? typeof(T).Name);
-        T newObj = obj.AddComponent<T>();
-        return newObj;
+        return Utils.InstantiateOfType<T>(name);
     }
 
     public T InstantiateOfType<T>(Type type, string name = null) where T : class

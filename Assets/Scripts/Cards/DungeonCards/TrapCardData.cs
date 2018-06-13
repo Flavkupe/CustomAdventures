@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Dungeon/Trap Card", order = 1)]
-public class TrapCardData : DungeonCardData
+public class TrapCardData : EntityCardData<TileTrap>
 {
     public Sprite Sprite;
 
@@ -11,4 +11,11 @@ public class TrapCardData : DungeonCardData
 
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Trap; } }
     public override Type BackingCardType { get { return typeof(TrapCard); } }
+
+    public override TileTrap InstantiateEntity()
+    {
+        var trap = Utils.InstantiateOfType<TileTrap>();
+        trap.Data = this;
+        return trap;
+    }
 }

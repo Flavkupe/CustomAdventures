@@ -6,20 +6,13 @@ public class TrapCard : DungeonCard<TrapCardData>
     {
         if (!tile.GetPassableTileEntities().Any(a => a.EntityType == TileEntityType.Trap))
         {            
-            var trap = InstantiateTrap();
+            var trap = Data.InstantiateEntity();
             Game.Dungeon.SpawnTrap(trap, tile);
         }
         else
         {
             // TODO: if contains a trap already, spawn elsewhere
         }
-    }
-
-    private TileTrap InstantiateTrap()
-    {                
-        TileTrap trap = InstantiateOfType<TileTrap>();
-        trap.Data = Data;
-        return trap;
     }
 
     public override bool RequiresFullTile { get { return false; } }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCardData
 {
@@ -20,7 +21,7 @@ public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCa
         }
         else
         {
-            int repeats = Random.Range(Data.EffectRepeatMinTimes, Data.EffectRepeatMaxTimes + 1);
+            int repeats = UnityEngine.Random.Range(Data.EffectRepeatMinTimes, Data.EffectRepeatMaxTimes + 1);
             return repeats + 1;
         }
     }
@@ -71,4 +72,19 @@ public abstract class DungeonCardData : CardData
 
     [Tooltip("Upper bound for EffectRepeatMinTimes")]
     public int EffectRepeatMaxTimes = 0;
+}
+
+public abstract class EntityCardData : DungeonCardData
+{
+    public abstract TileEntity InstantiateTileEntity();
+}
+
+public abstract class EntityCardData<TTileEntityType> : EntityCardData where TTileEntityType : TileEntity
+{
+    public abstract TTileEntityType InstantiateEntity();
+
+    public override TileEntity InstantiateTileEntity()
+    {
+        return InstantiateEntity();
+    }
 }

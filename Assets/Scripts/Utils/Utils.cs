@@ -49,6 +49,13 @@ public static class Utils
                 return Direction.Left;
         }
     }
+
+    public static T InstantiateOfType<T>(string name = null) where T : MonoBehaviour
+    {
+        GameObject obj = new GameObject(name ?? typeof(T).Name);
+        T newObj = obj.AddComponent<T>();
+        return newObj;
+    }
 }
 
 public static class ExtensionFunctions

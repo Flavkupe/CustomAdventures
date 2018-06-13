@@ -117,7 +117,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
             }
         }
 
-        // Put all tiles in this.grid.
+        // Put all tiles in this.grid and populate props
         Utils.DoForXY(NumRooms, NumRooms, (x, y) =>
         {
             Room room = _roomGrid[x, y];
@@ -137,6 +137,8 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
                 {
                     room.Pathing.GetComponent<TilemapRenderer>().enabled = false;
                 }
+
+                room.PopulateProps();
             }
         });
 

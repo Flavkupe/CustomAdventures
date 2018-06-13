@@ -398,6 +398,7 @@
     <Compile Include="Assets\Scripts\Tests\RoutineTests.cs" />
     <Compile Include="Assets\Scripts\Tests\UtilsTest.cs" />
     <Compile Include="Assets\Scripts\Tiles\GridTile.cs" />
+    <Compile Include="Assets\Scripts\Tiles\PropTile.cs" />
     <Compile Include="Assets\Scripts\Tiles\RuleTile.cs" />
     <Compile Include="Assets\Scripts\Tiles\TileGrid.cs" />
     <Compile Include="Assets\Scripts\UI\Ability\AbilityPanel.cs" />

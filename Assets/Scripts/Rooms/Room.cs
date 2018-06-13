@@ -12,6 +12,7 @@ public class Room : MonoBehaviour, IHasCoords
     public int Dims = 9;
 
     public Tilemap Pathing;
+    public Tilemap Entities;
 
     public bool BossRoom = false;
     public bool EntranceRoom = false;
@@ -36,9 +37,7 @@ public class Room : MonoBehaviour, IHasCoords
             List<GridTile> tileList = new List<GridTile>();
             Utils.DoForXY(Dims, Dims, (x, y) =>
             {
-                int currX = LeftGridXCoord + x;
-                int currY = BottomGridYCoord + y;
-                GridTile tile = Game.Dungeon.Grid.Get(currX, currY).Tile;
+                GridTile tile = GridTileFromLocalCoord(x, y);
                 if (tile != null)
                 {
                     tileList.Add(tile);
@@ -49,6 +48,14 @@ public class Room : MonoBehaviour, IHasCoords
         }
         
         return tiles;
+    }
+
+    private GridTile GridTileFromLocalCoord(int x, int y)
+    {
+        int currX = LeftGridXCoord + x;
+        int currY = BottomGridYCoord + y;
+        GridTile tile = Game.Dungeon.Grid.Get(currX, currY).Tile;
+        return tile;
     }
 
     public bool HasConnectorToDirection(Direction direction)
@@ -83,16 +90,19 @@ public class Room : MonoBehaviour, IHasCoords
 
     public void InitRoomTiles()
     {
+        // TODO: we can probably make this 100x more efficient; tons of useless operations here... just 
+        // take the props directly from the Tilemap fields set above!
         foreach(Tilemap tilemap in GetComponentsInChildren<Tilemap>())
         {
             for (var x = tilemap.cellBounds.x; x < tilemap.cellBounds.xMax; x++)
             {
                 for (var y = tilemap.cellBounds.y; y < tilemap.cellBounds.yMax; y++)
                 {
-                    RuleTile tile = tilemap.GetTile<RuleTile>(new Vector3Int(x, y, 0));
-                    if (tile != null)
+                    // Test rule tile
+                    RuleTile ruleTile = tilemap.GetTile<RuleTile>(new Vector3Int(x, y, 0));
+                    if (ruleTile != null)
                     {
-                        var gridTile = tile.InstantiateGridTile(Game.Dungeon.GenericTileTemplate, this);
+                        var gridTile = ruleTile.InstantiateGridTile(Game.Dungeon.GenericTileTemplate, this);
                         gridTile.transform.localPosition = new Vector3(x + 1, y + 1); // TODO: why do they need + 1...?
                         gridTile.Show(false);
                     }
@@ -107,6 +117,33 @@ public class Room : MonoBehaviour, IHasCoords
             {
                 tile.GetComponent<SpriteRenderer>().enabled = false;
             }
+        }
+    }
+
+    public void PopulateProps()
+    {
+        if (Entities != null)
+        {
+            Utils.DoForXY(Entities.cellBounds.xMax, Entities.cellBounds.yMax, (x, y) =>
+            {
+                PropTile propTile = Entities.GetTile<PropTile>(new Vector3Int(x, y, 0));
+                if (propTile != null)
+                {
+                    // TODO: why do we need the + 1...?
+                    var tile = GridTileFromLocalCoord(x + 1, y + 1);
+                    propTile.RollSpawn(Game.Dungeon.Grid, tile);
+                }
+            });
+
+            Entities.gameObject.SetActive(false);
+        }
+    }
+
+    public void Start()
+    {
+        if (Entities == null)
+        {
+            Entities = GetComponentsInChildren<Tilemap>(true).FirstOrDefault(a => a.name == "Entities");
         }
     }
 
