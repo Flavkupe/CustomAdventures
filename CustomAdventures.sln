@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAdventures", "CustomAdventures.csproj", "{82E2CD2E-578B-501B-8D4E-DE1C372C8E3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetIcons", "AssetIcons.csproj", "{DF1F5E04-87FC-13A2-0928-2A316FC96F92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAdventures.Editor.Plugins", "CustomAdventures.Editor.Plugins.csproj", "{85DB4FCF-B2E0-0FCE-DF01-47478F5749AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAdventures.Editor", "CustomAdventures.Editor.csproj", "{FE0C1703-C4A2-8EB9-331F-EC194AFD4DCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetIcons-Editor", "AssetIcons-Editor.csproj", "{92EDF189-EA40-B0E4-DB35-EB2ABB2105CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +21,10 @@ Global
 		{82E2CD2E-578B-501B-8D4E-DE1C372C8E3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82E2CD2E-578B-501B-8D4E-DE1C372C8E3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82E2CD2E-578B-501B-8D4E-DE1C372C8E3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF1F5E04-87FC-13A2-0928-2A316FC96F92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF1F5E04-87FC-13A2-0928-2A316FC96F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF1F5E04-87FC-13A2-0928-2A316FC96F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF1F5E04-87FC-13A2-0928-2A316FC96F92}.Release|Any CPU.Build.0 = Release|Any CPU
 		{85DB4FCF-B2E0-0FCE-DF01-47478F5749AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{85DB4FCF-B2E0-0FCE-DF01-47478F5749AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85DB4FCF-B2E0-0FCE-DF01-47478F5749AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -25,6 +33,10 @@ Global
 		{FE0C1703-C4A2-8EB9-331F-EC194AFD4DCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE0C1703-C4A2-8EB9-331F-EC194AFD4DCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE0C1703-C4A2-8EB9-331F-EC194AFD4DCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92EDF189-EA40-B0E4-DB35-EB2ABB2105CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92EDF189-EA40-B0E4-DB35-EB2ABB2105CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92EDF189-EA40-B0E4-DB35-EB2ABB2105CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92EDF189-EA40-B0E4-DB35-EB2ABB2105CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

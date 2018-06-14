@@ -143,4 +143,15 @@ public enum TileEntityType
     Environment = 4,
     Item = 8,
     Trap = 16,
+    Amenity = 32,
+}
+
+public interface IGeneratesTileEntity
+{
+    TileEntity InstantiateTileEntity();
+}
+
+public interface IGeneratesTileEntity<TTileEntityType> : IGeneratesTileEntity where TTileEntityType : TileEntity
+{
+    TTileEntityType InstantiateEntity();
 }

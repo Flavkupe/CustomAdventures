@@ -14,7 +14,6 @@ public class RoutineTests : IPrebuildSetup
     private class ValContainer
     {
         public int Val = 0;
-        public string StrVal;
     }
 
     private IEnumerator AddTimes(int times, ValContainer container)

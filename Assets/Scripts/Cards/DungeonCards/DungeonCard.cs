@@ -51,6 +51,8 @@ public enum DungeonCardType
     Trap,
 
     Multi,
+
+    Prop,
 }
 
 public enum DungeonEventType
@@ -74,16 +76,17 @@ public abstract class DungeonCardData : CardData
     public int EffectRepeatMaxTimes = 0;
 }
 
-public abstract class EntityCardData : DungeonCardData
+public abstract class EntityCardData : DungeonCardData, IGeneratesTileEntity
 {
     public abstract TileEntity InstantiateTileEntity();
 }
 
-public abstract class EntityCardData<TTileEntityType> : EntityCardData where TTileEntityType : TileEntity
+public abstract class EntityCardData<TTileEntityType> 
+    : EntityCardData, IGeneratesTileEntity<TTileEntityType> where TTileEntityType : TileEntity
 {
     public abstract TTileEntityType InstantiateEntity();
 
-    public override TileEntity InstantiateTileEntity()
+    public sealed override TileEntity InstantiateTileEntity()
     {
         return InstantiateEntity();
     }

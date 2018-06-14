@@ -1,20 +1,34 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.Tilemaps;
 
 namespace UnityEngine
 {
 	[Serializable]
-    [CreateAssetMenu(fileName = "Tile", menuName = "Create Tiles/Prop Tile", order = 1)]
-    public class PropTile : Tile
+    public abstract class PropTile : Tile
 	{
-        public EntityCardData[] PossibleSpawns;
+        [Tooltip("0.0 never spawns, 1.0 spawns all the time.")]
+	    public float SpawnChance = 1.0f;
+
+        [AssetIcon]
+        public Sprite AssetIcon;
+
+	    public abstract List<IGeneratesTileEntity> GetPossibleSpawns();
 
         public void RollSpawn(TileGrid grid, GridTile tile)
         {
-            if (tile.CanOccupy())
+            if (tile.CanOccupy() && SpawnChance >= 1.0f || Random.Range(0.0f, 1.0f) <= SpawnChance)
             {
-                var spawn = PossibleSpawns.GetRandom().InstantiateTileEntity();
-                grid.PutObject(tile, spawn, true);
+                var spawns = GetPossibleSpawns().Where(a => a != null).ToList();
+                if (spawns.Count == 0)
+                {
+                    return;
+                }
+
+                var spawn = spawns.GetRandom();
+                var entity = spawn.InstantiateTileEntity();
+                grid.PutObject(tile, entity, true);
             }
         }
     }

@@ -34,7 +34,7 @@ public class DeckManager : SingletonObject<DeckManager>
 
     private List<TCardDataType> LoadCards<TCardDataType>(string path) where TCardDataType : CardData
     {
-        return Resources.LoadAll<TCardDataType>(path).Where(a => a.IncludeCard).ToList();
+        return Resources.LoadAll<TCardDataType>(path).Where(a => a.CanCreateCard && a.IncludeCard).ToList();
     }
 
     private void InitDecks()

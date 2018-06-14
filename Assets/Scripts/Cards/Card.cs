@@ -109,6 +109,9 @@ public abstract class CardData : ScriptableObject
     public Rarity CardRarity = Rarity.Basic;
     public Sprite CardArt;
 
+    [AssetIcon]
+    public Sprite AssetIcon;
+
     [Tooltip("Custom value of rarity for this card, with 1000 being basic, 100 unusual, 10 exceptional and 1 being master. Use 0 to use default rarity numbers.")]
     public int CustomRarityRating = 0;
 
@@ -121,6 +124,15 @@ public abstract class CardData : ScriptableObject
     /// If this is false, this card will be excluded from all random deckbuilding
     /// </summary>
     public bool IncludeCard = true;
+
+    /// <summary>
+    /// Whether or not this Data can be used to generate a card. Types such as Props
+    /// might not have cards for them!
+    /// </summary>
+    public virtual bool CanCreateCard
+    {
+        get { return true; }
+    }
 
     public abstract Type BackingCardType { get; }
 
