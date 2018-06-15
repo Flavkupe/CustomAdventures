@@ -5,9 +5,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{82E2CD2E-578B-501B-8D4E-DE1C372C8E3D}</ProjectGuid>
+    <ProjectGuid>{DF1F5E04-87FC-13A2-0928-2A316FC96F92}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <AssemblyName>AssetIcons</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
@@ -310,154 +310,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="AssetIcons.csproj">
-      <Project>{DF1F5E04-87FC-13A2-0928-2A316FC96F92}</Project>
-      <Name>AssetIcons</Name>
-    </ProjectReference>
-    <ProjectReference Include="AssetIcons-Editor.csproj">
-      <Project>{92EDF189-EA40-B0E4-DB35-EB2ABB2105CE}</Project>
-      <Name>AssetIcons-Editor</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark01.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark01_UGUI.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark02.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark03.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\Benchmark04.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\CameraController.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\ChatController.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\ObjectSpin.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\ShaderPropAnimator.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\SimpleScript.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\SkewTextExample.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TeleType.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TextConsoleSimulator.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TextMeshProFloatingText.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TextMeshSpawner.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_DigitValidator.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_ExampleScript_01.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_FrameRateCounter.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextEventCheck.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextEventHandler.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextInfoDebugTool.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextSelector_A.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_TextSelector_B.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMP_UiFrameRateCounter.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\TMPro_InstructionOverlay.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexColorCycler.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexJitter.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexShakeA.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexShakeB.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexZoom.cs" />
-    <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\WarpTextExample.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\AbilityCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\AttackCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\AttackCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\SelfBuffCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\AbilityCards\SelfBuffCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\Card.cs" />
-    <Compile Include="Assets\Scripts\Cards\CardMesh.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\AbilityGainCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\AbilityGainCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\AttributeGainCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\AttributeGainCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\CharacterCards\CharacterCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\Deck.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\DungeonCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\EnemyCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\EnemyCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\MultiEventCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\MultiEventCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\TrapCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\TrapCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\TreasureCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\DungeonCards\TreasureCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\AccessoryCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\AccessoryCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\ArmorCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\ArmorCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\EarnGoldCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\EarnGoldCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\GeneralItemCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\ItemCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\ItemCardData.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\LootCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCard.cs" />
-    <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCardData.cs" />
-    <Compile Include="Assets\Scripts\Effects\AnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffectData.cs" />
-    <Compile Include="Assets\Scripts\Effects\ProjectileAnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\ProjectileAnimationEffectData.cs" />
-    <Compile Include="Assets\Scripts\Effects\TargetedAnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\TargetedAnimationEffectData.cs" />
-    <Compile Include="Assets\Scripts\Entities\Amenity.cs" />
-    <Compile Include="Assets\Scripts\Entities\DecorativeTileEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\DecorativeTileObject.cs" />
-    <Compile Include="Assets\Scripts\Entities\Enemy.cs" />
-    <Compile Include="Assets\Scripts\Entities\PassableTileEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\PassableTileItem.cs" />
-    <Compile Include="Assets\Scripts\Entities\TileEntity.cs" />
-    <Compile Include="Assets\Scripts\Entities\TileTrap.cs" />
-    <Compile Include="Assets\Scripts\Entities\Treasure.cs" />
-    <Compile Include="Assets\Scripts\EquippedItems\AnimatedEquipment.cs" />
-    <Compile Include="Assets\Scripts\Game.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Armor.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Inventory.cs" />
-    <Compile Include="Assets\Scripts\Inventory\InventoryItem.cs" />
-    <Compile Include="Assets\Scripts\Inventory\StackableItem.cs" />
-    <Compile Include="Assets\Scripts\Inventory\Weapon.cs" />
-    <Compile Include="Assets\Scripts\Managers\CardDrawManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\DebugManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\DeckManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\DungeonManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\EffectsManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\SoundManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\StateManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\TextManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\UIManager.cs" />
-    <Compile Include="Assets\Scripts\Misc\FloatyText.cs" />
-    <Compile Include="Assets\Scripts\Misc\FloatyTextGenerator.cs" />
-    <Compile Include="Assets\Scripts\MonoBehaviourEx.cs" />
-    <Compile Include="Assets\Scripts\Player\Player.cs" />
-    <Compile Include="Assets\Scripts\Player\PlayerInventory.cs" />
-    <Compile Include="Assets\Scripts\Props\AmenityData.cs" />
-    <Compile Include="Assets\Scripts\Props\DecorativePropData.cs" />
-    <Compile Include="Assets\Scripts\Props\PropData.cs" />
-    <Compile Include="Assets\Scripts\Rooms\MapGen\DungeonGenerator.cs" />
-    <Compile Include="Assets\Scripts\Rooms\Room.cs" />
-    <Compile Include="Assets\Scripts\Rooms\RoomArea.cs" />
-    <Compile Include="Assets\Scripts\Rooms\RoomGrid.cs" />
-    <Compile Include="Assets\Scripts\Sound\SoundGenerator.cs" />
-    <Compile Include="Assets\Scripts\Status\StatusEffect.cs" />
-    <Compile Include="Assets\Scripts\Tests\RoutineTests.cs" />
-    <Compile Include="Assets\Scripts\Tests\UtilsTest.cs" />
-    <Compile Include="Assets\Scripts\Tiles\CardPropTile.cs" />
-    <Compile Include="Assets\Scripts\Tiles\GridTile.cs" />
-    <Compile Include="Assets\Scripts\Tiles\PropTile.cs" />
-    <Compile Include="Assets\Scripts\Tiles\RuleTile.cs" />
-    <Compile Include="Assets\Scripts\Tiles\StaticPropTile.cs" />
-    <Compile Include="Assets\Scripts\Tiles\TileGrid.cs" />
-    <Compile Include="Assets\Scripts\UI\Ability\AbilityPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\Ability\AbilityPanelSlot.cs" />
-    <Compile Include="Assets\Scripts\UI\EntityPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\Inventory\InventoryItemButton.cs" />
-    <Compile Include="Assets\Scripts\UI\Inventory\InventoryPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\MulliganPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\PlayerPanel.cs" />
-    <Compile Include="Assets\Scripts\UI\UIEventButton.cs" />
-    <Compile Include="Assets\Scripts\Utils\CooldownTimer.cs" />
-    <Compile Include="Assets\Scripts\Utils\Logging\DefaultLogger.cs" />
-    <Compile Include="Assets\Scripts\Utils\ProbabilityContainer.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\ParallelRoutineSet.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\Routine.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\RoutineChain.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\WaitForEvents.cs" />
-    <Compile Include="Assets\Scripts\Utils\Routine\WaitForSecondsSpeedable.cs" />
-    <Compile Include="Assets\Scripts\Utils\Utils.cs" />
-    <Compile Include="Assets\TestObj.cs" />
-    <Compile Include="Assets\TestThing.cs" />
+    <Compile Include="Assets\ExternalAssets\AssetIcons\Scripts\AssetIconAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\ExternalAssets\25 cards\Readme.txt" />

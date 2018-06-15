@@ -125,6 +125,18 @@ public static class ExtensionFunctions
         }
     }
 
+    public static void SetOrIncrement<T>(this Dictionary<T, int> dict, T key)
+    {
+        if (dict.ContainsKey(key))
+        {
+            dict[key]++;
+        }
+        else
+        {
+            dict[key] = 1;
+        }
+    }
+
     public static IEnumerator MoveToSpotCoroutine(this Transform obj, Vector3 target, float speed, bool allowMouseSpeedup = true)
     {
         return obj.MoveToSpotAndScaleCoroutine(target, speed, 0.0f, allowMouseSpeedup);

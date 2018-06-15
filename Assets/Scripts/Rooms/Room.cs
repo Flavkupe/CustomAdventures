@@ -28,23 +28,30 @@ public class Room : MonoBehaviour, IHasCoords
     public int LeftGridXCoord { get { return XCoord * Dims; } }
     public int BottomGridYCoord { get { return YCoord * Dims; } }
 
+    List<GridTile> _tileList = null;
+
     public GridTile[] GetTiles()
     {
+        if (_tileList != null)
+        {
+            // return _tileList.ToArray();
+        }
+
         GridTile[] tiles = GetComponentsInChildren<GridTile>();
         if (tiles.Length == 0)
         {
             // Rooms were built and tiles transferred; find them in the map
-            List<GridTile> tileList = new List<GridTile>();
+            _tileList = new List<GridTile>();
             Utils.DoForXY(Dims, Dims, (x, y) =>
             {
                 GridTile tile = GridTileFromLocalCoord(x, y);
                 if (tile != null)
                 {
-                    tileList.Add(tile);
+                    _tileList.Add(tile);
                 }
             });
 
-            return tileList.ToArray();
+            return _tileList.ToArray();
         }
         
         return tiles;
@@ -68,6 +75,37 @@ public class Room : MonoBehaviour, IHasCoords
     {
         return GetExactMatchingConnector(connector) != null;
     }
+
+    public List<ConnectorInfo> GetConnectorInfo()
+    {
+        var connectors = new List<ConnectorInfo>();
+        var tiles = GetTiles();
+        foreach (var tile in tiles)
+        {
+            if (tile.ConnectsTo == Direction.Left)
+            {
+                connectors.Add(new ConnectorInfo(tile.LocalY, Direction.Left));
+            }
+
+            if (tile.ConnectsTo == Direction.Right)
+            {
+                connectors.Add(new ConnectorInfo(tile.LocalY, Direction.Right));
+            }
+
+            if (tile.ConnectsTo == Direction.Down)
+            {
+                connectors.Add(new ConnectorInfo(tile.LocalX, Direction.Down));
+            }
+
+            if (tile.ConnectsTo == Direction.Up)
+            {
+                connectors.Add(new ConnectorInfo(tile.LocalX, Direction.Up));
+            }
+        }
+
+        return connectors;
+    }
+    
 
     public GridTile GetExactMatchingConnector(GridTile connector)
     {
@@ -157,4 +195,16 @@ public class Room : MonoBehaviour, IHasCoords
         Gizmos.DrawLine((pos + (transform.up * Dims)).OffsetBy(0.5f), (pos + (transform.up * Dims + transform.right * Dims)).OffsetBy(0.5f));
         Gizmos.DrawLine((pos + (transform.right * Dims)).OffsetBy(0.5f), (pos + (transform.up * Dims + transform.right * Dims)).OffsetBy(0.5f));
     }
+}
+
+public struct ConnectorInfo
+{
+    public ConnectorInfo(int pos, Direction dir)
+    {
+        LocalPos = pos;
+        Direction = dir;
+    }
+
+    public int LocalPos;
+    public Direction Direction; 
 }

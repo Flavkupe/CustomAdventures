@@ -1,6 +1,6 @@
-{
-    "name": "AssetIcons",
-    "references": [],
-    "includePlatforms": [],
-    "excludePlatforms": []
+﻿{
+	"name": "AssetIcons",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": []
 }

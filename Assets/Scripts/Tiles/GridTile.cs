@@ -42,6 +42,9 @@ public class GridTile : MonoBehaviour, IHasCoords
         }
     }    
 
+    public int LocalX { get { return (int)transform.localPosition.x; } }
+    public int LocalY { get { return (int)transform.localPosition.y; } }
+
     public Room CachedRoom;
     public Room GetRoom()
     {
