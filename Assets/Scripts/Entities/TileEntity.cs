@@ -24,6 +24,12 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
         generator.ShowFloatyText(text, color, size);
     }
 
+    public void ShowFloatyText(FloatyTextOptions options)
+    {
+        var generator = GetComponent<FloatyTextGenerator>();
+        generator.ShowFloatyText(options);
+    }
+
     protected virtual void OnClicked()
     {
     }
@@ -132,6 +138,17 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
             Selected = !Selected;
             Game.Dungeon.AfterToggledSelection(this);
         }
+    }
+
+    protected IEnumerable PlayerTwitchTowardsThis()
+    {
+        if (this.gameObject == Game.Player.gameObject)
+        {
+            yield break;
+        }
+
+        var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
+        yield return Game.Player.TwitchTowards(playerDirection);
     }
 }
 

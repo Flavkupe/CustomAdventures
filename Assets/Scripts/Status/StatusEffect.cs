@@ -3,6 +3,7 @@
 [Serializable]
 public class StatusEffect
 {
+    // TODO: refactor these... let's use the scriptable object variety instead
     public int Duration = 1;
     public EffectDurationType DurationType;
     public virtual void Apply(Player player)

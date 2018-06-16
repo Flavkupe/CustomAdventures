@@ -4,7 +4,14 @@
 public class AmenityData : PropData<Amenity>
 {
     public string Name;
+
+    [AssetIcon]
     public Sprite Sprite;
+
+    [Tooltip("Floaty text shown when this amenity can't be used.")]
+    public string CantUseMessage = "Not now!";
+
+    public StatusEffectData[] StatusEffects;
 
     public override Amenity InstantiateEntity()
     {
@@ -13,3 +20,4 @@ public class AmenityData : PropData<Amenity>
         return obj;
     }
 }
+

@@ -47,8 +47,7 @@ public class Treasure : TileEntity
 
     public override IEnumerator PlayerInteractWith()
     {
-        var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
-        yield return Game.Player.TwitchTowards(playerDirection);
+        yield return PlayerTwitchTowardsThis();
 
         var filter = this.Data.LootTypes != null && this.Data.LootTypes.Length > 0 ? new LootCardFilter() : null;
         if (filter != null)

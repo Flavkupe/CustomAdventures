@@ -45,7 +45,7 @@ public class InventoryPanel : MonoBehaviour
 
     public void UpdateInventory()
     {
-        PlayerInventory inv = Game.Player.Stats.Inventory;
+        PlayerInventory inv = Game.Player.Inventory;
 
         var slots = InventorySlots.GetComponentsInChildren<InventoryItemButton>(true);
         if (slots.Length < inv.MaxItems)

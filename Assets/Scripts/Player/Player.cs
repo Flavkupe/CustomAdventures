@@ -6,8 +6,10 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine.SceneManagement;
 
-public class Player : TileEntity
+public class Player : TileEntity, IDungeonActor
 {
+    public GameObject Actor => this.gameObject;
+
     private static Player instance;
 
     public int AbilityThreshold = 3;
@@ -18,13 +20,18 @@ public class Player : TileEntity
 
     private AnimatedEquipment _animatedWeapon = null;
 
-    public List<IAbilityCard> Abilities { get { return abilities; } }
+    public List<IAbilityCard> Abilities { get { return _abilities; } }
 
-    public PlayerStats Stats;    
+    public PlayerStats Stats;
+    public Stats BaseStats;
 
-    private List<StatusEffect> Effects = new List<StatusEffect>();
+    public Stats CurrentStats { get { return Stats; } }
 
-    private List<IAbilityCard> abilities = new List<IAbilityCard>();
+    public PlayerInventory Inventory;
+
+    public List<StatusEffect> Effects { get; } = new List<StatusEffect>();
+
+    private List<IAbilityCard> _abilities = new List<IAbilityCard>();
 
     public DungeonCardData[] EntranceCards;
 
@@ -58,14 +65,14 @@ public class Player : TileEntity
 
     public void EquipAbility(IAbilityCard ability)
     {
-        abilities.Add(ability);
+        _abilities.Add(ability);
         AbilityPanel.Instance.SyncSlotsWithPlayer();
     }
 
     public void ForgetAbility(IAbilityCard ability)
     {
-        Debug.Assert(abilities.Contains(ability));
-        abilities.Remove(ability);
+        Debug.Assert(_abilities.Contains(ability));
+        _abilities.Remove(ability);
         ability.DestroyCard();
         AbilityPanel.Instance.SyncSlotsWithPlayer();
     }
@@ -78,8 +85,8 @@ public class Player : TileEntity
 
     public void UseAbility(IAbilityCard ability)
     {
-        // TODO: targetted abilities
-        Debug.Assert(abilities.Contains(ability));
+        // TODO: targetted _abilities
+        Debug.Assert(_abilities.Contains(ability));
         ability.ActivateAbility();
     }
 
@@ -89,9 +96,16 @@ public class Player : TileEntity
         Effects.Add(effect);
     }
 
+    public void DoHealing(int healing)
+    {
+        CurrentStats.HP += healing;
+        ShowFloatyText("+" + healing, Color.green, FloatyTextSize.Small);
+        BlinkColor(Color.green);
+    }
+
     public override void DoDamage(int damage)
     {
-        var defensiveItems = Stats.Inventory.GetDefensiveItems();
+        var defensiveItems = Inventory.GetDefensiveItems();
         defensiveItems.Shuffle(); // randomize order for mitigation order
 
         foreach (var item in defensiveItems)
@@ -246,9 +260,9 @@ public class Player : TileEntity
     private void OnAfterPlayerAttack()
     {
         ProcessEffects(EffectDurationType.Attacks);
-        if (Stats.Inventory.IsSlotOccupied(InventoryItemType.Weapon))
+        if (Inventory.IsSlotOccupied(InventoryItemType.Weapon))
         {
-            Stats.Inventory.EquippedWeapon.ItemUsed();
+            Inventory.EquippedWeapon.ItemUsed();
         }
 
         OnAfterPlayerAction(true);
@@ -349,7 +363,7 @@ public class Player : TileEntity
 
     private void PlayAttackEffects()
     {
-        var weapon = Stats.Inventory.EquippedWeapon;
+        var weapon = Inventory.EquippedWeapon;
         if (weapon != null)
         {
             if (_animatedWeapon != null)
@@ -370,9 +384,9 @@ public class Player : TileEntity
     public int GetAttackStrength()
     {
         int damage = Stats.BaseStrength;
-        if (Stats.Inventory.EquippedWeapon != null)
+        if (Inventory.EquippedWeapon != null)
         {
-            damage += Stats.Inventory.EquippedWeapon.Data.Power;
+            damage += Inventory.EquippedWeapon.Data.Power;
         }
 
         return damage;
@@ -405,7 +419,7 @@ public class Player : TileEntity
 
     public void DestroyItem(InventoryItem item)
     {
-        Stats.Inventory.DestroyInventoryItem(item);
+        Inventory.DestroyInventoryItem(item);
         if (item.ItemData.ItemType == InventoryItemType.Weapon)
         {
             item.ItemBroken();
@@ -451,25 +465,27 @@ public class Player : TileEntity
             _animatedWeapon.FaceDirection(direction);
         }
     }
+
+    public int FreeMoves
+    {
+        get { return CurrentStats.FreeMoves; } set { CurrentStats.FreeMoves = value; }
+    }
+
+    public int FullActions
+    {
+        get { return CurrentStats.FullActions;} set { CurrentStats.FullActions = value; }
+    }
+
+    public void AfterAppliedStatusEffect(StatusEffectData effect)
+    {
+    }
 }
 
 [Serializable]
-public class PlayerStats
+public class PlayerStats : Stats
 {
-    public int Level = 1;
-    public int HP = 10;
-    public int MaxHP = 10;
-    public int Energy = 0;
-    public int BaseStrength = 1;
-
     public int Mulligans = 2;
-
-    public int FullActions = 1;
-    public int FreeMoves = 1;
-
     public int EXP = 0;
-
-    public PlayerInventory Inventory;
 }
 
 public enum PlayerInteraction

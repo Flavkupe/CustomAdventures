@@ -36,11 +36,11 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
 
     private void LeftClickItem()
     {
-        PlayerInventory inv = Game.Player.Stats.Inventory;
+        PlayerInventory inv = Game.Player.Inventory;
         var item = BackingItem;
         if (this.Type == InventoryItemButtonType.Ground)
         {
-            if (Game.Player.Stats.Inventory.TryLootItem(BackingItem))
+            if (Game.Player.Inventory.TryLootItem(BackingItem))
             {
                 item.ItemLooted();
             }
@@ -49,7 +49,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
         {
             if (BackingItem == inv.GetEquipmentItem(BackingItem.Type))
             {
-                if (Game.Player.Stats.Inventory.Unequip(BackingItem.Type))
+                if (Game.Player.Inventory.Unequip(BackingItem.Type))
                 {
                     item.ItemLooted();
                     BackingItem = null;
@@ -57,7 +57,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
             }
             else
             {
-                Game.Player.Stats.Inventory.Equip(BackingItem);
+                Game.Player.Inventory.Equip(BackingItem);
             }
         }
     }
@@ -67,7 +67,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
         if (this.Type == InventoryItemButtonType.Inventory)
         {
             BackingItem.ItemDropped();
-            Game.Player.Stats.Inventory.DiscardItem(BackingItem);
+            Game.Player.Inventory.DiscardItem(BackingItem);
         }
     }
 

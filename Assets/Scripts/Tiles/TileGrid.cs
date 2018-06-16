@@ -369,13 +369,6 @@ public enum OccupancyRule
     CanBeTemporaryEntity = 6, // For checking adjacent spots to a spawn locale
 }
 
-public interface IDungeonActor
-{
-    int FreeMoves { get; set; }
-    int FullActions { get; set; }
-    IEnumerator ProcessCharacterTurn();
-}
-
 public interface IObjectOnTile : IHasCoords
 {
 }

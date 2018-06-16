@@ -1,46 +1,48 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using JetBrains.Annotations;
 
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(SoundGenerator))]
-public class Enemy : TileEntity, IDungeonActor
+public class Enemy : TileEntity, IAIDungeonActor
 {
     public EnemyCardData Data { get; set; }
 
     public override TileEntityType EntityType { get { return TileEntityType.Enemy; } }
 
-    private int HP;
+    private Stats _stats = new Stats();
+
+    public Stats CurrentStats => _stats;
+
+    public List<StatusEffect> Effects { get; } = new List<StatusEffect>();
 
     private SoundGenerator _soundGen;
 
-    public int FullActions { get; set; } 
-    public int FreeMoves { get; set; }
-
     public IEnumerator ProcessCharacterTurn()
     {
-        FullActions = Data.FullActions;
-        FreeMoves = Data.FreeMoves;
+        _stats.FullActions = Data.FullActions;
+        _stats.FreeMoves = Data.FreeMoves;
 
-        while (FullActions > 0 || FreeMoves > 0)
+        while (_stats.FullActions > 0 || _stats.FreeMoves > 0)
         {
             var performedMove = false;
 
             // Full actions
-            if (FullActions > 0)
+            if (_stats.FullActions > 0)
             {                
                 if (Game.Dungeon.Grid.GetNeighbors(XCoord, YCoord).Where(t => t != null && t.GetTileEntity() != null)
                                                                             .Select(a => a.GetTileEntity()).Any(b => b == Game.Player))
                 {
-                    FullActions--;
+                    _stats.FullActions--;
                     performedMove = true;
                     yield return AttackPlayer();
                 }
             }
 
             // Move actions
-            if (!performedMove && (FullActions > 0 || FreeMoves > 0))
+            if (!performedMove && (_stats.FullActions > 0 || _stats.FreeMoves > 0))
             {
                 // Basic move
                 Direction? dir = null;
@@ -63,8 +65,8 @@ public class Enemy : TileEntity, IDungeonActor
 
                 if (dir != null)
                 {
-                    if (FreeMoves > 0) FreeMoves--;
-                    else FullActions--;
+                    if (_stats.FreeMoves > 0) _stats.FreeMoves--;
+                    else _stats.FullActions--;
                     performedMove = true;
                     yield return TryMove(dir.Value);
                 }
@@ -73,8 +75,8 @@ public class Enemy : TileEntity, IDungeonActor
             if (!performedMove)
             {
                 // No moves; skip turn
-                FullActions = 0;
-                FreeMoves = 0;
+                _stats.FullActions = 0;
+                _stats.FreeMoves = 0;
                 yield break;
             }
         }
@@ -88,11 +90,11 @@ public class Enemy : TileEntity, IDungeonActor
 
     public override void DoDamage(int damage)
     {
-        if (HP > 0)
+        if (_stats.HP > 0)
         {
-            HP -= damage;
+            _stats.HP -= damage;
             ShowFloatyText("-" + damage.ToString(), null, FloatyTextSize.Small);
-            if (HP <= 0)
+            if (_stats.HP <= 0)
             {
                 _soundGen.PlayRandomFrom(Data.DeathSounds);
                 Die();
@@ -105,6 +107,13 @@ public class Enemy : TileEntity, IDungeonActor
         }
     }
 
+    public void DoHealing(int healing)
+    {
+        // TODO
+    }
+
+    public GameObject Actor => this.gameObject;
+
     protected override void OnClicked()
     {
         Game.UI.UpdateEntityPanel(this);
@@ -114,7 +123,7 @@ public class Enemy : TileEntity, IDungeonActor
     [UsedImplicitly]
     private void Start ()
     {
-        HP = Data.MaxHP;
+        _stats.HP = Data.MaxHP;
         GetComponent<SpriteRenderer>().sprite = Data.Sprite;
         GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
         _soundGen = GetComponent<SoundGenerator>();
@@ -160,5 +169,10 @@ public class Enemy : TileEntity, IDungeonActor
         yield return Game.Player.TwitchTowards(playerDirection);
         int damage = Game.Player.GetAttackStrength();
         DoDamage(damage);
+    }
+
+    public void AfterAppliedStatusEffect(StatusEffectData effect)
+    {
+        // TODO
     }
 }

@@ -9,7 +9,7 @@
 
         if (Data.MaxHPGain > 0)
         {
-            Game.Player.Stats.MaxHP += Data.MaxHPGain;
+            Game.Player.BaseStats.HP += Data.MaxHPGain;
             Game.Player.Stats.HP += Data.MaxHPGain;
         }
     }

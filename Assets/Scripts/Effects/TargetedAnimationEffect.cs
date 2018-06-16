@@ -37,7 +37,10 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
     {
         switch (Data.TargetType)
         {
+            case AnimationEffectTargetType.TargetParent:
+                return transform.parent == null ? transform.position : transform.parent.transform.position;
             case AnimationEffectTargetType.AlwaysTargetSource:
+                // TODO: source won't always be the player!
                 return Game.Player.transform.position;
             case AnimationEffectTargetType.DefaultTarget:
             default:

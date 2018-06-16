@@ -4,6 +4,8 @@
 public class DecorativePropData : PropData<DecorativeTileObject>
 {
     public string Name;
+
+    [AssetIcon]
     public Sprite Sprite;
 
     public override DecorativeTileObject InstantiateEntity()

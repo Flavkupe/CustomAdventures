@@ -5,9 +5,6 @@ public abstract class PropData : ScriptableObject, IGeneratesTileEntity
     // [Tooltip("Out of 1.0: 0 never spawns, 1 always spawns.")]
     // public float SpawnChance = 1;
 
-    [AssetIcon]
-    public Sprite AssetIcon;
-
     public abstract TileEntity InstantiateTileEntity();
 }
 
