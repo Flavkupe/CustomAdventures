@@ -24,6 +24,11 @@ public class Amenity : TileEntity
         }
         else
         {
+            if (!string.IsNullOrWhiteSpace(Data.CantUseDialogMessage))
+            {
+                Game.UI.MessageDialog.Show(Data.CantUseDialogMessage);
+            }
+
             var message = Data.StatusEffects.Length == 0 ? "This does nothing!" : Data.CantUseMessage;
             ShowFloatyText(new FloatyTextOptions {
                 Text = message,
@@ -38,7 +43,7 @@ public class Amenity : TileEntity
     {
         foreach (var effect in Data.StatusEffects)
         {
-            yield return effect.ApplyEffectOn(Game.Player);
+            yield return effect.ApplyEffectOn(Game.Player, this.transform.position);
         }
     }
 

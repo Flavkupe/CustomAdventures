@@ -3,10 +3,6 @@ using UnityEngine;
 
 public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffectData>
 {
-    public Vector3 Target { get; set; }
-
-    public Vector3 Source { get; set; }
-
     private GameObject _projectile;
 
     public override void InitEffect()
@@ -33,11 +29,19 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
 
     private IEnumerator Execute(IRoutineSet emptyRoutineSet)
     {
+        if (Target == null || Source == null)
+        {
+            Debug.Assert(Target != null, "No Target set!!");
+            Debug.Assert(Target != null, "No Source set!!");
+            OnComplete();
+            yield break;
+        }
+
         OnBeforeExecute();
-        transform.position = Source;
+        transform.position = Source.Value;
         IRoutineSet routines = GenerateRoutines(emptyRoutineSet);
         StartCoroutine(routines);
-        yield return transform.MoveToSpotCoroutine(Target, Data.ProjectileSpeed);
+        yield return transform.MoveToSpotCoroutine(Target.Value, Data.ProjectileSpeed);
 
         if (Data.DestinationReachedEffect != null)
         {

@@ -11,6 +11,9 @@ public class AmenityData : PropData<Amenity>
     [Tooltip("Floaty text shown when this amenity can't be used.")]
     public string CantUseMessage = "Not now!";
 
+    [Tooltip("Popout message shown in dialog if can't use. If null, no dialog is shown.")]
+    public string CantUseDialogMessage = "It's spent! Let's continue onward...";
+
     public StatusEffectData[] StatusEffects;
 
     public override Amenity InstantiateEntity()

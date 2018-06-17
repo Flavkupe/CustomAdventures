@@ -28,16 +28,6 @@ public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCa
             Game.Player.ForgetAbility(this);
         }
     }
-
-    [UsedImplicitly]
-    private void Start ()
-    {
-	}
-
-    [UsedImplicitly]
-    private void Update ()
-    {
-	}
 }
 
 public interface IAbilityCard : ICard

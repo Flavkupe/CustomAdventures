@@ -22,6 +22,19 @@ public abstract class AnimationEffect : MonoBehaviourEx
     public virtual void InitEffect() {}
 
     public abstract void SetData(AnimationEffectData data);
+
+    /// <summary>
+    /// Optional target property; set for effects where applicable. This is
+    /// a target position for effects like projectiles
+    /// </summary>
+    public Vector3? Target { get; set; }
+
+    /// <summary>
+    /// Optional source property, set for effects where applicable. This is the
+    /// position where the effect is born from (player, amenity, enemy, etc). Some
+    /// settings will always target source, or may fire a projectile from here.
+    /// </summary>
+    public Vector3? Source { get; set; }
 }
 
 public abstract class AnimationEffect<TDataType> : AnimationEffect where TDataType : AnimationEffectData

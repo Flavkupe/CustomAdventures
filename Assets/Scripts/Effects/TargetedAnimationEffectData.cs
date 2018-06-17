@@ -13,6 +13,5 @@ public enum AnimationEffectTargetType
 {
     DefaultTarget,
     AlwaysTargetSource,
-    TargetParent,
 }
 

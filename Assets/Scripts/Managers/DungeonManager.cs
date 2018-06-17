@@ -40,7 +40,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
             Game.States.EnqueueCoroutine(enemyTurns);
         }
-        else
+        else if (!Game.States.AreMenusOpen)
         {
             Game.States.SetState(GameState.AwaitingCommand);
         }

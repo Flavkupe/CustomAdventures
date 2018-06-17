@@ -6,7 +6,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine.SceneManagement;
 
-public class Player : TileEntity, IDungeonActor
+public class Player : TileActor, IDungeonActor
 {
     public GameObject Actor => this.gameObject;
 
@@ -25,11 +25,9 @@ public class Player : TileEntity, IDungeonActor
     public PlayerStats Stats;
     public Stats BaseStats;
 
-    public Stats CurrentStats { get { return Stats; } }
+    public override Stats CurrentStats { get { return Stats; } }
 
     public PlayerInventory Inventory;
-
-    public List<StatusEffect> Effects { get; } = new List<StatusEffect>();
 
     private List<IAbilityCard> _abilities = new List<IAbilityCard>();
 
@@ -96,7 +94,7 @@ public class Player : TileEntity, IDungeonActor
         Effects.Add(effect);
     }
 
-    public void DoHealing(int healing)
+    public override void DoHealing(int healing)
     {
         CurrentStats.HP += healing;
         ShowFloatyText("+" + healing, Color.green, FloatyTextSize.Small);
@@ -154,7 +152,7 @@ public class Player : TileEntity, IDungeonActor
 
     private void Update ()
     {
-        if (Game.States.IsPaused || Game.UI.IsMenuActive)
+        if (Game.States.IsPaused || Game.States.AreMenusOpen)
         {
             return;
         }
@@ -306,7 +304,7 @@ public class Player : TileEntity, IDungeonActor
         }
     }
 
-    public bool PlayerCanAct { get { return !Game.Dungeon.IsCombat || _fullActions > 0; } }
+    public bool PlayerCanAct { get { return Game.States.CanPlayerAct && !Game.Dungeon.IsCombat || _fullActions > 0; } }
     public bool PlayerCanMove { get { return PlayerCanAct || _freeMoves > 0; } }
 
     public void PlayerMoveCommand(Direction direction)
@@ -394,6 +392,7 @@ public class Player : TileEntity, IDungeonActor
 
     public override IEnumerator TwitchTowards(Direction direction, float speed = 5.0f)
     {
+        // Unparent Camera for twitch so that camera doesn't twitch too
         Camera.main.transform.SetParent(null);
         InterfaceObjects.transform.SetParent(null);
         yield return base.TwitchTowards(direction, speed);
@@ -464,20 +463,6 @@ public class Player : TileEntity, IDungeonActor
         {
             _animatedWeapon.FaceDirection(direction);
         }
-    }
-
-    public int FreeMoves
-    {
-        get { return CurrentStats.FreeMoves; } set { CurrentStats.FreeMoves = value; }
-    }
-
-    public int FullActions
-    {
-        get { return CurrentStats.FullActions;} set { CurrentStats.FullActions = value; }
-    }
-
-    public void AfterAppliedStatusEffect(StatusEffectData effect)
-    {
     }
 }
 

@@ -235,15 +235,15 @@ public class StateManager : SingletonObject<StateManager>
         return Input.GetMouseButton(0) ? MousedownSpeedMultiplier : 1.0f;
     }
 
-    public static class Checks
-    {
-        private static bool IsState(params GameState[] states)
-        {
-            return states.Contains(Instance.State);
-        }
 
-        public static bool CanPlayerWalk { get { return IsState(GameState.AwaitingCommand); } }
+    private static bool IsState(params GameState[] states)
+    {
+        return states.Contains(Instance.State);
     }
+
+    public bool AreMenusOpen { get { return IsState(GameState.AwaitingDialogClose) || Game.UI.IsMenuActive; } }
+
+    public bool CanPlayerAct { get { return IsState(GameState.AwaitingCommand) && !AreMenusOpen; } }
 }
 
 public enum TriggeredEvent
@@ -262,4 +262,5 @@ public enum GameState
     EnemyTurn,
     AwaitingSelection,
     CharacterActing,
+    AwaitingDialogClose,
 }

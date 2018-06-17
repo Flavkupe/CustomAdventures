@@ -19,5 +19,5 @@ public interface IDungeonActor
 
     void DoHealing(int healing);
 
-    GameObject Actor { get; }
+    Transform Transform { get; }
 }

@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(SoundGenerator))]
-public class Enemy : TileEntity, IAIDungeonActor
+public class Enemy : TileActor, IAIDungeonActor
 {
     public EnemyCardData Data { get; set; }
 
@@ -14,9 +14,7 @@ public class Enemy : TileEntity, IAIDungeonActor
 
     private Stats _stats = new Stats();
 
-    public Stats CurrentStats => _stats;
-
-    public List<StatusEffect> Effects { get; } = new List<StatusEffect>();
+    public override Stats CurrentStats => _stats;
 
     private SoundGenerator _soundGen;
 
@@ -107,12 +105,10 @@ public class Enemy : TileEntity, IAIDungeonActor
         }
     }
 
-    public void DoHealing(int healing)
+    public override void DoHealing(int healing)
     {
         // TODO
     }
-
-    public GameObject Actor => this.gameObject;
 
     protected override void OnClicked()
     {
@@ -171,7 +167,7 @@ public class Enemy : TileEntity, IAIDungeonActor
         DoDamage(damage);
     }
 
-    public void AfterAppliedStatusEffect(StatusEffectData effect)
+    public override void AfterAppliedStatusEffect(StatusEffectData effect)
     {
         // TODO
     }

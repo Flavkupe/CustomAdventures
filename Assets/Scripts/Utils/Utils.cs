@@ -60,6 +60,10 @@ public static class Utils
 
 public static class ExtensionFunctions
 {
+    /// <summary>
+    /// Gets whether target is to the left, right, top or bottom
+    /// of this object. Picks relative direction of highest maginitude
+    /// </summary>
     public static Direction GetRelativeDirection(this Vector3 me, Vector3 target)
     {
         float x = target.x - me.x;

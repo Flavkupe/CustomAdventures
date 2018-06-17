@@ -10,24 +10,27 @@ public class InstantEffectData : StatusEffectData {
 
     public InstantEffectType EffectType;
 
-    public override IEnumerator ApplyEffectOn(IDungeonActor actor)
+    public override IEnumerator ApplyEffectOn(TileActor targetActor, Vector3? source)
     {
         if (AnimationEffect != null)
         {
-            yield return AnimationEffect.CreateEffectRoutine();
+            var effect = AnimationEffect.CreateEffect();
+            effect.Source = source;
+            effect.Target = targetActor.transform.position;
+            yield return effect.CreateRoutine();
         }
 
         switch (EffectType)
         {
             case InstantEffectType.Heal:
-                actor.DoHealing(Magnitude);
+                targetActor.DoHealing(Magnitude);
                 break;
             case InstantEffectType.Damage:
-                actor.DoDamage(Magnitude);
+                targetActor.DoDamage(Magnitude);
                 break;
         }
 
-        actor.AfterAppliedStatusEffect(this);
+        targetActor.AfterAppliedStatusEffect(this);
         yield return null;
     }
 }

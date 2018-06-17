@@ -9,5 +9,5 @@ public abstract class StatusEffectData : ScriptableObject
 
     public AnimationEffectData AnimationEffect;
 
-    public abstract IEnumerator ApplyEffectOn(IDungeonActor actor);
+    public abstract IEnumerator ApplyEffectOn(TileActor targetActor, Vector3? source);
 }

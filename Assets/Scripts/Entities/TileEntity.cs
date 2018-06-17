@@ -140,7 +140,7 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
         }
     }
 
-    protected IEnumerable PlayerTwitchTowardsThis()
+    protected IEnumerator PlayerTwitchTowardsThis()
     {
         if (this.gameObject == Game.Player.gameObject)
         {

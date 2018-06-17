@@ -11,6 +11,8 @@ public class UIManager : SingletonObject<UIManager>
 
     public MulliganPanel MulliganPanel;
 
+    public MessageDialog MessageDialog;
+
     private UIEvent? _currentUIEvent;
 
     [UsedImplicitly]
@@ -38,6 +40,12 @@ public class UIManager : SingletonObject<UIManager>
         {
             MulliganPanel = FindObjectOfType<MulliganPanel>();
             MulliganPanel.gameObject.SetActive(false);
+        }
+
+        if (MessageDialog == null)
+        {
+            MessageDialog = FindObjectOfType<MessageDialog>();
+            MessageDialog.gameObject.SetActive(false);
         }
     }
 

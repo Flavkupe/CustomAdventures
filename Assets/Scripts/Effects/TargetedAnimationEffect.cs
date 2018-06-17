@@ -3,11 +3,6 @@ using UnityEngine;
 
 public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectData>
 {
-    public Vector3 Target { get; set; }
-
-    public Vector3 Source { get; set; }
-
-
     protected override IEnumerator RunEffectParallel()
     {
         yield return Execute(new ParallelRoutineSet());
@@ -35,16 +30,14 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
 
     private Vector3 GetTarget()
     {
+        Debug.Assert(Target != null && Source != null, "No Source or Target set!!");
         switch (Data.TargetType)
         {
-            case AnimationEffectTargetType.TargetParent:
-                return transform.parent == null ? transform.position : transform.parent.transform.position;
             case AnimationEffectTargetType.AlwaysTargetSource:
-                // TODO: source won't always be the player!
-                return Game.Player.transform.position;
+                return Source ?? Game.Player.transform.position;
             case AnimationEffectTargetType.DefaultTarget:
             default:
-                return Target;
+                return Target ?? Source ?? this.transform.position;
         }
     }
 

@@ -3,23 +3,12 @@ using UnityEngine;
 
 public class EffectsManager : SingletonObject<EffectsManager>
 {
-    public AnimationEffect GenerateTargetedAnimationEffect(TargetedAnimationEffectData data, Vector3 target, Vector3 source)
+    public AnimationEffect GenerateTargetedAnimationEffect(AnimationEffectData data, Vector3 target, Vector3 source)
     {
-        
-        if (data is ProjectileAnimationEffectData)
-        {
-            var effect = GenerateAnimationEffect<ProjectileAnimationEffect, ProjectileAnimationEffectData>((ProjectileAnimationEffectData)data);
-            effect.Source = source;
-            effect.Target = target;
-            return effect;
-        }
-        else
-        {
-            var effect = GenerateAnimationEffect<TargetedAnimationEffect, TargetedAnimationEffectData>(data);
-            effect.Source = source;
-            effect.Target = target;
-            return effect;
-        }
+        var effect = GenerateAnimationEffect(data);
+        effect.Source = source;
+        effect.Target = target;
+        return effect;
     }
 
     [UsedImplicitly]
@@ -54,7 +43,7 @@ public class EffectsManager : SingletonObject<EffectsManager>
         var effect = obj.AddComponent<TEffectType>();
         if (effect != null)
         {
-            effect.Data = data;
+            effect.SetData(data);
             effect.InitEffect();
         }
 
