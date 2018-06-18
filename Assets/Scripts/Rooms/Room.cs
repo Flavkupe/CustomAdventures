@@ -11,6 +11,8 @@ public class Room : MonoBehaviour, IHasCoords
     /// </summary>
     public int Dims = 9;
 
+    public bool IncludeRoom = true;
+
     public Tilemap Pathing;
     public Tilemap Entities;
 

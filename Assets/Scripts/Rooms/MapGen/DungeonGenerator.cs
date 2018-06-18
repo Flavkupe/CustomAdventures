@@ -28,6 +28,13 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
     [UsedImplicitly]
     private void Start()
     {
+        if (PossibleRoomTemplates.Length == 0)
+        {
+            var allRooms = Resources.LoadAll<Room>("Rooms");
+            var rooms = allRooms.Where(a => a.IncludeRoom && a.Dims == this.RoomDims);
+            PossibleRoomTemplates = rooms.ToArray();
+        }
+
         CreateRooms();
     }
 
@@ -43,9 +50,9 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
 
         _roomGrid = new Room[NumRooms, NumRooms];
 
-        // First room needs both a down and either a right or an up
-        Room firstRoom = Instantiate(PossibleRoomTemplates.Where(a => a.EntranceRoom).FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down) &&
-          (a.HasConnectorToDirection(Direction.Right) || a.HasConnectorToDirection(Direction.Up))));
+        // First room needs a down
+        var firstRoomTemplate = PossibleRoomTemplates.Where(a => a.EntranceRoom).FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down));
+        var firstRoom = Instantiate(firstRoomTemplate);
         firstRoom.InitRoomTiles();
         firstRoom.XCoord = 0;
         firstRoom.YCoord = 0;
