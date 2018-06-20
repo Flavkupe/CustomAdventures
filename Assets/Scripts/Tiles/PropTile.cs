@@ -16,7 +16,7 @@ namespace UnityEngine
 
 	    public abstract List<IGeneratesTileEntity> GetPossibleSpawns();
 
-        public void RollSpawn(TileGrid grid, GridTile tile)
+        public void RollSpawn(DungeonManager dungeon, GridTile tile)
         {
             if (tile.CanOccupy() && SpawnChance >= 1.0f || Random.Range(0.0f, 1.0f) <= SpawnChance)
             {
@@ -28,7 +28,7 @@ namespace UnityEngine
 
                 var spawn = spawns.GetRandom();
                 var entity = spawn.InstantiateTileEntity();
-                grid.PutObject(tile, entity, true);
+                entity.SpawnOnGrid(dungeon, tile);
             }
         }
     }

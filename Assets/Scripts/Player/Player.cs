@@ -55,10 +55,18 @@ public class Player : TileActor, IDungeonActor
         _soundGen = GetComponent<SoundGenerator>();
     }
 
-    public void InitializeCombatTurn()
+    private void InitializePlayerTurn()
     {
         _fullActions = Stats.FullActions;
         _freeMoves = Stats.FreeMoves;
+
+        // TODO: revamp!
+        Game.States.SetState(GameState.AwaitingCommand);
+    }
+
+    private void OnInitializeCombatTurn(object source, EventArgs args)
+    {
+        InitializePlayerTurn();
     }
 
     public void EquipAbility(IAbilityCard ability)
@@ -463,6 +471,24 @@ public class Player : TileActor, IDungeonActor
         {
             _animatedWeapon.FaceDirection(direction);
         }
+    }
+
+    /// <summary>
+    /// Call this method exactly once, after the dungeon starts. Use this to register
+    /// all startup events for the dungeon.
+    /// </summary>
+    public void DungeonStarted(DungeonManager dungeon)
+    {
+        dungeon.EnemyListPopulated += OnInitializeCombatTurn;
+        dungeon.AllEnemyTurnsComplete += OnInitializeCombatTurn;
+
+        // TODO: revamp with FSM!
+        if (dungeon.IsCombat)
+        {
+            this.InitializePlayerTurn();
+        }
+
+        Game.States.SetState(GameState.AwaitingCommand);
     }
 }
 

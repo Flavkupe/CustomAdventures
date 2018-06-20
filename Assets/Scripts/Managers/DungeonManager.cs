@@ -7,6 +7,16 @@ using JetBrains.Annotations;
 
 public class DungeonManager : SingletonObject<DungeonManager>
 {
+    public event EventHandler<List<Enemy>> EnemyListChanged;
+
+    public event EventHandler AllEnemyTurnsComplete;
+
+    /// <summary>
+    /// Event that fires when list of enemies goes from 0 to more than 0.
+    /// This indicates an event like combat starting.
+    /// </summary>
+    public event EventHandler EnemyListPopulated;
+
     public DungeonCardData[] PossibleBossCards;
 
     public AnimationEffectData CardTriggerEffect;
@@ -22,9 +32,21 @@ public class DungeonManager : SingletonObject<DungeonManager>
     {
         _enemies.Remove(enemy);
         Grid.ClearTileEntity(enemy.XCoord, enemy.YCoord);
+        EnemyListChanged?.Invoke(this, _enemies);
     }
 
-    public bool IsCombat { get { return _enemies.Count > 0; } }
+    public void RegisterEnemy(Enemy enemy)
+    {
+        var enemiesPopulated = _enemies.Count == 0;
+        _enemies.Add(enemy);
+        EnemyListChanged?.Invoke(this, _enemies);
+        if (enemiesPopulated)
+        {
+            EnemyListPopulated?.Invoke(this, null);
+        }
+    }
+
+    public bool IsCombat => _enemies.Count > 0;
 
     public void AfterPlayerTurn()
     {
@@ -34,8 +56,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
             RoutineChain enemyTurns = new RoutineChain(_enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
             enemyTurns.Then(() =>
             {
-                Game.Player.InitializeCombatTurn();
-                Game.States.SetState(GameState.AwaitingCommand);
+                AllEnemyTurnsComplete?.Invoke(this, null);
             });
 
             Game.States.EnqueueCoroutine(enemyTurns);
@@ -119,7 +140,6 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
         var numTimes = card.GetNumberOfExecutions();   
 
-        var wasCombatActive = IsCombat;
         var grid = Grid;
 
         var routineSet = new ParallelRoutineSet();
@@ -175,39 +195,20 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
         routines.AddRoutine(routineSet.AsRoutine());
         var finalRoutine = routines.ToRoutine();
-        finalRoutine.Finally(() =>
-        {
-            if (!wasCombatActive && IsCombat)
-            {
-                InitializeCombat();
-            }
-
-            card.DestroyCard();
-        });
+        finalRoutine.Finally(card.DestroyCard);
 
         return finalRoutine;
     }
 
-    private void InitializeCombat()
+    public void SpawnEntity(TileEntity entity, GridTile tile)
     {
-        Game.Player.InitializeCombatTurn();
+        Grid.PutObject(tile, entity, true);
     }
 
-    public void SpawnEnemy(Enemy enemy, GridTile tile)
+    public void SpawnPassableEntity(PassableTileEntity entity, GridTile tile)
     {
-        Grid.PutObject(tile, enemy, true);
-        _enemies.Add(enemy);
+        Grid.PutPassableEntity(tile.XCoord, tile.YCoord, entity, true);
     }
-
-    public void SpawnTreasure(Treasure treasure, GridTile tile)
-    {
-        Grid.PutObject(tile, treasure, true);
-    }
-
-    public void SpawnTrap(TileTrap trap, GridTile tile)
-    {
-        Grid.PutPassableEntity(tile.XCoord, tile.YCoord, trap, true);
-    }    
 
     [UsedImplicitly]
     private void Awake()
@@ -224,7 +225,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     [UsedImplicitly]
     private void StartDungeon()
     {
-        Game.States.SetState(GameState.AwaitingCommand);
+        Game.Player.DungeonStarted(this);
     }
 
     public List<GridTile> GetTilesNearPlayer(TileRangeType rangeType, int range)

@@ -171,7 +171,7 @@ public class Room : MonoBehaviour, IHasCoords
                 {
                     // TODO: why do we need the + 1...?
                     var tile = GridTileFromLocalCoord(x + 1, y + 1);
-                    propTile.RollSpawn(Game.Dungeon.Grid, tile);
+                    propTile.RollSpawn(Game.Dungeon, tile);
                 }
             });
 

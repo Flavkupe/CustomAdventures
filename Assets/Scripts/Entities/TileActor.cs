@@ -20,3 +20,8 @@ public abstract class TileActor : TileEntity, IDungeonActor
 
     public abstract void DoHealing(int healing);
 }
+
+public abstract class TileAI : TileActor, IAIDungeonActor
+{
+    public abstract IEnumerator ProcessCharacterTurn();
+}

@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(SoundGenerator))]
-public class Enemy : TileActor, IAIDungeonActor
+public class Enemy : TileAI, IAIDungeonActor
 {
     public EnemyCardData Data { get; set; }
 
@@ -18,7 +18,7 @@ public class Enemy : TileActor, IAIDungeonActor
 
     private SoundGenerator _soundGen;
 
-    public IEnumerator ProcessCharacterTurn()
+    public override IEnumerator ProcessCharacterTurn()
     {
         _stats.FullActions = Data.FullActions;
         _stats.FreeMoves = Data.FreeMoves;
@@ -170,5 +170,11 @@ public class Enemy : TileActor, IAIDungeonActor
     public override void AfterAppliedStatusEffect(StatusEffectData effect)
     {
         // TODO
+    }
+
+    public override void SpawnOnGrid(DungeonManager dungeon, GridTile tile)
+    {
+        base.SpawnOnGrid(dungeon, tile);
+        dungeon.RegisterEnemy(this);
     }
 }

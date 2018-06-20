@@ -7,7 +7,7 @@ public class TrapCard : DungeonCard<TrapCardData>
         if (!tile.GetPassableTileEntities().Any(a => a.EntityType == TileEntityType.Trap))
         {            
             var trap = Data.InstantiateEntity();
-            Game.Dungeon.SpawnTrap(trap, tile);
+            trap.SpawnOnGrid(Game.Dungeon, tile);
         }
         else
         {

@@ -131,6 +131,11 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
         grid.ClearTileEntity(this.XCoord, this.YCoord);
     }
 
+    public virtual void SpawnOnGrid(DungeonManager dungeon, GridTile tile)
+    {
+        dungeon.SpawnEntity(this, tile);
+    }
+
     private void OnMouseUp()
     {
         if (Game.States.State == GameState.AwaitingSelection)
