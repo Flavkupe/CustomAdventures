@@ -6,7 +6,7 @@ public class MonoBehaviourEx : MonoBehaviour
 {
     public virtual IEnumerator TwitchTowards(Vector3 target, float speed = 5.0f)
     {
-        Direction targetDirection = transform.position.GetRelativeDirection(target);
+        var targetDirection = transform.position.GetRelativeDirection(target);
         yield return TwitchTowards(targetDirection, speed);
     }
 

@@ -23,5 +23,7 @@ public abstract class TileActor : TileEntity, IDungeonActor
 
 public abstract class TileAI : TileActor, IAIDungeonActor
 {
+    public abstract BehaviorList Behavior { get; }
+
     public abstract IEnumerator ProcessCharacterTurn();
 }

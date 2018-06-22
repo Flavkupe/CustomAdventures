@@ -6,16 +6,11 @@ public class EnemyCardData : EntityCardData<Enemy>
 {
     public Sprite Sprite;
 
-    public int Level = 1;
-    public int MaxHP = 1;
-    public int Movement = 1;
-    public int Attack = 1;
-    public int EXP = 1;
+    public Stats BaseStats;
 
     public bool Boss = false;
 
-    public int FreeMoves = 1;
-    public int FullActions = 1;
+    public int EXP = 1;
 
     public AudioClip[] DamagedSounds;
     public AudioClip[] DeathSounds;
@@ -26,6 +21,8 @@ public class EnemyCardData : EntityCardData<Enemy>
     public Sprite[] LeaveOnDeath;
 
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Enemy; } }
+
+    public BehaviorList Behavior;
 
     public override Type BackingCardType { get { return typeof(EnemyCard); } }
 

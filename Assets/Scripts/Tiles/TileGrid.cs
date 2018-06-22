@@ -251,7 +251,6 @@ public class TileGrid : MonoBehaviour
     /// </summary>
     public List<TileEntity> GetEntities(TileRangeType rangeType, int x, int y, int range, TileEntityType? filter = null)
     {
-        List<TileEntity> entities = new List<TileEntity>();
         List<TileContents> contents = null;
         switch (rangeType)
         {
@@ -265,7 +264,7 @@ public class TileGrid : MonoBehaviour
                 throw new NotImplementedException();
         }
 
-        entities = contents.Where(a => a.TileObject != null).Select(b => b.TileObject).ToList();
+        var entities = contents.Where(a => a.TileObject != null).Select(b => b.TileObject).ToList();
         if (filter != null)
         {
             entities = entities.Where(a => Utils.HasFlag((int)a.EntityType, (int)filter)).ToList();

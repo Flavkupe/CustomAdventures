@@ -6,84 +6,36 @@ using JetBrains.Annotations;
 
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(SoundGenerator))]
-public class Enemy : TileAI, IAIDungeonActor
+[RequireComponent(typeof(BehaviorController))]
+public class Enemy : TileAI
 {
     public EnemyCardData Data { get; set; }
 
-    public override TileEntityType EntityType { get { return TileEntityType.Enemy; } }
+    public override TileEntityType EntityType => TileEntityType.Enemy;
+
+    public override BehaviorList Behavior => Data.Behavior;
 
     private Stats _stats = new Stats();
 
     public override Stats CurrentStats => _stats;
 
     private SoundGenerator _soundGen;
+    private BehaviorController _behavior;
 
     public override IEnumerator ProcessCharacterTurn()
     {
-        _stats.FullActions = Data.FullActions;
-        _stats.FreeMoves = Data.FreeMoves;
+        // Initialize stats for start of turn
+        CurrentStats.FreeMoves = Data.BaseStats.FreeMoves;
+        CurrentStats.FullActions = Data.BaseStats.FullActions;
 
-        while (_stats.FullActions > 0 || _stats.FreeMoves > 0)
-        {
-            var performedMove = false;
-
-            // Full actions
-            if (_stats.FullActions > 0)
-            {                
-                if (Game.Dungeon.Grid.GetNeighbors(XCoord, YCoord).Where(t => t != null && t.GetTileEntity() != null)
-                                                                            .Select(a => a.GetTileEntity()).Any(b => b == Game.Player))
-                {
-                    _stats.FullActions--;
-                    performedMove = true;
-                    yield return AttackPlayer();
-                }
-            }
-
-            // Move actions
-            if (!performedMove && (_stats.FullActions > 0 || _stats.FreeMoves > 0))
-            {
-                // Basic move
-                Direction? dir = null;
-                if (Game.Player.XCoord > XCoord && CanMove(Direction.Right))
-                {
-                    dir = Direction.Right;
-                }
-                else if (Game.Player.XCoord < XCoord && CanMove(Direction.Left))
-                {
-                    dir = Direction.Left;
-                }
-                else if (Game.Player.YCoord > YCoord && CanMove(Direction.Up))
-                {
-                    dir = Direction.Up;
-                }
-                else if (Game.Player.YCoord < YCoord && CanMove(Direction.Down))
-                {
-                    dir = Direction.Down;
-                }
-
-                if (dir != null)
-                {
-                    if (_stats.FreeMoves > 0) _stats.FreeMoves--;
-                    else _stats.FullActions--;
-                    performedMove = true;
-                    yield return TryMove(dir.Value);
-                }
-            }
-
-            if (!performedMove)
-            {
-                // No moves; skip turn
-                _stats.FullActions = 0;
-                _stats.FreeMoves = 0;
-                yield break;
-            }
-        }
+        // Do all strategies from behavior list
+        yield return _behavior.DoStrategy(new GameContext {Dungeon = Game.Dungeon, Player = Game.Player});
     }
 
     public IEnumerator AttackPlayer()
     {
         yield return TwitchTowards(Game.Player.transform.position);
-        Game.Player.DoDamage(Data.Attack);
+        Game.Player.DoDamage(Data.BaseStats.BaseStrength);
     }
 
     public override void DoDamage(int damage)
@@ -119,11 +71,12 @@ public class Enemy : TileAI, IAIDungeonActor
     [UsedImplicitly]
     private void Start ()
     {
-        _stats.HP = Data.MaxHP;
+        _stats = Data.BaseStats.Clone();
         GetComponent<SpriteRenderer>().sprite = Data.Sprite;
         GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
         _soundGen = GetComponent<SoundGenerator>();
         GetComponent<BoxCollider2D>().size = new Vector3(1.0f, 1.0f);
+        _behavior = GetComponent<BehaviorController>();
     }
 
     private void Die()

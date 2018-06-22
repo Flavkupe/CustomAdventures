@@ -12,4 +12,10 @@ public class Stats
     public int BaseStrength = 1;
     public int FullActions = 1;
     public int FreeMoves = 1;
+    public int VisibilityRange = 3;
+
+    public Stats Clone()
+    {
+        return MemberwiseClone() as Stats;
+    }
 }

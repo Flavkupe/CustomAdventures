@@ -348,8 +348,17 @@
     <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\MessageDialog.cs" />
+    <Compile Include="Assets\Scripts\Behavior\Actions\AttackPlayerAction.cs" />
+    <Compile Include="Assets\Scripts\Behavior\Actions\IdleAction.cs" />
+    <Compile Include="Assets\Scripts\Behavior\Actions\MoveTowardsPlayerAction.cs" />
+    <Compile Include="Assets\Scripts\Behavior\ActorAction.cs" />
     <Compile Include="Assets\Scripts\Behavior\ActorState.cs" />
     <Compile Include="Assets\Scripts\Behavior\ActorStrategy.cs" />
+    <Compile Include="Assets\Scripts\Behavior\BehaviorController.cs" />
+    <Compile Include="Assets\Scripts\Behavior\BehaviorList.cs" />
+    <Compile Include="Assets\Scripts\Behavior\Decisions\PlayerIsAdjacentDecision.cs" />
+    <Compile Include="Assets\Scripts\Behavior\Decisions\PlayerIsInRangeDecision.cs" />
+    <Compile Include="Assets\Scripts\Behavior\IdleStrategy.cs" />
     <Compile Include="Assets\Scripts\Cards\AbilityCards\AbilityCard.cs" />
     <Compile Include="Assets\Scripts\Cards\AbilityCards\AttackCard.cs" />
     <Compile Include="Assets\Scripts\Cards\AbilityCards\AttackCardData.cs" />
