@@ -13,7 +13,7 @@ public class ActorStrategy : ScriptableObject
     public Decision[] Decisions;
 
     [Tooltip("At the start of each turn, if any of these are true, will revert to base stat. For example, player goes off-sight.")]
-    public Decision ResetOn;
+    public Decision[] ResetOn;
 
     [Tooltip("List of sequential actions to use each turn, if on this state.")]
     public ActorAction[] Actions;
@@ -42,7 +42,7 @@ public class ActorStrategy : ScriptableObject
 
     public virtual bool ShouldAbandon(TileAI subject, GameContext context)
     {
-        return ResetOn != null && ResetOn.Evaluate(subject, context);
+        return ResetOn != null && ResetOn.Any(a => a.Evaluate(subject, context));
     }
 
     public virtual IEnumerator PerformActions(TileAI subject, GameContext context)
@@ -65,15 +65,6 @@ public class ActorStrategy : ScriptableObject
             subject.CurrentStats.FreeMoves = 0;
             subject.CurrentStats.FullActions--;
         }
-    }
-
-    /// <summary>
-    /// How to interpret the Decision; do all have to be true, or at least one?
-    /// </summary>
-    public enum DecisionEvaluationType
-    {
-        AllMustBeTrue,
-        AnyCanBeTrue
     }
 }
 

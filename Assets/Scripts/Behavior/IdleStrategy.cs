@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using System.Collections;
 
 /// <summary>
 /// Built-in strategy that does nothing
@@ -33,7 +27,7 @@ public class IdleStrategy : ActorStrategy
     public override bool ShouldAbandon(TileAI subject, GameContext context)
     {
         // Unless otherwise stated, will always abandon this
-        return ResetOn == null || base.ShouldAbandon(subject, context);
+        return ResetOn == null || ResetOn.Length == 0 || base.ShouldAbandon(subject, context);
     }
 
     public override IEnumerator PerformActions(TileAI subject, GameContext context)

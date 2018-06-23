@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,8 +10,25 @@ public class InstantEffectData : StatusEffectData {
     public int Magnitude;
 
     public InstantEffectType EffectType;
+    public ExtraEffectProperties ExtraProperties;
 
     public override IEnumerator ApplyEffectOn(TileActor targetActor, Vector3? source)
+    {
+        yield return ActivateEffect(targetActor, source, Magnitude);
+    }
+
+    public override IEnumerator ApplyEffectOn(TileActor targetActor, TileActor source)
+    {
+        var magnitude = Magnitude;
+        if (ExtraProperties.HasFlag(ExtraEffectProperties.BoostedByStrength))
+        {
+            magnitude += source.CurrentStats.BaseStrength;
+        }
+
+        yield return ActivateEffect(targetActor, source.transform.position, magnitude);
+    }
+
+    private IEnumerator ActivateEffect(TileActor targetActor, Vector3? source, int actualMagnitude)
     {
         if (AnimationEffect != null)
         {
@@ -23,15 +41,14 @@ public class InstantEffectData : StatusEffectData {
         switch (EffectType)
         {
             case InstantEffectType.Heal:
-                targetActor.DoHealing(Magnitude);
+                targetActor.DoHealing(actualMagnitude);
                 break;
             case InstantEffectType.Damage:
-                targetActor.DoDamage(Magnitude);
+                targetActor.DoDamage(actualMagnitude);
                 break;
         }
 
         targetActor.AfterAppliedStatusEffect(this);
-        yield return null;
     }
 }
 
@@ -39,4 +56,15 @@ public enum InstantEffectType
 {
     Heal,
     Damage,
+}
+
+[Flags]
+public enum ExtraEffectProperties
+{
+    None = 0,
+
+    /// <summary>
+    /// This ability gets a damage boost from the strength of the source.
+    /// </summary>
+    BoostedByStrength = 1,
 }

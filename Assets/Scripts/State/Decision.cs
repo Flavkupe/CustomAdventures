@@ -14,3 +14,12 @@ public abstract class Decision : ScriptableObject
 
     protected abstract bool Evaluation(TileAI subject, GameContext context);
 }
+
+/// <summary>
+/// How to interpret the Decision; do all have to be true, or at least one?
+/// </summary>
+public enum DecisionEvaluationType
+{
+    AllMustBeTrue,
+    AnyCanBeTrue
+}
