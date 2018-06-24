@@ -9,6 +9,21 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Strategy", menuName = "Create Behavior/Strategy", order = 1)]
 public class ActorStrategy : ScriptableObject
 {
+    [Serializable]
+    public class AbilityCountdownOptions
+    {
+        [Tooltip("Whether the countdown must run before the first use of this ability.")]
+        public bool FirstUseRequiresCountdown;
+
+        [Tooltip("How many turns must pass for this ability to be used. If 0, no countdown will be used.")]
+        public int Countdown = 0;
+    }
+
+    private int _countdown = 0;
+
+    [Tooltip("Options associated with using countdowns.")]
+    public AbilityCountdownOptions CountdownOptions;
+
     [Tooltip("What has to happen in order for this strategy to be picked. If all resolve to false, will try next strategy.")]
     public Decision[] Decisions;
 
@@ -45,15 +60,25 @@ public class ActorStrategy : ScriptableObject
         return ResetOn != null && ResetOn.Any(a => a.Evaluate(subject, context));
     }
 
-    public virtual IEnumerator PerformActions(TileAI subject, GameContext context)
+    public virtual void EnterStrategy(TileAI subject)
+    {
+        // Initialize countdown if applicable
+        _countdown = CountdownOptions.FirstUseRequiresCountdown ? CountdownOptions.Countdown : 0;
+        subject.HideThoughtBubble();
+    }
+
+    public virtual void ExitStrategy(TileAI subject)
+    {
+        // Reset countdown, even if not used.
+        _countdown = 0;
+        subject.HideThoughtBubble();
+    }
+
+    public IEnumerator Execute(TileAI subject, GameContext context)
     {
         Debug.Assert(CanTakeStrategy(subject), "Trying to perform action without free moves!");
 
-        foreach (var action in Actions)
-        {
-            yield return action.PerformAction(subject, context);
-        }
-
+        // Tally action points and free moves first
         if (CanUseFreeMove && subject.CurrentStats.FreeMoves > 0)
         {
             // First use free moves if available
@@ -65,6 +90,28 @@ public class ActorStrategy : ScriptableObject
             subject.CurrentStats.FreeMoves = 0;
             subject.CurrentStats.FullActions--;
         }
+
+        // Handle countdown actions and toggle subject's Thought bubble
+        if (_countdown > 0)
+        {            
+            subject.SetThoughtBubbleText(_countdown.ToString());
+            _countdown--;
+            yield break;
+        }
+        else
+        {
+            yield return PerformActions(subject, context);
+            subject.HideThoughtBubble();
+            _countdown = CountdownOptions.Countdown;
+        }        
+    }
+
+    protected virtual IEnumerator PerformActions(TileAI subject, GameContext context)
+    {
+        foreach (var action in Actions)
+        {
+            yield return action.PerformAction(subject, context);
+        }      
     }
 }
 

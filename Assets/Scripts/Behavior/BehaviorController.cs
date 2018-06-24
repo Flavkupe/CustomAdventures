@@ -15,7 +15,7 @@ public class BehaviorController : MonoBehaviour
         _subject = GetComponent<TileAI>();
         Debug.Assert(_subject != null, "No TileAI Component along BehaviorController!");
         Debug.Assert(_subject.Behavior != null, "BehaviorList was not set on TileAI data!");
-        _chain = new StrategyChain(_subject.Behavior);
+        _chain = new StrategyChain(this, _subject.Behavior);
     }
 
     public IEnumerator DoStrategy(GameContext context)
@@ -25,7 +25,7 @@ public class BehaviorController : MonoBehaviour
         {
             var total = stats.FreeMoves + stats.FullActions;
             var strat = _chain.GetCurrentStrategy(_subject, context);
-            yield return strat.PerformActions(_subject, context);
+            yield return strat.Execute(_subject, context);
             if (total == stats.FreeMoves + stats.FullActions)
             {
                 // Safety closure to ensure faulty strategies don't loop forever
@@ -49,19 +49,20 @@ public class StrategyChain
 
     public ActorStrategy GetCurrentStrategy(TileAI subject, GameContext context)
     {
+        var prevNode = _currentNode;
         if (_currentNode.Strategy.ShouldAbandon(subject, context) || _currentNode == _finalNode)
         {
-            // Activity no longer valid, or at final node; start deciding from start again
+            // Activity no longer valid, or at final node; start deciding from start again.
             _currentNode = _baseNode;
         }
-
+                
         while (_currentNode != null)
         {
             if (_currentNode.Strategy.CanTakeStrategy(subject) && _currentNode.Strategy.Decide(subject, context))
             {
                 break;
             }
-            
+                        
             _currentNode = _currentNode.Next;
         }
 
@@ -72,19 +73,26 @@ public class StrategyChain
             return _idleStrat;
         }
 
+        if (prevNode != null && prevNode != _currentNode)
+        {
+            // Handle transitions to new events
+            prevNode.Strategy.ExitStrategy(subject);
+            _currentNode.Strategy.EnterStrategy(subject);
+        }
+
         return _currentNode.Strategy;
     }
 
-    public StrategyChain(BehaviorList list)
+    public StrategyChain(BehaviorController controller, BehaviorList list)
     {
         _idleStrat = ScriptableObject.CreateInstance<IdleStrategy>();
-
+        
         Debug.Assert(list.Strategies.Length != 0, "Empty BehaviorList used!");
-        _baseNode = new StrategyChainNode(list.Strategies[0]);
+        _baseNode = new StrategyChainNode(Object.Instantiate(list.Strategies[0]));
         var current = _baseNode;
         for (int i = 1; i < list.Strategies.Length; i++)
         {
-            current.Next = new StrategyChainNode(list.Strategies[i]);
+            current.Next = new StrategyChainNode(Object.Instantiate(list.Strategies[i]));
             current = current.Next;
         }
 

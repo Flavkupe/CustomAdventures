@@ -71,12 +71,18 @@ public class Enemy : TileAI
     [UsedImplicitly]
     private void Start ()
     {
+        Init();
         _stats = Data.BaseStats.Clone();
         GetComponent<SpriteRenderer>().sprite = Data.Sprite;
         GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
         _soundGen = GetComponent<SoundGenerator>();
         GetComponent<BoxCollider2D>().size = new Vector3(1.0f, 1.0f);
         _behavior = GetComponent<BehaviorController>();
+    }
+
+    protected override void Init()
+    {
+        base.Init();
     }
 
     private void Die()

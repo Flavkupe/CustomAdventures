@@ -30,7 +30,7 @@ public class IdleStrategy : ActorStrategy
         return ResetOn == null || ResetOn.Length == 0 || base.ShouldAbandon(subject, context);
     }
 
-    public override IEnumerator PerformActions(TileAI subject, GameContext context)
+    protected override IEnumerator PerformActions(TileAI subject, GameContext context)
     {
         // use up all actions
         subject.CurrentStats.FreeMoves = 0;
