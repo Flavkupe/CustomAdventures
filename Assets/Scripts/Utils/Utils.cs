@@ -153,7 +153,7 @@ public static class ExtensionFunctions
         float distanceTravelled = 0.0f;
         while (distanceTravelled < targetDistance)
         {
-            float speedMultiplier = allowMouseSpeedup ? Game.States.GetMouseDownSpeedMultiplier() : 1.0f;
+            float speedMultiplier = allowMouseSpeedup && Game.States != null ? Game.States.GetMouseDownSpeedMultiplier() : 1.0f;
             float delta = Time.deltaTime * speed * speedMultiplier;
             float proportion = delta / targetDistance;
             obj.position = Vector3.MoveTowards(obj.position, target, delta);

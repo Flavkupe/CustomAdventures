@@ -94,7 +94,7 @@ public class Enemy : TileAI
 
         if (Data.DeathEffect != null)
         {
-            var effect = Game.Effects.GenerateAnimationEffect(Data.DeathEffect);
+            var effect = Data.DeathEffect.CreateEffect();
             effect.transform.position = this.transform.position;
             effect.Execute();
         }

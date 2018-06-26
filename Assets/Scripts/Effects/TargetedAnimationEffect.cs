@@ -18,8 +18,10 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
         OnBeforeExecute();
         foreach (var data in Data.SubEffects)
         {
-            var effect = Game.Effects.GenerateAnimationEffect(data);
+            var effect = data.CreateEffect();
             effect.transform.position = GetTarget();
+            effect.Source = this.Source;
+            effect.Target = this.Target;
             emptyRoutineSet.AddRoutine(effect.CreateRoutine());
         }
 

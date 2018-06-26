@@ -108,20 +108,50 @@ public enum AnimationEffectSequenceType
     Parallel
 }
 
+public static class AnimationEffectUtils
+{
+    public static Routine GenerateAnimationEffectRoutine(AnimationEffectData data)
+    {
+        var effect = GenerateAnimationEffect(data);
+        return effect.CreateRoutine();
+    }
+
+    public static AnimationEffect GenerateAnimationEffect(AnimationEffectData data)
+    {
+        var obj = new GameObject(data.name);
+        var effect = obj.AddComponent(data.AnimationEffectObjectType) as AnimationEffect;
+        if (effect != null)
+        {
+            effect.SetData(data);
+            effect.InitEffect();
+        }
+
+        return effect;
+    }
+
+    public static AnimationEffect GenerateTargetedAnimationEffect(AnimationEffectData data, Vector3 target, Vector3 source)
+    {
+        var effect = GenerateAnimationEffect(data);
+        effect.Source = source;
+        effect.Target = target;
+        return effect;
+    }
+}
+
 public static class AnimationEffectExtensionFunctions
 {
     public static AnimationEffect CreateEffect(this AnimationEffectData data)
     {
-        return Game.Effects.GenerateAnimationEffect(data);
+        return AnimationEffectUtils.GenerateAnimationEffect(data);
     }
 
     public static Routine CreateEffectRoutine(this AnimationEffectData data)
     {
-        return Game.Effects.GenerateAnimationEffectRoutine(data);
+        return AnimationEffectUtils.GenerateAnimationEffectRoutine(data);
     }
 
-    public static AnimationEffect CreateTargetedEffect(this TargetedAnimationEffectData data, Vector3 target, Vector3 source)
+    public static AnimationEffect CreateTargetedEffect(this AnimationEffectData data, Vector3 target, Vector3 source)
     {
-        return Game.Effects.GenerateTargetedAnimationEffect(data, target, source);
+        return AnimationEffectUtils.GenerateTargetedAnimationEffect(data, target, source);
     }
 }

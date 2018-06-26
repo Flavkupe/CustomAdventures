@@ -12,6 +12,7 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
         if (Data.Projectile != null)
         {
             _projectile = Instantiate(Data.Projectile);
+            _projectile.SetActive(true);
             _projectile.transform.parent = transform;
             _projectile.transform.localPosition = new Vector3();
         }
@@ -60,7 +61,7 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
 
         if (Data.DestinationReachedEffect != null)
         {
-            var effect = Game.Effects.GenerateAnimationEffect(Data.DestinationReachedEffect);
+            var effect = Data.DestinationReachedEffect.CreateEffect();
             effect.transform.parent = transform;
             effect.transform.localPosition = new Vector3();
             yield return effect.CreateRoutine();
@@ -71,7 +72,7 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
     {
         foreach (var data in Data.SubEffects)
         {
-            var effect = Game.Effects.GenerateAnimationEffect(data);
+            var effect = data.CreateEffect();
             effect.transform.parent = transform;
             effect.transform.position = transform.position;
             routines.AddRoutine(effect.CreateRoutine());

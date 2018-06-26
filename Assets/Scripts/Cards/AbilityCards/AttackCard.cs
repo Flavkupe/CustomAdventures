@@ -64,7 +64,7 @@ public class AttackCard : AbilityCard<AttackCardData>
     {
         if (Data.AnimationEffect != null)
         {
-            var effect = Game.Effects.GenerateTargetedAnimationEffect(Data.AnimationEffect, entity.transform.position, Game.Player.transform.position);
+            var effect = Data.AnimationEffect.CreateTargetedEffect(entity.transform.position, Game.Player.transform.position);
             yield return effect.CreateRoutine();
         }
     }

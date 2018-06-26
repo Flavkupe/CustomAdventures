@@ -4,6 +4,21 @@ using UnityEngine;
 
 public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectData>
 {
+    protected override void OnBeforeExecute()
+    {
+        base.OnBeforeExecute();
+
+        // Set the position to either the Target or Source if either are used
+        if (Target != null)
+        {
+            transform.position = Target.Value;
+        }
+        else if (Source != null)
+        {
+            transform.position = Source.Value;
+        }
+    }
+
     protected override IEnumerator RunEffectParallel()
     {
         OnBeforeExecute();

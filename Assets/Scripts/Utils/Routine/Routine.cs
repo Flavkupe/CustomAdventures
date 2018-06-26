@@ -69,12 +69,14 @@ public class Routine : IEnumerator
         }
     }
 
+    public bool DisableSafeMode = false;
+
     public object Current
     {
         get
         {
             IEnumerator enumerator = _current ?? (_next != null ? (IEnumerator)_next.Current : null);
-            return RunSafe(enumerator);
+            return DisableSafeMode ? enumerator : RunSafe(enumerator);
         }
     }
 
