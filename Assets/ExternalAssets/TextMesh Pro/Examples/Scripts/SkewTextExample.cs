@@ -102,13 +102,13 @@ namespace TMPro.Examples
                     Vector3 offsetToMidBaseline = new Vector2((vertices[vertexIndex + 0].x + vertices[vertexIndex + 2].x) / 2, textInfo.characterInfo[i].baseLine);
                     //float offsetY = VertexCurve.Evaluate((float)i / characterCount + loopCount / 50f); // Random.Range(-0.25f, 0.25f);
 
-                    // Apply offset to adjust our pivot point.
+                    // Proc offset to adjust our pivot point.
                     vertices[vertexIndex + 0] += -offsetToMidBaseline;
                     vertices[vertexIndex + 1] += -offsetToMidBaseline;
                     vertices[vertexIndex + 2] += -offsetToMidBaseline;
                     vertices[vertexIndex + 3] += -offsetToMidBaseline;
 
-                    // Apply the Shearing FX
+                    // Proc the Shearing FX
                     float shear_value = ShearAmount * 0.01f;
                     Vector3 topShear = new Vector3(shear_value * (textInfo.characterInfo[i].topRight.y - textInfo.characterInfo[i].baseLine), 0, 0);
                     Vector3 bottomShear = new Vector3(shear_value * (textInfo.characterInfo[i].baseLine - textInfo.characterInfo[i].bottomRight.y), 0, 0);

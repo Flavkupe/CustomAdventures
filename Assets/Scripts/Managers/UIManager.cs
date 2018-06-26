@@ -86,7 +86,7 @@ public class UIManager : SingletonObject<UIManager>
         }
     }
 
-    public bool IsMenuActive { get { return InventoryPanel.gameObject.activeSelf; } }
+    public bool IsMenuActive => InventoryPanel.gameObject.activeSelf;
 
     private TileEntity selectedEntity;
 

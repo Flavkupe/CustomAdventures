@@ -9,6 +9,9 @@ using JetBrains.Annotations;
 [RequireComponent(typeof(BehaviorController))]
 public class Enemy : TileAI
 {
+    [TemplatePrefab]
+    public static Enemy Template;
+
     public EnemyCardData Data { get; set; }
 
     public override TileEntityType EntityType => TileEntityType.Enemy;
@@ -87,6 +90,8 @@ public class Enemy : TileAI
 
     private void Die()
     {
+        HideThoughtBubble();
+
         if (Data.DeathEffect != null)
         {
             var effect = Game.Effects.GenerateAnimationEffect(Data.DeathEffect);

@@ -19,7 +19,5 @@ public static class Game
     public static DebugManager Debug { get { return DebugManager.Instance; } }
 
     public static SoundManager Sounds {get { return SoundManager.Instance; } }
-
-    public static PrefabManager Prefabs { get { return PrefabManager.Instance; } }
 }
 

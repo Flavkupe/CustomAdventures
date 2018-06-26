@@ -20,12 +20,22 @@ public abstract class TileActor : TileEntity, IDungeonActor
     {
     }
 
+    public void AddPersistentEffect(StatusEffect effect)
+    {
+        Effects.Add(effect);
+    }
+
+    public void RemovePersistentEffect(StatusEffect effect)
+    {
+        Effects.Remove(effect);
+    }
+
     public abstract void DoHealing(int healing);
 
     protected virtual void Init()
     {
         // Populate all Entity parts
-        ThoughtBubble = Instantiate(Game.Prefabs.EntityParts.ThoughtBubble);
+        ThoughtBubble = Instantiate(Game.Dungeon.Templates.EntityParts.ThoughtBubble);
         ThoughtBubble.transform.SetParent(transform, false);
         ThoughtBubble.gameObject.SetActive(false);
     }

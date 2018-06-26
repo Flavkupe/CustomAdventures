@@ -31,6 +31,17 @@ public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCa
     public virtual bool RequiresFullTile { get { return true; } }
 }
 
+public abstract class DungeonSpawnCard<TDataType, TEntityType> : DungeonCard<TDataType> 
+    where TDataType : EntityCardData<TEntityType> 
+    where TEntityType : TileEntity
+{
+    public override void ExecuteTileSpawnEvent(GridTile tile)
+    {
+        TEntityType entity = Data.InstantiateEntity();
+        entity.SpawnOnGrid(Game.Dungeon, tile);
+    }
+}
+
 public interface IDungeonCard : ICard
 {
     DungeonEventType DungeonEventType { get; }

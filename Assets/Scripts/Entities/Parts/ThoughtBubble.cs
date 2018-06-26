@@ -9,6 +9,9 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class ThoughtBubble : MonoBehaviourEx
 {
+    [TemplatePrefab]
+    public static ThoughtBubble Template;
+
     public TextMeshPro Text;
 
     private void Awake()

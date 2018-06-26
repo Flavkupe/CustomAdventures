@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class Amenity : TileEntity
@@ -32,7 +33,7 @@ public class Amenity : TileEntity
             var message = Data.StatusEffects.Length == 0 ? "This does nothing!" : Data.CantUseMessage;
             ShowFloatyText(new FloatyTextOptions {
                 Text = message,
-                Color = UnityEngine.Color.white,
+                Color = Color.white,
                 Size = FloatyTextSize.Medium, 
                 OnlyShowOnEmptyQueue = true
             });
@@ -43,7 +44,7 @@ public class Amenity : TileEntity
     {
         foreach (var effect in Data.StatusEffects)
         {
-            yield return effect.ApplyEffectOn(Game.Player, this.transform.position);
+            yield return effect.ApplyEffectOn(Game.Player, transform.position);
         }
     }
 
@@ -52,6 +53,7 @@ public class Amenity : TileEntity
         return PlayerInteraction.InteractWithObject;
     }
 
+    [UsedImplicitly]
     private void Start()
     {
         GetComponent<SpriteRenderer>().sprite = Data.Sprite;

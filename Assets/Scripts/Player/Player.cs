@@ -85,21 +85,14 @@ public class Player : TileActor, IDungeonActor
 
     public void AfterAbilityUsed(IAbilityCard ability)
     {
-        ProcessEffects(EffectDurationType.Attacks);
+        ProcessEffects(EffectActivatorType.Attacks);
         OnAfterPlayerAction(true);
     }
 
     public void UseAbility(IAbilityCard ability)
     {
-        // TODO: targetted _abilities
         Debug.Assert(_abilities.Contains(ability));
         ability.ActivateAbility();
-    }
-
-    public void ApplyEffect(StatusEffect effect)
-    {
-        effect.Apply(this);
-        Effects.Add(effect);
     }
 
     public override void DoHealing(int healing)
@@ -150,12 +143,6 @@ public class Player : TileActor, IDungeonActor
     {
         // TODO
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void EffectExpire(StatusEffect effect)
-    {
-        effect.Expire(this);
-        Effects.Remove(effect);
     }
 
     private void Update ()
@@ -236,36 +223,29 @@ public class Player : TileActor, IDungeonActor
         _soundGen.PlayClip(LevelupSound);
     }
 
-    private void ProcessEffects(EffectDurationType actionTaken)
+    private void ProcessEffects(EffectActivatorType actionTaken)
     {
         foreach (StatusEffect effect in Effects.ToList())
         {
-            if (effect.DurationType == actionTaken)
-            {
-                effect.Duration--;
-                if (effect.Duration <= 0)
-                {
-                    EffectExpire(effect);
-                }
-            }
+            effect.ActionTaken(this, actionTaken);
         }
     }
 
     private void OnAfterPlayerInteract()
     {
-        ProcessEffects(EffectDurationType.Steps);
+        ProcessEffects(EffectActivatorType.Steps);
         OnAfterPlayerAction(true);
     }
 
     private void OnAfterPlayerMove()
     {        
-        ProcessEffects(EffectDurationType.Steps);
+        ProcessEffects(EffectActivatorType.Steps);
         OnAfterPlayerAction(false);
     }
 
     private void OnAfterPlayerAttack()
     {
-        ProcessEffects(EffectDurationType.Attacks);
+        ProcessEffects(EffectActivatorType.Attacks);
         if (Inventory.IsSlotOccupied(InventoryItemType.Weapon))
         {
             Inventory.EquippedWeapon.ItemUsed();

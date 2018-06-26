@@ -7,6 +7,8 @@ using JetBrains.Annotations;
 
 public class DungeonManager : SingletonObject<DungeonManager>
 {
+    public DungeonPrefabTemplates Templates;
+
     public event EventHandler<List<Enemy>> EnemyListChanged;
 
     public event EventHandler AllEnemyTurnsComplete;

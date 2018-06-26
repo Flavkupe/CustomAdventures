@@ -91,7 +91,7 @@ public abstract class AnimationEffectData : ScriptableObject
 
     /// <summary>
     /// How long the effect will last for before disappearing. Not used if
-    /// AllInnerEffects is selected for DurationType.
+    /// AllInnerEffects is selected for ActivatorType.
     /// </summary>
     public float Duration;
 
