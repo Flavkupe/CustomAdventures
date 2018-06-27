@@ -15,4 +15,6 @@ public class ProjectileAnimationEffectData : TargetedAnimationEffectData
     public GameObject Projectile;
 
     public float ProjectileSpeed = 10.0f;
+
+    public float ProjectileRotation = 0.0f;
 }

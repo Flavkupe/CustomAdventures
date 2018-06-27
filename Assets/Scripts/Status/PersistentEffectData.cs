@@ -56,8 +56,8 @@ public class PersistentEffectData : StatusEffectData
         if (ExpireAnimationEffect != null)
         {
             var effect = ExpireAnimationEffect.CreateEffect();
-            effect.Source = targetActor.transform.position;
-            effect.Target = targetActor.transform.position;
+            effect.SetSourceEntity(targetActor);
+            effect.SetTargetEntity(targetActor);
             yield return effect.CreateRoutine();
         }
     }

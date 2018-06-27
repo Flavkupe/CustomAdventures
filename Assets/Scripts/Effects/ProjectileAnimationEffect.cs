@@ -42,7 +42,12 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
         transform.position = Source.Value;
         IRoutineSet routines = GenerateRoutines(emptyRoutineSet);
         StartCoroutine(routines);
-        yield return transform.MoveToSpotCoroutine(Target.Value, Data.ProjectileSpeed);
+        yield return transform.MoveToSpotCoroutine(Target.Value, new MoveToSpotOptions
+        {
+            Speed = Data.ProjectileSpeed,
+            AllowMouseSpeedup = true,
+            RotationChange = Data.ProjectileRotation
+        });
 
         if (Data.DestinationReachedEffect != null)
         {
@@ -61,7 +66,7 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
 
         if (Data.DestinationReachedEffect != null)
         {
-            var effect = Data.DestinationReachedEffect.CreateEffect();
+            var effect = GetEffectFromData(Data.DestinationReachedEffect);
             effect.transform.parent = transform;
             effect.transform.localPosition = new Vector3();
             yield return effect.CreateRoutine();
@@ -70,9 +75,8 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
 
     private IRoutineSet GenerateRoutines(IRoutineSet routines)
     {
-        foreach (var data in Data.SubEffects)
+        foreach (var effect in GetSubEffectAnimations())
         {
-            var effect = data.CreateEffect();
             effect.transform.parent = transform;
             effect.transform.position = transform.position;
             routines.AddRoutine(effect.CreateRoutine());

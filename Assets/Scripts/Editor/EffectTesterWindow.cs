@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using EditorCoroutines;
 
 public class EffectTesterWindow : EditorWindow
 {
@@ -50,8 +49,7 @@ public class EffectTesterWindow : EditorWindow
             routine.Finally(() => EditorApplication.update -= RunEffect);
             _current = routine;
             routine.DisableSafeMode = true;
-            this.StartCoroutine(routine);
-            // EditorApplication.update += RunEffect;
+            EditorApplication.update += RunEffect;
         }
     }
 

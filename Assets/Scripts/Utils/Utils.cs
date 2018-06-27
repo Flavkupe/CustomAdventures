@@ -146,24 +146,41 @@ public static class ExtensionFunctions
         return obj.MoveToSpotAndScaleCoroutine(target, speed, 0.0f, allowMouseSpeedup);
     }
 
-    public static IEnumerator MoveToSpotAndScaleCoroutine(this Transform obj, Vector3 target, float speed, float targetScaleChange, bool allowMouseSpeedup = true)
+    public static IEnumerator MoveToSpotAndScaleCoroutine(this Transform obj, Vector3 target, float speed,
+        float targetScaleChange, bool allowMouseSpeedup = true)
     {
-        Vector3 targetScale = obj.localScale.IncrementBy(targetScaleChange, targetScaleChange, targetScaleChange);
+        return obj.MoveToSpotCoroutine(target,
+            new MoveToSpotOptions
+            {
+                Speed = speed,
+                ScaleChange = targetScaleChange,
+                AllowMouseSpeedup = allowMouseSpeedup
+            });
+    }
+
+    public static IEnumerator MoveToSpotCoroutine(this Transform obj, Vector3 target, MoveToSpotOptions options)
+    {
+        Vector3 targetScale = obj.localScale.IncrementBy(options.ScaleChange, options.ScaleChange, options.ScaleChange);
         float targetDistance = Vector3.Distance(target, obj.position);
         float distanceTravelled = 0.0f;
         while (distanceTravelled < targetDistance)
         {
-            float speedMultiplier = allowMouseSpeedup && Game.States != null ? Game.States.GetMouseDownSpeedMultiplier() : 1.0f;
-            float delta = Time.deltaTime * speed * speedMultiplier;
+            float speedMultiplier = options.AllowMouseSpeedup && Game.States != null ? Game.States.GetMouseDownSpeedMultiplier() : 1.0f;
+            float delta = Time.deltaTime * options.Speed * speedMultiplier;
             float proportion = delta / targetDistance;
             obj.position = Vector3.MoveTowards(obj.position, target, delta);
 
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            if (targetScaleChange != 0.0f)
+            if (options.ScaleChange != 0.0f)
             {
-                float scaleChange = proportion * targetScaleChange;
+                float scaleChange = proportion * options.ScaleChange;
                 Vector3 newScale = obj.localScale.IncrementBy(scaleChange, scaleChange, scaleChange);
                 obj.localScale = newScale;
+            }
+
+            if (options.RotationChange != 0.0f)
+            {
+                obj.Rotate(Vector3.back, options.RotationChange * delta);
             }
 
             distanceTravelled += delta;
@@ -306,6 +323,17 @@ public static class ExtensionFunctions
             other.position = temp;
         }
     }
+}
+
+public class MoveToSpotOptions
+{
+    public bool AllowMouseSpeedup = true;
+
+    public float ScaleChange = 0.0f;
+
+    public float Speed = 10.0f;
+
+    public float RotationChange = 0.0f;
 }
 
 public static class OtherUtils

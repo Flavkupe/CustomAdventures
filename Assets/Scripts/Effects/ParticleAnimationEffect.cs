@@ -40,6 +40,14 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
             duration = Data.Particles.Max(a => a.main.duration);
         }
 
+        foreach (var effect in GetSubEffectAnimations())
+        {
+            // Run effects in parallel
+            effect.transform.parent = transform;
+            effect.transform.position = transform.position;
+            StartCoroutine(effect.CreateRoutine());
+        }
+
         yield return Routine.WaitForSeconds(duration);
 
         OnComplete();
@@ -57,6 +65,14 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
             var obj = CreateParticle(particle);            
             obj.Play();
             yield return new WaitForSeconds(particle.main.duration);
+        }
+
+        foreach (var effect in GetSubEffectAnimations())
+        {
+            // Run sub-effects in sequence
+            effect.transform.parent = transform;
+            effect.transform.position = transform.position;
+            yield return effect.CreateRoutine();
         }
 
         OnComplete();

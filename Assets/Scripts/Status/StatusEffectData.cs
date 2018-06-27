@@ -29,8 +29,8 @@ public abstract class StatusEffectData : ScriptableObject
         if (AnimationEffect != null)
         {
             var effect = AnimationEffect.CreateEffect();
-            effect.Source = source;
-            effect.Target = targetActor.transform.position;
+            effect.SetSourcePosition(source);
+            effect.SetTargetEntity(targetActor);
             yield return effect.CreateRoutine();
         }
     }

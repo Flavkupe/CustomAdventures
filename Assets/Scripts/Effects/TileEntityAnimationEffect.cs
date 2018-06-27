@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using System.Linq;
 using UnityEngine;
 
-public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectData>
+public class TileEntityAnimationEffect : AnimationEffect<TileEntityAnimationEffectData>
 {
     protected override IEnumerator RunEffectParallel()
     {
@@ -15,10 +16,17 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
 
     private IEnumerator Execute(IRoutineSet emptyRoutineSet)
     {
+        Debug.Assert(TargetEntity != null, "Must call SetTargetEntity to use this type of animation effect!");
+
         OnBeforeExecute();
+
+        if (TargetEntity != null && Data.BlinkColorSpeed > 0.0f)
+        {
+            TargetEntity.BlinkColor(Data.BlinkColor, Data.BlinkColorSpeed);
+        }
+
         foreach (var effect in GetSubEffectAnimations())
         {
-            effect.transform.position = GetTarget();
             emptyRoutineSet.AddRoutine(effect.CreateRoutine());
         }
 
@@ -26,19 +34,5 @@ public class TargetedAnimationEffect : AnimationEffect<TargetedAnimationEffectDa
 
         OnComplete();
     }
-
-    private Vector3 GetTarget()
-    {
-        Debug.Assert(Target != null && Source != null, "No Source or Target set!!");
-        switch (Data.TargetType)
-        {
-            case AnimationEffectTargetType.AlwaysTargetSource:
-                return Source ?? Game.Player.transform.position;
-            case AnimationEffectTargetType.DefaultTarget:
-            default:
-                return Target ?? Source ?? this.transform.position;
-        }
-    }
-
 }
 
