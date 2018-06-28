@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
 /// <summary>
 /// A persistent effect is an effect like poison which keeps triggering after an action
 /// </summary>
@@ -18,6 +17,9 @@ public class PersistentEffectData : StatusEffectData
 
     [Tooltip("How long a status effect will last (based on the action provided)")]
     public int Duration;
+
+    [Tooltip("How many of the actions should be taken before the proc happens.")]
+    public int ActionsToProc = 1;
 
     [Tooltip("Type of action that causes this effect to expire (such as steps)")]
     public EffectActivatorType ExpiryType;
@@ -36,14 +38,14 @@ public class PersistentEffectData : StatusEffectData
     public override IEnumerator ApplyEffectOn(TileActor targetActor, Vector3? source)
     {
         yield return RunAnimationEffects(targetActor, source);
-        targetActor.AddPersistentEffect(CreateEffect());
+        targetActor.AddStatusEffect(CreateEffect());
         targetActor.AfterAppliedStatusEffect(this);
     }
 
     public virtual IEnumerator EffectExpires(TileActor targetActor, StatusEffect effect)
     {
         yield return RunExpireAnimationEffects(targetActor);
-        targetActor.RemovePersistentEffect(effect);
+        targetActor.RemoveStatusEffect(effect);
     }
 
     public virtual IEnumerator ProcEffectOn(TileActor targetActor)
@@ -88,6 +90,8 @@ public class StatusEffect
 
     private int _duration;
 
+    private int _actionsTaken = 0;
+
     public virtual void Proc(TileActor subject)
     {
         // TODO: do we want to block on this?
@@ -104,7 +108,12 @@ public class StatusEffect
     {
         if (Data.ProcType == EffectActivatorType.Any || actionType == Data.ProcType)
         {
-            Proc(subject);
+            _actionsTaken++;
+            if (_actionsTaken >= Data.ActionsToProc)
+            {
+                _actionsTaken = 0;
+                Proc(subject);
+            }
         }
 
         if (Data.ExpiryType == EffectActivatorType.Any || actionType == Data.ExpiryType)

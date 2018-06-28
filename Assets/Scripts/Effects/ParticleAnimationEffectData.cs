@@ -6,7 +6,10 @@ public class ParticleAnimationEffectData : AnimationEffectData
 {
     public ParticleSystem[] Particles;
 
-    public override Type AnimationEffectObjectType { get { return typeof(ParticleAnimationEffect); } }
+    [Tooltip("If true, will set the parent of the particles to the target entity, if applicable.")]
+    public bool ParentParticlesToTarget;
+
+    public override Type AnimationEffectObjectType => typeof(ParticleAnimationEffect);
 
     public AnimationDurationType DurationType;
 

@@ -64,6 +64,7 @@ public enum DungeonCardType
     Multi,
 
     Prop,
+    Totem,
 }
 
 public enum DungeonEventType

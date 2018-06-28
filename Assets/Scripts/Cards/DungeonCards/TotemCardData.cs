@@ -12,8 +12,8 @@ public class TotemCardData : EntityCardData<CurseTotem>
 
     public LootCardType[] LootTypes;
 
-    public override DungeonCardType DungeonCardType { get { return DungeonCardType.Treasure; } }
-    public override Type BackingCardType { get { return typeof(TreasureCard); } }
+    public override DungeonCardType DungeonCardType => DungeonCardType.Totem;
+    public override Type BackingCardType => typeof(CurseTotem);
 
     public AudioClip[] OpenSounds;
 

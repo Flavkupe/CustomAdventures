@@ -81,8 +81,9 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
     private ParticleSystem CreateParticle(ParticleSystem particle)
     {
         var obj = Instantiate(particle);
-        obj.transform.parent = transform;
-        obj.transform.position = transform.position;
+        var parent = Data.ParentParticlesToTarget && TargetEntity != null ? TargetEntity.transform : transform;
+        obj.transform.parent = parent;
+        obj.transform.position = parent.position;
         return obj;
     }
 }

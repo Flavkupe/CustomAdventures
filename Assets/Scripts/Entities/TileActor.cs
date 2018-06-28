@@ -20,12 +20,12 @@ public abstract class TileActor : TileEntity, IDungeonActor
     {
     }
 
-    public void AddPersistentEffect(StatusEffect effect)
+    public void AddStatusEffect(StatusEffect effect)
     {
         Effects.Add(effect);
     }
 
-    public void RemovePersistentEffect(StatusEffect effect)
+    public void RemoveStatusEffect(StatusEffect effect)
     {
         Effects.Remove(effect);
     }
