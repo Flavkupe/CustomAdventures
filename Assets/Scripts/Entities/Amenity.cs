@@ -15,7 +15,7 @@ public class Amenity : TileEntity
         return true;
     }
 
-    public override IEnumerator PlayerInteractWith()
+    public override IEnumerator PlayerInteractWith(Player player)
     {
         if (_usable && Data.StatusEffects.Length > 0)
         {

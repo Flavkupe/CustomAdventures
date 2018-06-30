@@ -142,34 +142,10 @@ public class DungeonManager : SingletonObject<DungeonManager>
 
         var numTimes = card.GetNumberOfExecutions();   
 
-        var grid = Grid;
-
         var routineSet = new ParallelRoutineSet();
         for (var i = 0; i < numTimes; i++)
         {
-            GridTile tile = null;
-            if (card.DungeonEventType == DungeonEventType.SpawnNear)
-            {
-                var tiles = roomArea.GetAreaTiles();
-                tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();
-            }
-            else if (card.DungeonEventType == DungeonEventType.SpawnOnCorner)
-            {
-                var tiles = roomArea.GetCornerTiles();
-                tile = tiles.GetRandom();
-            }
-            else if (card.DungeonEventType == DungeonEventType.SpawnOnWideOpen)
-            {
-                var tiles = roomArea.GetWideOpenTiles();
-                tile = tiles.GetRandom();
-
-                if (tile == null)
-                {
-                    // Fall back to corner tiles
-                    tiles = roomArea.GetCornerTiles();
-                    tile = tiles.GetRandom();
-                }
-            }
+            var tile = GetTargetTile(roomArea, card);
 
             if (tile != null)
             {
@@ -184,7 +160,13 @@ public class DungeonManager : SingletonObject<DungeonManager>
                         tile.IsReserved = true;
                     }
 
-                    card.ExecuteTileSpawnEvent(tile);
+                    var context = new DungeonCardExecutionContext()
+                    {
+                        Player = Game.Player,
+                        Dungeon = this,
+                    };
+
+                    card.ExecuteTileSpawnEvent(tile, context);
                 });
 
                 routineSet.AddRoutine(routine);
@@ -200,6 +182,36 @@ public class DungeonManager : SingletonObject<DungeonManager>
         finalRoutine.Finally(card.DestroyCard);
 
         return finalRoutine;
+    }
+
+    private GridTile GetTargetTile(RoomArea roomArea, IDungeonCard card)
+    {
+        var grid = Grid;
+        GridTile tile = null;
+        if (card.DungeonEventType == DungeonEventType.SpawnNear)
+        {
+            var tiles = roomArea.GetAreaTiles();
+            tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();
+        }
+        else if (card.DungeonEventType == DungeonEventType.SpawnOnCorner)
+        {
+            var tiles = roomArea.GetCornerTiles();
+            tile = tiles.GetRandom();
+        }
+        else if (card.DungeonEventType == DungeonEventType.SpawnOnWideOpen)
+        {
+            var tiles = roomArea.GetWideOpenTiles();
+            tile = tiles.GetRandom();
+
+            if (tile == null)
+            {
+                // Fall back to corner tiles
+                tiles = roomArea.GetCornerTiles();
+                tile = tiles.GetRandom();
+            }
+        }
+
+        return tile;
     }
 
     public void SpawnEntity(TileEntity entity, GridTile tile)

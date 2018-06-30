@@ -20,12 +20,13 @@ public class BehaviorController : MonoBehaviour
 
     public IEnumerator DoStrategy(GameContext context)
     {
-        var stats = _subject.CurrentStats;
+        var stats = _subject.GetModifiedStats();
         while (stats.FreeMoves > 0 || stats.FullActions > 0)
         {
             var total = stats.FreeMoves + stats.FullActions;
             var strat = _chain.GetCurrentStrategy(_subject, context);
             yield return strat.Execute(_subject, context);
+            stats = _subject.GetModifiedStats();
             if (total == stats.FreeMoves + stats.FullActions)
             {
                 // Safety closure to ensure faulty strategies don't loop forever

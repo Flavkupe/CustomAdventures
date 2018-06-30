@@ -3,9 +3,9 @@ using UnityEngine;
 
 public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCardData
 {
-    public override CardType CardType { get { return CardType.Dungeon; } }
+    public override CardType CardType => CardType.Dungeon;
 
-    public abstract void ExecuteTileSpawnEvent(GridTile tile);
+    public abstract void ExecuteTileSpawnEvent(GridTile tile, DungeonCardExecutionContext context);
     public TDataType GetData<TDataType>() where TDataType : DungeonCardData
     {
         Debug.Assert(Data is TDataType, "Assumed incorrect data type for DungeonCard.");
@@ -26,16 +26,22 @@ public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCa
         }
     }
 
-    public DungeonEventType DungeonEventType { get { return Data.DungeonEventType; } }
+    public DungeonEventType DungeonEventType => Data.DungeonEventType;
 
-    public virtual bool RequiresFullTile { get { return true; } }
+    public virtual bool RequiresFullTile => true;
+}
+
+public class DungeonCardExecutionContext
+{
+    public DungeonManager Dungeon;
+    public Player Player;
 }
 
 public abstract class DungeonSpawnCard<TDataType, TEntityType> : DungeonCard<TDataType> 
     where TDataType : EntityCardData<TEntityType> 
     where TEntityType : TileEntity
 {
-    public override void ExecuteTileSpawnEvent(GridTile tile)
+    public override void ExecuteTileSpawnEvent(GridTile tile, DungeonCardExecutionContext context)
     {
         TEntityType entity = Data.InstantiateEntity();
         entity.SpawnOnGrid(Game.Dungeon, tile);
@@ -48,7 +54,7 @@ public interface IDungeonCard : ICard
 
     bool RequiresFullTile { get; }
 
-    void ExecuteTileSpawnEvent(GridTile tile);
+    void ExecuteTileSpawnEvent(GridTile tile, DungeonCardExecutionContext context);
 
     int GetNumberOfExecutions();
 

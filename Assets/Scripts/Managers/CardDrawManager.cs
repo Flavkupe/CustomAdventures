@@ -255,7 +255,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         {
             cards = Game.Decks.DrawCards(props.NumDraws, props.Deck, props.DrawConditionFunc).ToList();
             yield return Game.Decks.AnimateCardDraws(cards.Cast<ICard>().ToList(), props.Deck.DeckHolder);
-            if (props.AllowMulligan && Game.Player.Stats.Mulligans > 0)
+            if (props.AllowMulligan && Game.Player.GetPlayerStats().Mulligans > 0)
             {
                 Game.UI.ToggleMulliganPanel(true);
                 var pressEvent = new AwaitKeyPress(MulliganKey, TakeKey);
@@ -295,7 +295,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     private IEnumerator MulliganCardsIntoDeck<TCardType>(Deck<TCardType> deck, List<TCardType> cards) where TCardType : class, ICard
     {
         Game.Sounds.PlayClip(MulliganSound);
-        Game.Player.Stats.Mulligans--;
+        Game.Player.GetPlayerStats().Mulligans--;
         ParallelRoutineSet routines = new ParallelRoutineSet();
         foreach (var card in cards)
         {

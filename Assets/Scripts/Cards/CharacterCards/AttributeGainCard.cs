@@ -4,13 +4,13 @@
     {
         if (Data.StrengthGain > 0)
         {
-            Game.Player.Stats.BaseStrength += Data.StrengthGain;
+            Game.Player.CurrentStats.Strength += Data.StrengthGain;
         }
 
         if (Data.MaxHPGain > 0)
         {
             Game.Player.BaseStats.HP += Data.MaxHPGain;
-            Game.Player.Stats.HP += Data.MaxHPGain;
+            Game.Player.CurrentStats.HP += Data.MaxHPGain;
         }
     }
 }

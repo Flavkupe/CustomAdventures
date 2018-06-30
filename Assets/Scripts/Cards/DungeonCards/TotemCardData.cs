@@ -8,14 +8,13 @@ public class TotemCardData : EntityCardData<CurseTotem>
 
     public int Level = 1;
 
-    public int NumTreasures = 1;
-
-    public LootCardType[] LootTypes;
+    public PersistentEffectData CurseEffect;
 
     public override DungeonCardType DungeonCardType => DungeonCardType.Totem;
-    public override Type BackingCardType => typeof(CurseTotem);
 
-    public AudioClip[] OpenSounds;
+    public override Type BackingCardType => typeof(TotemCard);
+
+    public AudioClip[] BreakSounds;
 
     public override CurseTotem InstantiateEntity()
     {

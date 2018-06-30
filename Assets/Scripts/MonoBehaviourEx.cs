@@ -56,6 +56,7 @@ public class MonoBehaviourEx : MonoBehaviour
 
     public T InstantiateOfType<T>(Type type, string name = null) where T : class
     {
+        var t = typeof(T);
         if (!typeof(T).IsAssignableFrom(type))
         {
             Debug.LogError(string.Format("Trying instantiate things of different type as specified! type: {0}, T: {1}", type.FullName, typeof(T).FullName));

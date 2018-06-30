@@ -4601,7 +4601,7 @@ TextureImporter:
     21309188: dcss_4594
     21309190: dcss_4595
     21309192: dcss_4596
-    21309194: dcss_4597
+    21309194: dcss_totem
     21309196: dcss_4598
     21309198: dcss_4599
     21309200: dcss_4600
@@ -70483,7 +70483,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: dcss_4597
+      name: dcss_totem
       rect:
         serializedVersion: 2
         x: 1696

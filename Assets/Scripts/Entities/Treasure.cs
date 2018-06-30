@@ -45,7 +45,7 @@ public class Treasure : TileEntity
         return PlayerInteraction.InteractWithObject;
     }
 
-    public override IEnumerator PlayerInteractWith()
+    public override IEnumerator PlayerInteractWith(Player player)
     {
         yield return PlayerTwitchTowardsThis();
 

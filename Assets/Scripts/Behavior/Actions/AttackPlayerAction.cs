@@ -12,7 +12,7 @@ public class AttackPlayerAction : ActorAction
     public override IEnumerator PerformAction(TileAI subject, GameContext context)
     {
         yield return subject.TwitchTowards(context.Player.transform.position);
-        context.Player.DoDamage(subject.CurrentStats.BaseStrength);
+        context.Player.DoDamage(subject.GetModifiedStats().Strength);
     }
 }
 

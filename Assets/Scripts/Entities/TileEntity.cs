@@ -53,7 +53,7 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
         return PlayerInteraction.None;
     }
 
-    public virtual IEnumerator PlayerInteractWith()
+    public virtual IEnumerator PlayerInteractWith(Player player)
     {
         yield return null;
     }
@@ -166,6 +166,7 @@ public enum TileEntityType
     Item = 8,
     Trap = 16,
     Amenity = 32,
+    Totem = 64,
 }
 
 public interface IGeneratesTileEntity

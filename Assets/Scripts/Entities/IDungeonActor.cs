@@ -13,7 +13,7 @@ public interface IDungeonActor
 
     Stats CurrentStats { get; }
 
-    List<StatusEffect> Effects { get; }
+    List<PersistentStatusEffect> Effects { get; }
 
     void DoDamage(int damage);
 

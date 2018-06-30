@@ -21,6 +21,7 @@ public class Enemy : TileAI
     private Stats _stats = new Stats();
 
     public override Stats CurrentStats => _stats;
+    public override Stats BaseStats => Data.BaseStats;
 
     private SoundGenerator _soundGen;
     private BehaviorController _behavior;
@@ -28,8 +29,8 @@ public class Enemy : TileAI
     public override IEnumerator ProcessCharacterTurn()
     {
         // Initialize stats for start of turn
-        CurrentStats.FreeMoves = Data.BaseStats.FreeMoves;
-        CurrentStats.FullActions = Data.BaseStats.FullActions;
+        CurrentStats.FreeMoves = BaseStats.FreeMoves;
+        CurrentStats.FullActions = BaseStats.FullActions;
 
         // Do all strategies from behavior list
         yield return _behavior.DoStrategy(new GameContext {Dungeon = Game.Dungeon, Player = Game.Player});
@@ -38,7 +39,7 @@ public class Enemy : TileAI
     public IEnumerator AttackPlayer()
     {
         yield return TwitchTowards(Game.Player.transform.position);
-        Game.Player.DoDamage(Data.BaseStats.BaseStrength);
+        Game.Player.DoDamage(Data.BaseStats.Strength);
     }
 
     public override void DoDamage(int damage)
@@ -123,7 +124,7 @@ public class Enemy : TileAI
         return PlayerInteraction.Attack;
     }
 
-    public override IEnumerator PlayerInteractWith()
+    public override IEnumerator PlayerInteractWith(Player player)
     {
         var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
         yield return Game.Player.TwitchTowards(playerDirection);

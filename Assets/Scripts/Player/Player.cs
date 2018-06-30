@@ -14,18 +14,23 @@ public class Player : TileActor, IDungeonActor
 
     public int AbilityThreshold = 3;
 
-    public override TileEntityType EntityType { get { return TileEntityType.Player; } }
+    public override TileEntityType EntityType => TileEntityType.Player;
 
     public static Player Instance { get { return instance; } private set { instance = value; } }
 
     private AnimatedEquipment _animatedWeapon = null;
 
-    public List<IAbilityCard> Abilities { get { return _abilities; } }
+    public List<IAbilityCard> Abilities => _abilities;
 
-    public PlayerStats Stats;
-    public Stats BaseStats;
+    private PlayerStats _stats { get; } = new PlayerStats();
 
-    public override Stats CurrentStats { get { return Stats; } }
+    private PlayerStats _basePlayerStats { get; } = new PlayerStats();
+
+    public PlayerStats GetPlayerStats() { return _stats; }
+
+    public override Stats BaseStats => _basePlayerStats;
+
+    public override Stats CurrentStats => _stats;
 
     public PlayerInventory Inventory;
 
@@ -36,9 +41,6 @@ public class Player : TileActor, IDungeonActor
     private SoundGenerator _soundGen;
 
     private Direction _facingDirection = Direction.Right;
-
-    private int _fullActions;
-    private int _freeMoves;
 
     // Sounds
     public AudioClip[] DamagedSounds;
@@ -57,8 +59,9 @@ public class Player : TileActor, IDungeonActor
 
     private void InitializePlayerTurn()
     {
-        _fullActions = Stats.FullActions;
-        _freeMoves = Stats.FreeMoves;
+        var baseStats = GetModifiedStats(true);
+        CurrentStats.FullActions = baseStats.FullActions;
+        CurrentStats.FreeMoves = baseStats.FreeMoves;
 
         // TODO: revamp!
         Game.States.SetState(GameState.AwaitingCommand);
@@ -121,9 +124,9 @@ public class Player : TileActor, IDungeonActor
 
         if (damage > 0)
         {
-            Stats.HP -= damage;
+            CurrentStats.HP -= damage;
             ShowFloatyText("-" + damage, null, FloatyTextSize.Small);
-            if (Stats.HP <= 0)
+            if (CurrentStats.HP <= 0)
             {
                 Die();
             }
@@ -186,8 +189,8 @@ public class Player : TileActor, IDungeonActor
 
     private void PlayerSkipTurn()
     {
-        _freeMoves = 0;
-        _fullActions = 0;
+        CurrentStats.FreeMoves = 0;
+        CurrentStats.FullActions = 0;
         OnAfterPlayerMove();
     }
 
@@ -204,9 +207,9 @@ public class Player : TileActor, IDungeonActor
     public void GainXP(int exp)
     {
         ShowFloatyText(exp.ToString() + " XP", Color.white, FloatyTextSize.Medium);
-        Stats.EXP += exp;
+        _stats.EXP += exp;
 
-        if ((Stats.EXP / 10) + 1 > Stats.Level)
+        if ((_stats.EXP / 10) + 1 > CurrentStats.Level)
         {
             LevelUp();
         }
@@ -214,7 +217,7 @@ public class Player : TileActor, IDungeonActor
 
     public void LevelUp()
     {
-        Stats.Level++;
+        CurrentStats.Level++;
         Routine routine = Routine.Create(() => Routine.WaitForSeconds(0.5f));
         routine.Then(() => ShowFloatyText("LEVEL UP!", Color.yellow, FloatyTextSize.Large))
                .Then(() => Game.CardDraw.PerformCharacterCardDrawing(2))
@@ -225,7 +228,7 @@ public class Player : TileActor, IDungeonActor
 
     private void ProcessEffects(EffectActivatorType actionTaken)
     {
-        foreach (StatusEffect effect in Effects.ToList())
+        foreach (PersistentStatusEffect effect in Effects.ToList())
         {
             effect.ActionTaken(this, actionTaken);
         }
@@ -258,14 +261,14 @@ public class Player : TileActor, IDungeonActor
     {        
         if (Game.Dungeon.IsCombat)
         {
-            if (!isFullAction && _freeMoves > 0)
+            if (!isFullAction && CurrentStats.FreeMoves > 0)
             {
-                _freeMoves--;
+                CurrentStats.FreeMoves--;
             }
             else
             {
-                _fullActions--;
-                _freeMoves = 0;
+                CurrentStats.FullActions--;
+                CurrentStats.FreeMoves = 0;
             }
         }
 
@@ -292,8 +295,8 @@ public class Player : TileActor, IDungeonActor
         }
     }
 
-    public bool PlayerCanAct { get { return Game.States.CanPlayerAct && !Game.Dungeon.IsCombat || _fullActions > 0; } }
-    public bool PlayerCanMove { get { return PlayerCanAct || _freeMoves > 0; } }
+    public bool PlayerCanAct => Game.States.CanPlayerAct && !Game.Dungeon.IsCombat || CurrentStats.FullActions > 0;
+    public bool PlayerCanMove => PlayerCanAct || CurrentStats.FreeMoves > 0;
 
     public void PlayerMoveCommand(Direction direction)
     {
@@ -332,7 +335,7 @@ public class Player : TileActor, IDungeonActor
     private void InteractWith(TileEntity obj)
     {
         var interaction = obj.GetPlayerInteraction(this);
-        var routine = Routine.Create(() => obj.PlayerInteractWith());
+        var routine = Routine.Create(obj.PlayerInteractWith, this);
         
         if (interaction == PlayerInteraction.Attack)
         {
@@ -369,7 +372,8 @@ public class Player : TileActor, IDungeonActor
 
     public int GetAttackStrength()
     {
-        int damage = Stats.BaseStrength;
+        var stats = GetModifiedStats();
+        int damage = stats.Strength;
         if (Inventory.EquippedWeapon != null)
         {
             damage += Inventory.EquippedWeapon.Data.Power;

@@ -10,20 +10,13 @@ public class RoomArea : MonoBehaviourEx
     private BoxCollider2D col;
 
     public int NumDraws = 2;
-    public bool IsBossArea
-    {
-        get { return this.parentRoom.BossRoom; }
-    }
+    public bool IsBossArea => this.parentRoom.BossRoom;
 
-    public bool IsEntranceArea
-    {
-        get { return this.parentRoom.EntranceRoom; }
-    }
+    public bool IsEntranceArea => this.parentRoom.EntranceRoom;
 
-    public bool IsNormalArea
-    {
-        get { return this.parentRoom.IsNormalRoom; }
-    }
+    public bool IsNormalArea => this.parentRoom.IsNormalRoom;
+
+    public bool RoomVisited { get; private set; }
 
     public OnPlayerEnterEvents OnPlayerEnter = OnPlayerEnterEvents.DungeonEvents;
 
@@ -43,6 +36,8 @@ public class RoomArea : MonoBehaviourEx
         Player player = collision.GetComponent<Player>();
         if (player != null)
         {
+            RoomVisited = true;
+
             if (OnPlayerEnter == OnPlayerEnterEvents.DungeonEvents)
             {
                 this.DoDungeonEvents();

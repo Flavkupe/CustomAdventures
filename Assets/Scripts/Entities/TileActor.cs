@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -11,8 +12,9 @@ public abstract class TileActor : TileEntity, IDungeonActor
     protected ThoughtBubble ThoughtBubble { get; private set; }
 
     public abstract Stats CurrentStats { get; }
+    public abstract Stats BaseStats { get; }
 
-    public List<StatusEffect> Effects { get; } = new List<StatusEffect>();
+    public List<PersistentStatusEffect> Effects { get; } = new List<PersistentStatusEffect>();
 
     public Transform Transform => this.transform;
 
@@ -20,14 +22,34 @@ public abstract class TileActor : TileEntity, IDungeonActor
     {
     }
 
-    public void AddStatusEffect(StatusEffect effect)
+    public void AddStatusEffect(PersistentStatusEffect effect)
     {
         Effects.Add(effect);
     }
 
-    public void RemoveStatusEffect(StatusEffect effect)
+    public void TryRemoveStatusEffect(PersistentStatusEffect effect)
     {
-        Effects.Remove(effect);
+        if (effect != null && Effects.Contains(effect))
+        {
+            Effects.Remove(effect);
+        }
+    }
+
+    /// <summary>
+    /// Gets the stats modified by each Effect. Creates
+    /// a clone of the stats, does not modify in place.
+    /// </summary>
+    /// <param name="baseStats">Whether this is the modified base stats or current stats</param>
+    /// <returns></returns>
+    public Stats GetModifiedStats(bool baseStats = false)
+    {
+        var statsClone = baseStats ? BaseStats.Clone() : CurrentStats.Clone();
+        foreach (var effect in Effects)
+        {
+            effect.ModifyStats(statsClone);
+        }
+
+        return statsClone;
     }
 
     public abstract void DoHealing(int healing);

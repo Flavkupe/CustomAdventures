@@ -12,15 +12,12 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.3.1f1</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -469,14 +466,14 @@
     <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCard.cs" />
     <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCardData.cs" />
     <Compile Include="Assets\Scripts\Effects\AnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\TileEntityAnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffect.cs" />
-    <Compile Include="Assets\Scripts\Effects\TileEntityAnimationEffectData.cs" />
     <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffectData.cs" />
     <Compile Include="Assets\Scripts\Effects\ProjectileAnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\ProjectileAnimationEffectData.cs" />
     <Compile Include="Assets\Scripts\Effects\TargetedAnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\TargetedAnimationEffectData.cs" />
+    <Compile Include="Assets\Scripts\Effects\TileEntityAnimationEffect.cs" />
+    <Compile Include="Assets\Scripts\Effects\TileEntityAnimationEffectData.cs" />
     <Compile Include="Assets\Scripts\Entities\Amenity.cs" />
     <Compile Include="Assets\Scripts\Entities\CurseTotem.cs" />
     <Compile Include="Assets\Scripts\Entities\DecorativeTileEntity.cs" />
@@ -523,7 +520,9 @@
     <Compile Include="Assets\Scripts\State\GameContext.cs" />
     <Compile Include="Assets\Scripts\State\State.cs" />
     <Compile Include="Assets\Scripts\Status\InstantEffectData.cs" />
-    <Compile Include="Assets\Scripts\Status\PersistentEffectData.cs" />
+    <Compile Include="Assets\Scripts\Status\Persistent\EnchantmentEffectData.cs" />
+    <Compile Include="Assets\Scripts\Status\Persistent\PersistentEffectData.cs" />
+    <Compile Include="Assets\Scripts\Status\Persistent\ProccingPersistentEffectData.cs" />
     <Compile Include="Assets\Scripts\Status\Stats.cs" />
     <Compile Include="Assets\Scripts\Status\StatusEffectData.cs" />
     <Compile Include="Assets\Scripts\Tests\EffectTester.cs" />

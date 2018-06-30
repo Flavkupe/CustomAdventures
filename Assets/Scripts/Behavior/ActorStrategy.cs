@@ -41,7 +41,8 @@ public class ActorStrategy : ScriptableObject
 
     public bool CanTakeStrategy(TileAI subject)
     {
-        return subject.CurrentStats.FullActions > 0 || CanUseFreeMove && subject.CurrentStats.FreeMoves > 0;
+        var stats = subject.GetModifiedStats();
+        return stats.FullActions > 0 || CanUseFreeMove && stats.FreeMoves > 0;
     }
 
     public virtual bool Decide(TileAI subject, GameContext context)
@@ -79,7 +80,7 @@ public class ActorStrategy : ScriptableObject
         Debug.Assert(CanTakeStrategy(subject), "Trying to perform action without free moves!");
 
         // Tally action points and free moves first
-        if (CanUseFreeMove && subject.CurrentStats.FreeMoves > 0)
+        if (CanUseFreeMove && subject.GetModifiedStats().FreeMoves > 0)
         {
             // First use free moves if available
             subject.CurrentStats.FreeMoves--;

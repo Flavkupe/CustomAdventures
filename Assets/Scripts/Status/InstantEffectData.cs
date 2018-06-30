@@ -22,7 +22,7 @@ public class InstantEffectData : StatusEffectData
         var magnitude = Magnitude;
         if (ExtraProperties.HasFlag(ExtraEffectProperties.BoostedByStrength))
         {
-            magnitude += source.CurrentStats.BaseStrength;
+            magnitude += source.GetModifiedStats().Strength;
         }
 
         yield return ActivateEffect(targetActor, source.transform.position, magnitude);

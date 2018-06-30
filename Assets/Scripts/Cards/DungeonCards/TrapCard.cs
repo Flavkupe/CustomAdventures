@@ -2,7 +2,7 @@
 
 public class TrapCard : DungeonCard<TrapCardData>
 {
-    public override void ExecuteTileSpawnEvent(GridTile tile)
+    public override void ExecuteTileSpawnEvent(GridTile tile, DungeonCardExecutionContext context)
     {
         if (!tile.GetPassableTileEntities().Any(a => a.EntityType == TileEntityType.Trap))
         {            

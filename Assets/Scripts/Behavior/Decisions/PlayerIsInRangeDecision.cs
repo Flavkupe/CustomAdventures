@@ -18,7 +18,7 @@ public class PlayerIsInRangeDecision : Decision
 
     protected override bool Evaluation(TileAI subject, GameContext context)
     {
-        var range = UseVisionForRange ? subject.CurrentStats.VisibilityRange : Range;
+        var range = UseVisionForRange ? subject.GetModifiedStats().VisibilityRange : Range;
         return context.Dungeon.Grid.GetEntities(RangeType, subject.XCoord, subject.YCoord, range, TileEntityType.Player).Count > 0;
     }
 }

@@ -11,15 +11,18 @@ public class CurseTotem : TileEntity
 
     private SoundGenerator _soundGen;
 
-    public override TileEntityType EntityType => TileEntityType.Environment;
+    private SpriteRenderer _renderer;
+
+    public override TileEntityType EntityType => TileEntityType.Totem;
 
     private bool _canInteractWith = true;
 
     [UsedImplicitly]
     private void Start ()
     {
-        GetComponent<SpriteRenderer>().sprite = Data.Sprite;
-        GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
+        _renderer = GetComponent<SpriteRenderer>();
+        _renderer.sprite = Data.Sprite;
+        _renderer.sortingLayerName = "Entities";
         _soundGen = GetComponent<SoundGenerator>();
     }
 
@@ -33,18 +36,17 @@ public class CurseTotem : TileEntity
         return PlayerInteraction.InteractWithObject;
     }
 
-    public override IEnumerator PlayerInteractWith()
+    public override IEnumerator PlayerInteractWith(Player player)
     {
         yield return PlayerTwitchTowardsThis();
 
-        var filter = this.Data.LootTypes != null && this.Data.LootTypes.Length > 0 ? new LootCardFilter() : null;
-        if (filter != null)
-        {
-            this.Data.LootTypes.ToList().ForEach(a => filter.PossibleTypes.Add(a));
-        }
+        _soundGen.PlayRandomFrom(Data.BreakSounds);
 
-        _soundGen.PlayRandomFrom(Data.OpenSounds);
-        Game.CardDraw.PerformLootCardDrawing(this.Data.NumTreasures, filter);
+        // Find and expire matching effect
+        var matchingEffect = player.Effects.FirstOrDefault(a => a.GetIdentifier() == Data.CurseEffect.GetIdentifier());
+        matchingEffect?.Expire(player);
+
+        _renderer.enabled = false;
         _canInteractWith = false;
         Destroy(gameObject, 1.0f);
     }

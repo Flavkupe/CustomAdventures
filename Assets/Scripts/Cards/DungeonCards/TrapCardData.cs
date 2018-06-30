@@ -9,8 +9,8 @@ public class TrapCardData : EntityCardData<TileTrap>
     public int Level = 1;
     public int Damage = 1;
 
-    public override DungeonCardType DungeonCardType { get { return DungeonCardType.Trap; } }
-    public override Type BackingCardType { get { return typeof(TrapCard); } }
+    public override DungeonCardType DungeonCardType => DungeonCardType.Trap;
+    public override Type BackingCardType => typeof(TrapCard);
 
     public override TileTrap InstantiateEntity()
     {
