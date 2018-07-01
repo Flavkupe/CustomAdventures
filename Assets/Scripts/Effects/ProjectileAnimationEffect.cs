@@ -77,8 +77,7 @@ public class ProjectileAnimationEffect : AnimationEffect<ProjectileAnimationEffe
     {
         foreach (var effect in GetSubEffectAnimations())
         {
-            effect.transform.parent = transform;
-            effect.transform.position = transform.position;
+            effect.transform.SetParentAndPos(transform);
             routines.AddRoutine(effect.CreateRoutine());
         }
 

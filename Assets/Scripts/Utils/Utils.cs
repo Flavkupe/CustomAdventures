@@ -205,6 +205,12 @@ public static class ExtensionFunctions
         return new Vector3(vector.x + xOffset, vector.y + yOffset, vector.z + zOffset);
     }
 
+    public static void SetParentAndPos(this Transform transform, Transform parent)
+    {
+        transform.SetParent(parent);
+        transform.position = parent.position;
+    }
+
     #region 2D array extensions    
 
     public static void ShiftInDirection<T>(this T obj, Direction direction) where T : IHasCoords

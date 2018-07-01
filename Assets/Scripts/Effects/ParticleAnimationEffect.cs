@@ -4,18 +4,36 @@ using UnityEngine;
 
 public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectData>
 {
+    private ParticleSystem _particles;
+
     protected override void OnBeforeExecute()
     {
         base.OnBeforeExecute();
 
-        // Set the position to either the Target or Source if either are used
-        if (Target != null)
+        switch (Data.Targeting)
         {
-            transform.position = Target.Value;
-        }
-        else if (Source != null)
-        {
-            transform.position = Source.Value;
+            case ParticleEffectTargeting.ParentParticlesToTarget:
+                if (TargetEntity != null)
+                {
+                    transform.SetParentAndPos(TargetEntity.transform);
+                }
+                else if (Target != null)
+                {
+                    transform.position = Target.Value;
+                }
+
+                break;
+            case ParticleEffectTargeting.ParentParticlesToSource:
+                if (SourceEntity != null)
+                {
+                    transform.SetParentAndPos(SourceEntity.transform);
+                }
+                else if (Source != null)
+                {
+                    transform.position = Source.Value;
+                }
+
+                break;
         }
     }
 
@@ -43,8 +61,7 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
         foreach (var effect in GetSubEffectAnimations())
         {
             // Run effects in parallel
-            effect.transform.parent = transform;
-            effect.transform.position = transform.position;
+            effect.transform.SetParentAndPos(transform);
             StartCoroutine(effect.CreateRoutine());
         }
 
@@ -70,21 +87,23 @@ public class ParticleAnimationEffect : AnimationEffect<ParticleAnimationEffectDa
         foreach (var effect in GetSubEffectAnimations())
         {
             // Run sub-effects in sequence
-            effect.transform.parent = transform;
-            effect.transform.position = transform.position;
+            effect.transform.SetParentAndPos(transform);
             yield return effect.CreateRoutine();
         }
 
         OnComplete();
     }
 
+    protected override void OnComplete()
+    {
+        base.OnComplete();
+    }
+
     private ParticleSystem CreateParticle(ParticleSystem particle)
     {
-        var obj = Instantiate(particle);
-        var parent = Data.ParentParticlesToTarget && TargetEntity != null ? TargetEntity.transform : transform;
-        obj.transform.parent = parent;
-        obj.transform.position = parent.position;
-        return obj;
+        _particles = Instantiate(particle);
+        _particles.transform.SetParentAndPos(transform);
+        return _particles;
     }
 }
 

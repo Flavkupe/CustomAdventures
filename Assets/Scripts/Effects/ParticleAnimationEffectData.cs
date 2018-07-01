@@ -6,8 +6,8 @@ public class ParticleAnimationEffectData : AnimationEffectData
 {
     public ParticleSystem[] Particles;
 
-    [Tooltip("If true, will set the parent of the particles to the target entity, if applicable.")]
-    public bool ParentParticlesToTarget;
+    [Tooltip("Parents the particles to apropriate target.")]
+    public ParticleEffectTargeting Targeting;
 
     public override Type AnimationEffectObjectType => typeof(ParticleAnimationEffect);
 
@@ -30,5 +30,23 @@ public class ParticleAnimationEffectData : AnimationEffectData
         /// </summary>
         Loop,
     }
+}
+
+public enum ParticleEffectTargeting
+{
+    /// <summary>
+    /// Don't parent to anything; let parent effects decide (such as for projectiles)
+    /// </summary>
+    Default,
+
+    /// <summary>
+    /// Always put position on Target
+    /// </summary>
+    ParentParticlesToTarget,
+
+    /// <summary>
+    /// Always put position on Source
+    /// </summary>
+    ParentParticlesToSource,
 }
 

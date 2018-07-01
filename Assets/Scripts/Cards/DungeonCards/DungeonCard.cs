@@ -28,6 +28,8 @@ public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCa
 
     public DungeonEventType DungeonEventType => Data.DungeonEventType;
 
+    public RoomEventType RoomEventType => Data.RoomEventType;
+
     public virtual bool RequiresFullTile => true;
 }
 
@@ -51,6 +53,8 @@ public abstract class DungeonSpawnCard<TDataType, TEntityType> : DungeonCard<TDa
 public interface IDungeonCard : ICard
 {
     DungeonEventType DungeonEventType { get; }
+
+    RoomEventType RoomEventType { get; }
 
     bool RequiresFullTile { get; }
 
@@ -82,10 +86,20 @@ public enum DungeonEventType
     MultiEvent,
 }
 
+/// <summary>
+/// What room will an event occur in?
+/// </summary>
+public enum RoomEventType
+{
+    CurrentRoom,
+    RandomUnexplored,
+}
+
 public abstract class DungeonCardData : CardData
 {
     public abstract DungeonCardType DungeonCardType { get; }
     public DungeonEventType DungeonEventType;
+    public RoomEventType RoomEventType;
 
     [Tooltip("If more than 1, will repeat at least that many times, bounded by EffectRepeatMaxTimes")]
     public int EffectRepeatMinTimes = 0;

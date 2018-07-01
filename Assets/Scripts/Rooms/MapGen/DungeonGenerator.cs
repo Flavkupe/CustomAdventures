@@ -43,12 +43,13 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         // At least 2 rooms (start and boss rooms)
         NumRooms = Mathf.Max(NumRooms, 2);
 
-        _roomGrid = Game.Dungeon.RoomGrid;
         _grid = Game.Dungeon.Grid;
 
         _grid.Init(Dims, Dims);
 
         _roomGrid = new Room[NumRooms, NumRooms];
+
+        Game.Dungeon.RoomGrid = _roomGrid;
 
         // First room needs a down
         var firstRoomTemplate = PossibleRoomTemplates.Where(a => a.EntranceRoom).FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down));

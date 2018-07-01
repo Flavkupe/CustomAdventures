@@ -64,7 +64,11 @@ public class ActorStrategy : ScriptableObject
     public virtual void EnterStrategy(TileAI subject)
     {
         // Initialize countdown if applicable
-        _countdown = CountdownOptions.FirstUseRequiresCountdown ? CountdownOptions.Countdown : 0;
+        if (CountdownOptions != null)
+        {
+            _countdown = CountdownOptions.FirstUseRequiresCountdown ? CountdownOptions.Countdown : 0;
+        }
+
         subject.HideThoughtBubble();
     }
 
@@ -103,7 +107,7 @@ public class ActorStrategy : ScriptableObject
         {
             yield return PerformActions(subject, context);
             subject.HideThoughtBubble();
-            _countdown = CountdownOptions.Countdown;
+            _countdown = CountdownOptions?.Countdown ?? 0;
         }        
     }
 

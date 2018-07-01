@@ -385,11 +385,9 @@ public class Player : TileActor, IDungeonActor
     public override IEnumerator TwitchTowards(Direction direction, float speed = 5.0f)
     {
         // Unparent Camera for twitch so that camera doesn't twitch too
-        Camera.main.transform.SetParent(null);
         InterfaceObjects.transform.SetParent(null);
         yield return base.TwitchTowards(direction, speed);
         InterfaceObjects.transform.SetParent(transform);
-        Camera.main.transform.SetParent(transform);
     }
 
     public void PlayClip(AudioClip clip)

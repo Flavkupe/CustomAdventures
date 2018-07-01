@@ -145,31 +145,34 @@ public class DungeonManager : SingletonObject<DungeonManager>
         var routineSet = new ParallelRoutineSet();
         for (var i = 0; i < numTimes; i++)
         {
-            var tile = GetTargetTile(roomArea, card);
+            // Which room does the event happen in?
+            var spawnRoomArea = roomArea;
+            if (card.RoomEventType == RoomEventType.RandomUnexplored)
+            {
+                spawnRoomArea = GetUnexploredRoomArea(roomArea);
+            }
+
+            var tile = GetTargetTile(spawnRoomArea, card);
 
             if (tile != null)
             {
-                // Card travel effect
-                var cardTravelEffect = CardMoveToEffect.CreateTargetedEffect(tile.transform.position, card.Object.transform.position);
-                var routine = cardTravelEffect.CreateRoutine();
-                routine.Finally(() =>
+                if (card.RoomEventType == RoomEventType.CurrentRoom)
                 {
-                    if (card.RequiresFullTile)
+                    // Card travel effect
+                    var cardTravelEffect = CardMoveToEffect.CreateTargetedEffect(tile.transform.position, card.Object.transform.position);
+                    var routine = cardTravelEffect.CreateRoutine();
+                    routine.Finally(() =>
                     {
-                        // TODO: I don't think the IsReserved system is needed....
-                        tile.IsReserved = true;
-                    }
+                        DoCardSpawnEvent(card, tile);
+                    });
 
-                    var context = new DungeonCardExecutionContext()
-                    {
-                        Player = Game.Player,
-                        Dungeon = this,
-                    };
-
-                    card.ExecuteTileSpawnEvent(tile, context);
-                });
-
-                routineSet.AddRoutine(routine);
+                    routineSet.AddRoutine(routine);
+                }
+                else
+                {
+                    // No travel event
+                    routineSet.AddRoutine(Routine.CreateAction(() => DoCardSpawnEvent(card, tile)));
+                }
             }
             else
             {
@@ -182,6 +185,45 @@ public class DungeonManager : SingletonObject<DungeonManager>
         finalRoutine.Finally(card.DestroyCard);
 
         return finalRoutine;
+    }
+
+    private void DoCardSpawnEvent(IDungeonCard card, GridTile tile)
+    {
+        if (card.RequiresFullTile)
+        {
+            // TODO: I don't think the IsReserved system is needed....
+            tile.IsReserved = true;
+        }
+
+        var context = new DungeonCardExecutionContext()
+        {
+            Player = Game.Player,
+            Dungeon = this,
+        };
+
+        card.ExecuteTileSpawnEvent(tile, context);
+    }
+
+    /// <summary>
+    /// Gets a random unvisited room area. If all rooms have been visited, returns 'defaultArea'.
+    /// </summary>
+    /// <param name="defaultArea">RoomArea to get if all areas have been explored.</param>
+    /// <returns>Random unvisited RoomArea, or defaultArea if none exist.</returns>
+    private RoomArea GetUnexploredRoomArea(RoomArea defaultArea)
+    {
+        var areas = new List<RoomArea>();
+        areas.Add(defaultArea);
+        foreach (var room in RoomGrid)
+        {
+            // TODO: improve RoomGrid?
+            if (room != null)
+            {
+                var roomAreas = room.GetComponentsInChildren<RoomArea>();
+                areas.AddRange(roomAreas.Where(a => !a.RoomVisited));
+            }
+        }
+
+        return areas.GetRandom();
     }
 
     private GridTile GetTargetTile(RoomArea roomArea, IDungeonCard card)
