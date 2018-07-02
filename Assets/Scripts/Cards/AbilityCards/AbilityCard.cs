@@ -1,24 +1,17 @@
-﻿
-using System;
-using JetBrains.Annotations;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCardData
 {
-    public override CardType CardType { get { return CardType.Ability; } }
-    public AbilityCardType AbilityCardType { get { return Data.AbilityCardType; } }
-    public AbilityActivationType ActivationType { get { return Data.ActivationType; } }
+    public override CardType CardType => CardType.Ability;
+    public AbilityCardType AbilityCardType => Data.AbilityCardType;
+    public AbilityActivationType ActivationType => Data.ActivationType;
 
-    public Sprite AbilityIcon { get { return Data.AbilityIcon; } }
+    public Sprite AbilityIcon => Data.AbilityIcon;
 
     // TODO: based on character class and card
-    public bool ForgetOnUse { get { return true; } }
+    public bool ForgetOnUse => true;
 
-    public virtual void ActivateAbility()
-    {
-        // Must implement to use!
-        throw new NotImplementedException();
-    }
+    public abstract void ActivateAbility();
 
     protected void AfterCardUsed()
     {

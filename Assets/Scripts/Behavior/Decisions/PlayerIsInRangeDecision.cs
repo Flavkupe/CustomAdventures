@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "Decision", menuName = "Create Behavior/Decisions/Player Is In Range", order = 1)]
 public class PlayerIsInRangeDecision : Decision

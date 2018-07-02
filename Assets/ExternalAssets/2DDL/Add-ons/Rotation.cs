@@ -1,11 +1,8 @@
 ﻿namespace DynamicLight2D
 {
 	using UnityEngine;
-	using System.Collections;
-	using System;
-
 #if UNITY_EDITOR
-	using UnityEditor;
+
 #endif
 
 	[ExecuteInEditMode]

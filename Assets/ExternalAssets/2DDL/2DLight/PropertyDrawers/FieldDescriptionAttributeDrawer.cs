@@ -3,9 +3,8 @@ namespace DynamicLight2D
 {
 	using UnityEngine;
 	using UnityEditor;
-	using System.Collections;
-	
-	[CustomPropertyDrawer(typeof(FieldDescriptionAttribute))]
+
+    [CustomPropertyDrawer(typeof(FieldDescriptionAttribute))]
 	public class FieldDescriptionAttributeDrawer : PropertyDrawer {
 		private FieldDescriptionAttribute _attributeValue = null;
 		private FieldDescriptionAttribute attributeValue

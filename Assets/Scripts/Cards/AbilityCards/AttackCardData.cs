@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Card", menuName = "Create Cards/Ability/Attack Card", order = 1)]
 public class AttackCardData : AbilityCardData
 {
-    public override AbilityCardType AbilityCardType { get { return AbilityCardType.Attack; } }
+    public override AbilityCardType AbilityCardType => AbilityCardType.Attack;
 
     public AttackTargetType TargetType;
     public TileRangeType RangeType;
@@ -16,7 +16,7 @@ public class AttackCardData : AbilityCardData
 
     public TargetedAnimationEffectData AnimationEffect;
 
-    public override Type BackingCardType { get { return typeof(AttackCard); } }
+    public override Type BackingCardType => typeof(AttackCard);
 }
 
 public enum AttackTargetType

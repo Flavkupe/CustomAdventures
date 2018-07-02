@@ -1,10 +1,8 @@
 ﻿namespace DynamicLight2D
 {
 	using UnityEngine;
-	using System.Collections;
-	using DynamicLight2D;
 
-	[ExecuteInEditMode]
+    [ExecuteInEditMode]
 	public class Illumination : AddOnBase {
 		
 		// Tags array is used for search results in inspector

@@ -1,11 +1,8 @@
 ﻿namespace DynamicLight2D
 {
 	using UnityEngine;
-	using System.Collections;
-	using System.IO;
-	using System.Reflection;
-	
-	[ExecuteInEditMode]
+
+    [ExecuteInEditMode]
 	public class LensFlares : AddOnBase {
 
 

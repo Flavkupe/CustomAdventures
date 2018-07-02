@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCardData
 {

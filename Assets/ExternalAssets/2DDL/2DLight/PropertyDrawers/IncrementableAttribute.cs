@@ -2,9 +2,8 @@
 namespace DynamicLight2D
 {
 	using UnityEngine;
-	using System.Collections;
 
-	public class IncrementableAttribute : PropertyAttribute
+    public class IncrementableAttribute : PropertyAttribute
 	{
 		public readonly float incrementBy;
 		

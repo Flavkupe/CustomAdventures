@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 //-- Timer Class -- Easy handle timer in C# --//
 //--by  Martin Ysa --//

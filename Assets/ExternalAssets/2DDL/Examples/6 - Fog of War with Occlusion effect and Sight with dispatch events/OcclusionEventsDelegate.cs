@@ -2,9 +2,8 @@
 {
 	using UnityEngine;
 	using UnityEngine.UI;
-	using System.Collections;
-	
-	public class OcclusionEventsDelegate : MonoBehaviour {
+
+    public class OcclusionEventsDelegate : MonoBehaviour {
 
 		[SerializeField] DynamicLight SightOfWar;
 		[SerializeField] Text status;

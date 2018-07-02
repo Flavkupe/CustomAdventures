@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Linq;
 using UnityEngine.Tilemaps;
-using System.Collections;
 using System.Collections.Generic;
 
 public class GridTile : MonoBehaviour, IHasCoords

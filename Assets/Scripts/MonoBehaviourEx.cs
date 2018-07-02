@@ -49,22 +49,21 @@ public class MonoBehaviourEx : MonoBehaviour
         }        
     }
 
-    public T InstantiateOfType<T>(string name = null) where T : MonoBehaviour
+    public T InstantiateOfType<T>(string objName = null) where T : MonoBehaviour
     {
-        return Utils.InstantiateOfType<T>(name);
+        return Utils.InstantiateOfType<T>(objName);
     }
 
-    public T InstantiateOfType<T>(Type type, string name = null) where T : class
+    public T InstantiateOfType<T>(Type type, string objName = null) where T : class
     {
-        var t = typeof(T);
         if (!typeof(T).IsAssignableFrom(type))
         {
-            Debug.LogError(string.Format("Trying instantiate things of different type as specified! type: {0}, T: {1}", type.FullName, typeof(T).FullName));
+            Debug.LogError($"Trying instantiate things of different type as specified! type: {type.FullName}, T: {typeof(T).FullName}");
             return null;
         }
 
-        GameObject obj = new GameObject(name ?? typeof(T).Name);
-        T newObj = obj.AddComponent(type) as T;
+        var obj = new GameObject(objName ?? typeof(T).Name);
+        var newObj = obj.AddComponent(type) as T;
         return newObj;
     }
 

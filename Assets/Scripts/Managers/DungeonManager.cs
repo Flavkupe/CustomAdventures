@@ -212,7 +212,6 @@ public class DungeonManager : SingletonObject<DungeonManager>
     private RoomArea GetUnexploredRoomArea(RoomArea defaultArea)
     {
         var areas = new List<RoomArea>();
-        areas.Add(defaultArea);
         foreach (var room in RoomGrid)
         {
             // TODO: improve RoomGrid?
@@ -223,7 +222,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
             }
         }
 
-        return areas.GetRandom();
+        return areas.Count == 0 ? defaultArea : areas.GetRandom();
     }
 
     private GridTile GetTargetTile(RoomArea roomArea, IDungeonCard card)

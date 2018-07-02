@@ -4,7 +4,6 @@ namespace DynamicLight2D
 	using UnityEngine;
 	using UnityEditor;
 	using System;
-	using System.Collections;
 	using System.Reflection;
 	
 	[CustomPropertyDrawer(typeof(ButtonAttribute))]

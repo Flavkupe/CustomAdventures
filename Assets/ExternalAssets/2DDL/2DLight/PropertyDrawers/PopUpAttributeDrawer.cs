@@ -3,9 +3,8 @@ namespace DynamicLight2D
 {
 	using UnityEngine;
 	using UnityEditor;
-	using System.Collections;
-	
-	[CustomPropertyDrawer(typeof(PopUpAttribute))]
+
+    [CustomPropertyDrawer(typeof(PopUpAttribute))]
 	public class PopUpAttributeDrawer : PropertyDrawer {
 		private PopUpAttribute _attributeValue = null;
 		private PopUpAttribute attributeValue

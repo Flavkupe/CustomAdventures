@@ -2,8 +2,6 @@
 {
 	using UnityEngine;
 
-	using System.Collections;
-
 	#region Editor Section
 		#if UNITY_EDITOR
 		using UnityEditor;

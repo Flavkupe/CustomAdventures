@@ -1,9 +1,8 @@
 ﻿namespace DynamicLight2D
 {
 	using UnityEngine;
-	using System.Collections;
-	
-	public class AngleAttribute : PropertyAttribute
+
+    public class AngleAttribute : PropertyAttribute
 	{
 		public readonly bool radians;
 		

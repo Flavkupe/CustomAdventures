@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class SetProximityFactor : MonoBehaviour {
 	public float proximityCasters = 25f;

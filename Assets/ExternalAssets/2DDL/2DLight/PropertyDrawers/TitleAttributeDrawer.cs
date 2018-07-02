@@ -3,9 +3,8 @@ namespace DynamicLight2D
 {
 	using UnityEngine;
 	using UnityEditor;
-	using System.Collections;
-	
-	[CustomPropertyDrawer(typeof(TitleAttribute))]
+
+    [CustomPropertyDrawer(typeof(TitleAttribute))]
 	public class DescriptionAttributeDrawer : DecoratorDrawer {
 		private TitleAttribute _attributeValue = null;
 		private TitleAttribute attributeValue

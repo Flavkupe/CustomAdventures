@@ -3,9 +3,8 @@ namespace DynamicLight2D
 {
 	using UnityEngine;
 	using UnityEditor;
-	using System.Collections;
-	
-	[CustomPropertyDrawer(typeof(SeparatorAttribute))]
+
+    [CustomPropertyDrawer(typeof(SeparatorAttribute))]
 	public class SeparatorAttributeDrawer : DecoratorDrawer {
 		private SeparatorAttribute _attributeValue = null;
 		private SeparatorAttribute attributeValue

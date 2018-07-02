@@ -2,9 +2,7 @@
 #if UNITY_EDITOR
 namespace DynamicLight2D
 {
-	using System.Collections;
-	using System.Collections.Generic;
-	using System.Text.RegularExpressions;
+    using System.Text.RegularExpressions;
 	using System.IO;
 	using UnityEngine;
 	using UnityEditor;

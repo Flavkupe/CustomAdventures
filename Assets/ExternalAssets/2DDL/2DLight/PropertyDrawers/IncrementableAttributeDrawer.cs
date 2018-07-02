@@ -3,9 +3,8 @@ namespace DynamicLight2D
 {
 	using UnityEngine;
 	using UnityEditor;
-	using System.Collections;
-	
-	[CustomPropertyDrawer(typeof(IncrementableAttribute))]
+
+    [CustomPropertyDrawer(typeof(IncrementableAttribute))]
 	public class IncrementableAttributeDrawer : PropertyDrawer
 	{
 		

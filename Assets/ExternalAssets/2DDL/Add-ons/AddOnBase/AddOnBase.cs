@@ -1,10 +1,8 @@
 ﻿namespace DynamicLight2D
 {
 	using UnityEngine;
-	using System.Collections;
-	using DynamicLight2D;
-	
-	public class AddOnBase : MonoBehaviour {
+
+    public class AddOnBase : MonoBehaviour {
 		
 		public DynamicLight dynamicLightInstance
 		{
