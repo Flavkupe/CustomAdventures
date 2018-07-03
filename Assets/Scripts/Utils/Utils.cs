@@ -211,6 +211,19 @@ public static class ExtensionFunctions
         transform.position = parent.position;
     }
 
+    public static IEnumerator RotateCoroutine(this Transform transform, Vector3 axis, float angle, float speed)
+    {
+        float totalRot = 0;
+        while (totalRot < angle)
+        {
+            float speedMultiplier = Game.States.GetMouseDownSpeedMultiplier();
+            float delta = Time.deltaTime * speed * speedMultiplier;
+            transform.Rotate(axis, delta);
+            totalRot += delta;
+            yield return null;
+        }
+    }
+
     #region 2D array extensions    
 
     public static void ShiftInDirection<T>(this T obj, Direction direction) where T : IHasCoords

@@ -16,6 +16,21 @@ public class DungeonPrefabTemplates : ScriptableObject
         public GridTile GridTile;
     }
 
+    [Serializable]
+    public class CardPartPrefabs
+    {
+        [Serializable]
+        public class AnimationEffects
+        {
+            public AnimationEffectData DefaultCardTriggerEffect;
+            public AnimationEffectData DefaultCardMoveToEffect;
+        }
+
+        public AnimationEffects Effects;
+    }
+
+    public CardPartPrefabs CardParts;
+
     public EntityPartPrefabs EntityParts;
 
     public DungeonPartPrefabs DungeonParts;

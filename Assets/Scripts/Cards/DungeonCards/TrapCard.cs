@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 
-public class TrapCard : DungeonCard<TrapCardData>
+public class TrapCard : DungeonSpawnCard<TrapCardData, TileTrap>
 {
-    public override void ExecuteTileSpawnEvent(GridTile tile, DungeonCardExecutionContext context)
+    protected override IEnumerator ExecuteSpawnEvent(GridTile tile, DungeonCardExecutionContext context)
     {
-        if (!tile.GetPassableTileEntities().Any(a => a.EntityType == TileEntityType.Trap))
-        {            
+        if (tile.GetPassableTileEntities().All(a => a.EntityType != TileEntityType.Trap))
+        {
             var trap = Data.InstantiateEntity();
             trap.SpawnOnGrid(Game.Dungeon, tile);
         }
@@ -13,7 +14,9 @@ public class TrapCard : DungeonCard<TrapCardData>
         {
             // TODO: if contains a trap already, spawn elsewhere
         }
+
+        yield return null;
     }
 
-    public override bool RequiresFullTile { get { return false; } }
+    public override bool RequiresFullTile => false;
 }

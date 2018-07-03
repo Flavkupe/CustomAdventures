@@ -18,111 +18,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     private void Awake()
     {
         Instance = this;
-    }
-
-    public Routine PerformDungeonEvents(RoomArea roomArea)
-    {
-        int draws = roomArea.NumDraws;
-        DungeonCardData[] specialCards = null;
-        if (roomArea.IsBossArea)
-        {
-            specialCards = Game.Dungeon.PossibleBossCards;
-        }
-        else if (roomArea.IsEntranceArea)
-        {
-            specialCards = Game.Player.GetEntranceCards();
-        }
-
-        // TODO: empty deck?
-        Func<IDungeonCard, Routine> cardExecuteRoutine = card => GetDungeonCardRoutine(roomArea, card);
-
-        if (specialCards != null)
-        {
-            foreach (var cardData in specialCards)
-            {
-                var specialCard = Game.Decks.CreateCardFromData<IDungeonCard, DungeonCardData>(cardData);
-                Game.Decks.DungeonDeck.PushCard(specialCard);
-            }
-
-            draws = specialCards.Length;
-        }
-
-        roomArea.gameObject.SetActive(false);
-        Game.Dungeon.PostGroupEventCleanup();
-
-        return DoCardDraw(new DrawCoroutineProps<IDungeonCard>(draws, Game.Decks.DungeonDeck, cardExecuteRoutine, roomArea.IsNormalArea));
-    }
-
-    private Routine GetDungeonCardRoutine(RoomArea roomArea, IDungeonCard card)
-    {
-        switch (card.DungeonEventType)
-        {
-            case DungeonEventType.SpawnNear:
-            case DungeonEventType.SpawnOnCorner:
-            case DungeonEventType.SpawnOnWideOpen:
-                return Game.Dungeon.CreateSpawnEventRoutine(roomArea, card);
-            case DungeonEventType.MultiEvent:
-                return GenerateMultiEventRoutines(roomArea, card);
-            default:
-                Debug.LogError("No behavior set for DungeonEventType!");
-                return Routine.Empty;
-        }
-    }
-
-    private Routine GenerateMultiEventRoutines(RoomArea roomArea, IDungeonCard card)
-    {
-        var data = card.GetData<MultiEventCardData>();
-        if (data == null)
-        {
-            Debug.LogError("Invalid cast for MultiEventCardData!");
-            return Routine.Empty;
-        }
-
-        var drawChain = new ParallelRoutineSet();
-        var effectChain = new ParallelRoutineSet();
-        var events = new List<DungeonCardData>();
-        if (data.MultiEventType == MultiEventType.DoEach)
-        {
-            events.AddRange(data.Events);
-        }
-        else
-        {
-            for (var i = 0; i < data.NumberOfEvents; i++)
-            {
-                events.Add(data.Events.GetRandom());
-            }
-        }
-
-        var yDist = 1.2f;
-        var zOffset = -0.2f;
-        foreach (var subevent in events)
-        {
-            var newCard = Game.Decks.CreateAnonymousCardFromData<IDungeonCard>(subevent);
-            if (newCard != null)
-            {
-                newCard.SetFaceUp();
-                newCard.Object.transform.position = card.Object.transform.position.OffsetBy(0.0f, 0.0f, zOffset);
-                drawChain.AddRoutine(Routine.Create(SlideCardUp, newCard, yDist, 10.0f));
-                yDist += 1.2f;
-                zOffset -= 0.2f;
-
-                var cardRoutine = GetDungeonCardRoutine(roomArea, newCard);
-                effectChain.AddRoutine(cardRoutine);
-            }
-        }
-
-        var routine = drawChain.AsRoutine();
-        routine.Then(() => Routine.WaitForSeconds(0.5f, true));
-        routine.Then(() => effectChain);
-        routine.Finally(card.DestroyCard);
-        return routine;
-    }
-
-    private IEnumerator SlideCardUp(ICard card, float yDist, float speed)
-    {
-        Vector3 target = card.Object.transform.position + (Vector3.up * yDist);
-        yield return card.Object.transform.MoveToSpotCoroutine(target, speed);
-    }
+    }    
 
     public Routine PerformLootCardDrawing(int cardNum, LootCardFilter filter = null)
     {
@@ -219,15 +115,15 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
             DrawConditionFunc = drawConditionFunc;
         }
 
-        public Func<TCardType, bool> DrawConditionFunc { get; private set; }
+        public Func<TCardType, bool> DrawConditionFunc { get; }
 
-        public int NumDraws { get; private set; }
+        public int NumDraws { get; }
 
-        public Deck<TCardType> Deck { get; private set; }
+        public Deck<TCardType> Deck { get; }
 
-        public Func<TCardType, Routine> CardRoutine { get; private set; }
+        public Func<TCardType, Routine> CardRoutine { get; }
 
-        public bool AllowMulligan { get; private set; }
+        public bool AllowMulligan { get; }
     }
 
     private IEnumerator QuickDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
@@ -239,13 +135,19 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         {
             yield return SlideCardUp(card, 1.5f, 20.0f);
             yield return Routine.WaitForSeconds(0.5f, true);
-            yield return card.Object.RotateCoroutine(Vector3.up, 180, 500.0f);
+            yield return card.Object.transform.RotateCoroutine(Vector3.up, 180, 500.0f);
             yield return Routine.WaitForSeconds(0.5f, true);
             yield return props.CardRoutine(card);
 
             // Make card big for UI display
             card.Object.transform.localScale = new Vector3(fullSize, fullSize, fullSize);
         }
+    }
+
+    private IEnumerator SlideCardUp(ICard card, float yDist, float speed)
+    {
+        var target = card.Object.transform.position + (Vector3.up * yDist);
+        yield return card.Object.transform.MoveToSpotCoroutine(target, speed);
     }
 
     private IEnumerator InternalDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(Dungeon))]
-[RequireComponent(typeof(TileGrid))]
 public class DungeonGenerator: MonoBehaviourEx
 {
     public int NumRooms = 4;
@@ -16,6 +16,7 @@ public class DungeonGenerator: MonoBehaviourEx
 
     private TileGrid _grid;
     private Room[,] _roomGrid;
+    private readonly List<Room> _roomsUsed = new List<Room>();
 
     private readonly List<GridTile> _openConnectors = new List<GridTile>();
     private readonly List<GridTile> _toClearLater = new List<GridTile>();
@@ -23,10 +24,15 @@ public class DungeonGenerator: MonoBehaviourEx
 
     private Dungeon _dungeon;
 
+    public event EventHandler<List<Room>> DungeonGenerated;
+
     [UsedImplicitly]
     private void Start()
     {
         _dungeon = GetComponent<Dungeon>();
+        _grid = GetComponentInChildren<TileGrid>();
+
+        Debug.Assert(_grid != null, "DungeonGenerator Requires TileGrid child component!");
 
         if (PossibleRoomTemplates.Length == 0)
         {
@@ -36,6 +42,8 @@ public class DungeonGenerator: MonoBehaviourEx
         }
 
         CreateRooms();
+
+        DungeonGenerated?.Invoke(this, _roomsUsed);
     }
 
     private void CreateRooms()
@@ -43,16 +51,14 @@ public class DungeonGenerator: MonoBehaviourEx
         // At least 2 rooms (start and boss rooms)
         NumRooms = Mathf.Max(NumRooms, 2);
 
-        _grid = _dungeon.Grid;
-
         _grid.Init(Dims, Dims);
 
         _roomGrid = new Room[NumRooms, NumRooms];
-        _dungeon.RoomGrid = _roomGrid;
 
         // First room needs a down
         var firstRoomTemplate = PossibleRoomTemplates.Where(a => a.EntranceRoom).FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down));
         var firstRoom = Instantiate(firstRoomTemplate);
+        _roomsUsed.Add(firstRoom);
         firstRoom.InitRoom(_dungeon, _dungeon.Templates.DungeonParts.GridTile);
         firstRoom.XCoord = 0;
         firstRoom.YCoord = 0;
@@ -60,13 +66,13 @@ public class DungeonGenerator: MonoBehaviourEx
         _roomGrid[0, 0] = firstRoom;
 
         // For first tile, ignore the down connector
-        GridTile[] tiles = firstRoom.GetTiles();
-        GridTile startingTile = tiles.First(a => a.ConnectsTo == Direction.Down);
+        var tiles = firstRoom.GetTiles();
+        var startingTile = tiles.First(a => a.ConnectsTo == Direction.Down);
         _openConnectors.AddRange(tiles.Where(a => a.IsConnectorTile() && a.ConnectsTo != Direction.Down));
         _numRoomsCreated = 1;
 
-        bool bossTime = false;
-        int attempts = 0;
+        var bossTime = false;
+        var attempts = 0;
         while (attempts < 5000)
         {
             if (++attempts >= 5000)
@@ -87,9 +93,9 @@ public class DungeonGenerator: MonoBehaviourEx
             }
 
             // Clear out the bad connectors
-            foreach (GridTile connectorToCheck in _openConnectors.ToList())
+            foreach (var connectorToCheck in _openConnectors.ToList())
             {
-                Room room = connectorToCheck.GetRoom();
+                var room = connectorToCheck.GetRoom();
                 if (connectorToCheck.ConnectsTo.HasValue && _roomGrid.IsAdjacentOffBoundsOrFull(room.XCoord, room.YCoord, connectorToCheck.ConnectsTo.Value))
                 {
                     _toClearLater.Add(connectorToCheck);
@@ -106,11 +112,12 @@ public class DungeonGenerator: MonoBehaviourEx
             if (_openConnectors.Count == 0)
             {
                 // If no possible connectors, throw it away and start over
+                _roomsUsed.Clear();
                 Utils.DoForXY(NumRooms, NumRooms, (x, y) =>
                 {
                     if (x != 0 || y != 0)
                     {
-                        Room toDelete = _roomGrid[x, y];
+                        var toDelete = _roomGrid[x, y];
                         if (toDelete != null)
                         {
                             Destroy(toDelete.gameObject);
@@ -127,12 +134,12 @@ public class DungeonGenerator: MonoBehaviourEx
         // Put all tiles in this.grid and populate props
         Utils.DoForXY(NumRooms, NumRooms, (x, y) =>
         {
-            Room room = _roomGrid[x, y];
+            var room = _roomGrid[x, y];
             if (room != null)
             {
-                int roomOffsetX = room.XCoord * RoomDims;
-                int roomOffsetY = room.YCoord * RoomDims;
-                foreach (GridTile tile in room.GetTiles())
+                var roomOffsetX = room.XCoord * RoomDims;
+                var roomOffsetY = room.YCoord * RoomDims;
+                foreach (var tile in room.GetTiles())
                 {
                     tile.XCoord = roomOffsetX + (int)tile.transform.localPosition.x;
                     tile.YCoord = roomOffsetY + (int)tile.transform.localPosition.y;
@@ -150,12 +157,12 @@ public class DungeonGenerator: MonoBehaviourEx
         });
 
         // Remove all left-over connectors
-        foreach (GridTile connector in _openConnectors)
+        foreach (var connector in _openConnectors)
         {
             DestroyConnectorNeighborsRecursive(connector);
         }
 
-        foreach (GridTile connector in _toClearLater)
+        foreach (var connector in _toClearLater)
         {
             DestroyConnectorNeighborsRecursive(connector);
         }
@@ -169,23 +176,24 @@ public class DungeonGenerator: MonoBehaviourEx
         connector = bossRoom ? _openConnectors.GetMax(a => Vector3.Distance(a.transform.position, Game.Player.transform.position)) : _openConnectors.GetRandom();
 
         _openConnectors.Remove(connector);
-        Room currRoom = connector.GetRoom();
-        List<Room> possibleRooms = PossibleRoomTemplates.Where(a => bossRoom ? a.BossRoom : a.IsNormalRoom && a.HasExactMatchingConnector(connector)).ToList();
+        var currRoom = connector.GetRoom();
+        var possibleRooms = PossibleRoomTemplates.Where(a => bossRoom ? a.BossRoom : a.IsNormalRoom && a.HasExactMatchingConnector(connector)).ToList();
         if (possibleRooms.Count == 0)
         {
             // No rooms for this connector; try again
             return;
         }
 
-        Room newRoom = Instantiate(possibleRooms.ToList().GetRandom());
+        var newRoom = Instantiate(possibleRooms.ToList().GetRandom());
         newRoom.InitRoom(_dungeon, _dungeon.Templates.DungeonParts.GridTile);
         newRoom.XCoord = currRoom.XCoord;
         newRoom.YCoord = currRoom.YCoord;
         newRoom.ShiftInDirection(connector.ConnectsTo.Value);
+        _roomsUsed.Add(newRoom);
         _roomGrid[newRoom.XCoord, newRoom.YCoord] = newRoom;
         newRoom.transform.position = new Vector3(newRoom.XCoord * RoomDims, newRoom.YCoord * RoomDims);
-        GridTile[] newTiles = newRoom.GetTiles();
-        Direction opposite = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
+        var newTiles = newRoom.GetTiles();
+        var opposite = Utils.GetOppositeDirection(connector.ConnectsTo.Value);
         var newConnectors = newTiles.Where(a => a.IsConnectorTile()).ToList();
         var matching = newRoom.GetExactMatchingConnector(connector);
         _openConnectors.AddRange(newConnectors.Where(a => a.ConnectsTo != null && a.ConnectsTo.Value != opposite));
@@ -209,8 +217,8 @@ public class DungeonGenerator: MonoBehaviourEx
 
         _visitedNeighbors.Add(tile);
 
-        int x = tile.XCoord;
-        int y = tile.YCoord;
+        var x = tile.XCoord;
+        var y = tile.YCoord;
         tile.RemoveConnector();        
         foreach (var neighbor in _grid.GetNeighbors(x, y))
         {

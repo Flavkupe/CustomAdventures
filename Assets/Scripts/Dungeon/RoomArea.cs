@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using JetBrains.Annotations;
@@ -10,11 +11,15 @@ public class RoomArea : MonoBehaviourEx
     private BoxCollider2D col;
 
     public int NumDraws = 2;
-    public bool IsBossArea => this.parentRoom.BossRoom;
+    public bool IsBossArea => parentRoom.BossRoom;
 
-    public bool IsEntranceArea => this.parentRoom.EntranceRoom;
+    public bool IsEntranceArea => parentRoom.EntranceRoom;
 
-    public bool IsNormalArea => this.parentRoom.IsNormalRoom;
+    public event EventHandler<RoomArea> PlayerEnteredRoomArea;
+
+    public bool IsNormalArea => parentRoom.IsNormalRoom;
+
+    public bool CanMulligan => IsNormalArea;
 
     public bool RoomVisited { get; private set; }
 
@@ -33,21 +38,24 @@ public class RoomArea : MonoBehaviourEx
     [UsedImplicitly]
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Player player = collision.GetComponent<Player>();
-        if (player != null)
+        var player = collision.GetComponent<Player>();
+        if (player == null)
         {
-            RoomVisited = true;
+            return;
+        }
 
-            if (OnPlayerEnter == OnPlayerEnterEvents.DungeonEvents)
-            {
-                this.DoDungeonEvents();
-            }
+        RoomVisited = true;
+
+        if (OnPlayerEnter == OnPlayerEnterEvents.DungeonEvents)
+        {
+            DoDungeonEvents();
         }
     }
 
     private void DoDungeonEvents()
     {
-        Game.CardDraw.PerformDungeonEvents(this);
+        PlayerEnteredRoomArea?.Invoke(this, this);
+        // Game.CardDraw.PerformDungeonEvents(this);
     }
 
     public List<GridTile> GetAreaTiles()
@@ -70,7 +78,7 @@ public class RoomArea : MonoBehaviourEx
     {
         List<GridTile> corners = new List<GridTile>();
         List<GridTile> tiles = GetAreaTiles();
-        TileGrid grid = Game.Dungeon.Grid;
+        TileGrid grid = parentRoom.Dungeon.Grid;
         foreach (GridTile tile in tiles)
         {
             if (grid.IsCorner(tile.XCoord, tile.YCoord))
@@ -85,7 +93,7 @@ public class RoomArea : MonoBehaviourEx
     public List<GridTile> GetWideOpenTiles()
     {
         List<GridTile> freeTiles = new List<GridTile>();
-        TileGrid grid = Game.Dungeon.Grid;
+        TileGrid grid = parentRoom.Dungeon.Grid;
         List<GridTile> tiles = GetAreaTiles().Where(a => grid.CanOccupy(a)).ToList();
         foreach (GridTile tile in tiles)
         {

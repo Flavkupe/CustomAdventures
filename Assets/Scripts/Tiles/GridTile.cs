@@ -41,8 +41,8 @@ public class GridTile : MonoBehaviour, IHasCoords
         }
     }    
 
-    public int LocalX { get { return (int)transform.localPosition.x; } }
-    public int LocalY { get { return (int)transform.localPosition.y; } }
+    public int LocalX => (int)transform.localPosition.x;
+    public int LocalY => (int)transform.localPosition.y;
 
     public Room CachedRoom;
     public Room GetRoom()
@@ -63,22 +63,18 @@ public class GridTile : MonoBehaviour, IHasCoords
 
     public bool CanOccupy(OccupancyRule rule = OccupancyRule.MustBeEmpty)
     {
-        return Game.Dungeon.Grid.CanOccupy(this, rule);
+        var room = GetRoom();
+        return room.Dungeon.Grid.CanOccupy(this, rule);        
     }
 
     public bool IsConnectorTile()
     {        
-        Room room = GetRoom();
+        var room = GetRoom();
 
-        if ((int)transform.localPosition.x == 0 ||
-            (int)transform.localPosition.y == 0 ||
-            (int)transform.localPosition.x == room.Dims - 1 ||
-            (int)transform.localPosition.y == room.Dims - 1)
-        {
-            return true;
-        }
-
-        return false;
+        return (int)transform.localPosition.x == 0 ||
+               (int)transform.localPosition.y == 0 ||
+               (int)transform.localPosition.x == room.Dims - 1 ||
+               (int)transform.localPosition.y == room.Dims - 1;
     }
 
     public void Show(bool show)
@@ -101,7 +97,7 @@ public class GridTile : MonoBehaviour, IHasCoords
     public List<PassableTileEntity> GetPassableTileEntities()
     {
         var contents = Game.Dungeon.Grid.Get(XCoord, YCoord);
-        return contents.PassableEntities;
+        return contents.PassableEntities.ToList();
     }
 
     public Inventory<PassableTileItem> GetTileItems()

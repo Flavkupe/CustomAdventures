@@ -36,19 +36,6 @@ public class MonoBehaviourEx : MonoBehaviour
         yield return transform.MoveToSpotCoroutine(start, speed, false);
     }
 
-    public IEnumerator RotateCoroutine(Vector3 axis, float angle, float speed)
-    {
-        float totalRot = 0;
-        while (totalRot < angle)
-        {
-            float speedMultiplier = Game.States.GetMouseDownSpeedMultiplier();
-            float delta = Time.deltaTime * speed * speedMultiplier;
-            transform.Rotate(axis, delta);
-            totalRot += delta;
-            yield return null;
-        }        
-    }
-
     public T InstantiateOfType<T>(string objName = null) where T : MonoBehaviour
     {
         return Utils.InstantiateOfType<T>(objName);

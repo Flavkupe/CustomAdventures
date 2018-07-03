@@ -21,7 +21,8 @@ public class Player : TileActor, IDungeonActor
 
     public List<IAbilityCard> Abilities => _abilities;
 
-    private PlayerStats _stats { get; } = new PlayerStats();
+    [SerializeField]
+    private PlayerStats _stats = new PlayerStats();
 
     private PlayerStats _basePlayerStats { get; } = new PlayerStats();
 
@@ -33,7 +34,7 @@ public class Player : TileActor, IDungeonActor
 
     public PlayerInventory Inventory;
 
-    private List<IAbilityCard> _abilities = new List<IAbilityCard>();
+    private readonly List<IAbilityCard> _abilities = new List<IAbilityCard>();
 
     public DungeonCardData[] EntranceCards;
 

@@ -18,12 +18,12 @@ public class TileGrid : MonoBehaviour
 
         public GridTile Tile;
         public TileEntity TileObject;
-        public Inventory<PassableTileItem> TileItems { get { return _tileItems; } }
-        public List<PassableTileEntity> PassableEntities { get { return _passableEntities; } }
+        public Inventory<PassableTileItem> TileItems => _tileItems;
+        public List<PassableTileEntity> PassableEntities => _passableEntities;
 
-        public bool HasTile { get { return Tile != null; } }
-        public bool IsPassable { get { return HasTile && TileObject == null; } }
-        public bool IsEmpty { get { return HasTile && TileObject == null && _tileItems.Count == 0; } }
+        public bool HasTile => Tile != null;
+        public bool IsPassable => HasTile && TileObject == null;
+        public bool IsEmpty => HasTile && TileObject == null && _tileItems.Count == 0;
     }
 
     public TileContents[,] grid;
@@ -205,7 +205,7 @@ public class TileGrid : MonoBehaviour
     public TileEntity GetAdjacentObject(int x, int y, Direction direction)
     {
         TileContents contents = GetAdjacent(x, y, direction);
-        return contents == null ? null : contents.TileObject;
+        return contents?.TileObject;
     }
 
     public bool IsOffBounds(int x, int y)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using JetBrains.Annotations;
@@ -19,6 +20,8 @@ public class Room : MonoBehaviour, IHasCoords
     public bool BossRoom = false;
     public bool EntranceRoom = false;
 
+    public event EventHandler<RoomArea> PlayerEnteredRoom;
+
     public bool IsNormalRoom => !BossRoom && !EntranceRoom;
 
     public int XCoord { get; set; }
@@ -29,7 +32,7 @@ public class Room : MonoBehaviour, IHasCoords
 
     private List<GridTile> _tileList;
 
-    private Dungeon _dungeon;
+    public Dungeon Dungeon { get; private set; }
 
     public GridTile[] GetTiles()
     {
@@ -57,7 +60,7 @@ public class Room : MonoBehaviour, IHasCoords
     {
         int currX = LeftGridXCoord + x;
         int currY = BottomGridYCoord + y;
-        GridTile tile = _dungeon.Grid.Get(currX, currY).Tile;
+        GridTile tile = Dungeon.Grid.Get(currX, currY).Tile;
         return tile;
     }
 
@@ -124,7 +127,7 @@ public class Room : MonoBehaviour, IHasCoords
 
     public void InitRoom(Dungeon dungeon, GridTile genericGridTileTemplate)
     {
-        _dungeon = dungeon;
+        Dungeon = dungeon;
 
         // TODO: we can probably make this 100x more efficient; tons of useless operations here... just 
         // take the props directly from the Tilemap fields set above!
@@ -167,7 +170,7 @@ public class Room : MonoBehaviour, IHasCoords
                 {
                     // TODO: why do we need the + 1...?
                     var tile = GridTileFromLocalCoord(x + 1, y + 1);
-                    propTile.RollSpawn(_dungeon, tile);
+                    propTile.RollSpawn(Dungeon, tile);
                 }
             });
 
@@ -182,6 +185,16 @@ public class Room : MonoBehaviour, IHasCoords
             // TODO: better to make a special Script for these, and for that script to also have special behavior
             Entities = GetComponentsInChildren<Tilemap>(true).FirstOrDefault(a => a.name == "Entities");
         }
+
+        foreach (var roomArea in GetComponentsInChildren<RoomArea>())
+        {
+            roomArea.PlayerEnteredRoomArea += HandlePlayerEnteredRoomArea;
+        }
+    }
+
+    private void HandlePlayerEnteredRoomArea(object sender, RoomArea e)
+    {
+        PlayerEnteredRoom?.Invoke(this, e);
     }
 
     [UsedImplicitly]

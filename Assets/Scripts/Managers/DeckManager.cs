@@ -129,7 +129,7 @@ public class DeckManager : SingletonObject<DeckManager>
     {
         MonoBehaviourEx obj = card.Object;
         yield return obj.transform.MoveToSpotAndScaleCoroutine(deckHolder.transform.position, CardMoveSpeed, DeckSmallSize - DeckBigSize);
-        yield return obj.RotateCoroutine(Vector3.up, 0.0f, 200.0f);
+        yield return obj.transform.RotateCoroutine(Vector3.up, 0.0f, 200.0f);
         obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
         obj.transform.SetParent(deckHolder.transform);        
     }
@@ -139,7 +139,7 @@ public class DeckManager : SingletonObject<DeckManager>
         MonoBehaviourEx obj = card.Object;        
         Vector3 target = obj.transform.position.IncrementBy(-targetX, 0.0f, 0.0f);
         yield return obj.transform.MoveToSpotCoroutine(target, CardMoveSpeed);
-        yield return obj.RotateCoroutine(Vector3.up, 180.0f, 200.0f);
+        yield return obj.transform.RotateCoroutine(Vector3.up, 180.0f, 200.0f);
         obj.transform.eulerAngles = new Vector3(0.0f, 0.0f);
         obj.transform.SetParent(null);
     }

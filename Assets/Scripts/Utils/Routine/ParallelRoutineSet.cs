@@ -4,16 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ParallelRoutineSet : IEnumerator, IRoutineSet
+public class ParallelRoutineSet : IRoutineSet
 {
     public static Func<IEnumerator, Coroutine> CoroutineRunner = null;
 
-    private Func<IEnumerator, Coroutine> Runner
-    {
-        get { return CoroutineRunner ?? Game.States.StartCoroutine; }
-    }
+    private Func<IEnumerator, Coroutine> Runner => CoroutineRunner ?? Game.States.StartCoroutine;
 
-    private HashSet<Routine> _routines = new HashSet<Routine>();
+    private readonly HashSet<Routine> _routines = new HashSet<Routine>();
     private IEnumerator _func = null;
     private int _running = 0;
 
@@ -41,10 +38,7 @@ public class ParallelRoutineSet : IEnumerator, IRoutineSet
         _routines.Add(routine);
     }
 
-    public object Current
-    {
-        get { return _func; }
-    }
+    public object Current => _func;
 
     public bool MoveNext()
     {
@@ -77,6 +71,21 @@ public class ParallelRoutineSet : IEnumerator, IRoutineSet
         {
             yield return null;
         }
+    }
+
+    /// <summary>
+    /// Factory for easily creating ParallelRoutineSet given a collection and a conversion
+    /// from each item of that collection to a routine involving it.
+    /// </summary>
+    public static ParallelRoutineSet CreateSet<T>(IEnumerable<T> items, Func<T, Routine> func)
+    {
+        var set = new ParallelRoutineSet();
+        foreach (var item in items)
+        {
+            set.AddRoutine(func(item));
+        }
+
+        return set;
     }
 }
 

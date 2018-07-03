@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ public interface ICard
     MonoBehaviourEx Object { get; }
 
     void SetFaceUp();
-    void SetFaceDown();
+    void SetFaceDown();    
 }
 
 public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDataType : CardData
@@ -25,7 +26,7 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
     public abstract CardType CardType { get; }
     public CardMesh CardMesh { get; set; }
 
-    public MonoBehaviourEx Object { get { return this; } }
+    public MonoBehaviourEx Object => this;
 
     public void DestroyCard()
     {
@@ -102,6 +103,21 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
     {
         transform.eulerAngles = new Vector3(0, 180, 0);
     }
+
+    /// <summary>
+    /// The full effect for a card effect being triggered once the card is drawn
+    /// </summary>
+    protected IEnumerator AnimateCardTriggerEffect(AnimationEffectData defaultEffect)
+    {
+        var effect = Data.CardTriggerEffect ?? defaultEffect;
+        if (effect != null)
+        {
+            var cardTriggerEffect = effect.CreateEffect();
+            cardTriggerEffect.transform.position = transform.position;
+            ToggleHideCard(true);
+            yield return cardTriggerEffect.CreateRoutine();
+        }
+    }
 }
 
 public abstract class CardData : ScriptableObject
@@ -129,10 +145,7 @@ public abstract class CardData : ScriptableObject
     /// Whether or not this Data can be used to generate a card. Types such as Props
     /// might not have cards for them!
     /// </summary>
-    public virtual bool CanCreateCard
-    {
-        get { return true; }
-    }
+    public virtual bool CanCreateCard => true;
 
     public abstract Type BackingCardType { get; }
 
@@ -155,6 +168,9 @@ public abstract class CardData : ScriptableObject
                 return 1;
         }
     }
+
+    [Tooltip("The animation effect that occurs when the card is drawn and executed")]
+    public AnimationEffectData CardTriggerEffect;
 }
 
 public enum CardType

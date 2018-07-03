@@ -22,12 +22,12 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public DungeonCardData[] PossibleBossCards;
 
-    public AnimationEffectData CardTriggerEffect;
-    public TargetedAnimationEffectData CardMoveToEffect;
-
     public GridTile GenericTileTemplate;
     public TileGrid Grid;
-    public Room[,] RoomGrid;
+
+    private List<Room> _rooms;
+
+    private CardEventController _cardController;
 
     private readonly List<Enemy> _enemies = new List<Enemy>();
 
@@ -132,91 +132,16 @@ public class Dungeon : SingletonObject<Dungeon>
         Grid.UnreserveAll();
     }
 
-    public Routine CreateSpawnEventRoutine(RoomArea roomArea, IDungeonCard card)
-    {
-        var routines = new RoutineChain();
-
-        // Card trigger effect
-        var cardTriggerEffect = CardTriggerEffect.CreateEffect();
-        cardTriggerEffect.transform.position = card.Object.transform.position;
-        card.ToggleHideCard(true);
-        routines.AddRoutine(cardTriggerEffect.CreateRoutine());
-
-        var numTimes = card.GetNumberOfExecutions();   
-
-        var routineSet = new ParallelRoutineSet();
-        for (var i = 0; i < numTimes; i++)
-        {
-            // Which room does the event happen in?
-            var spawnRoomArea = roomArea;
-            if (card.RoomEventType == RoomEventType.RandomUnexplored)
-            {
-                spawnRoomArea = GetUnexploredRoomArea(roomArea);
-            }
-
-            var tile = GetTargetTile(spawnRoomArea, card);
-
-            if (tile != null)
-            {
-                if (card.RoomEventType == RoomEventType.CurrentRoom)
-                {
-                    // Card travel effect
-                    var cardTravelEffect = CardMoveToEffect.CreateTargetedEffect(tile.transform.position, card.Object.transform.position);
-                    var routine = cardTravelEffect.CreateRoutine();
-                    routine.Finally(() =>
-                    {
-                        DoCardSpawnEvent(card, tile);
-                    });
-
-                    routineSet.AddRoutine(routine);
-                }
-                else
-                {
-                    // No travel event
-                    routineSet.AddRoutine(Routine.CreateAction(() => DoCardSpawnEvent(card, tile)));
-                }
-            }
-            else
-            {
-                // TODO: no tile chosen? What do?
-            }
-        }
-
-        routines.AddRoutine(routineSet.AsRoutine());
-        var finalRoutine = routines.ToRoutine();
-        finalRoutine.Finally(card.DestroyCard);
-
-        return finalRoutine;
-    }
-
-    private void DoCardSpawnEvent(IDungeonCard card, GridTile tile)
-    {
-        if (card.RequiresFullTile)
-        {
-            // TODO: I don't think the IsReserved system is needed....
-            tile.IsReserved = true;
-        }
-
-        var context = new DungeonCardExecutionContext()
-        {
-            Player = Game.Player,
-            Dungeon = this,
-        };
-
-        card.ExecuteTileSpawnEvent(tile, context);
-    }
-
     /// <summary>
     /// Gets a random unvisited room area. If all rooms have been visited, returns 'defaultArea'.
     /// </summary>
     /// <param name="defaultArea">RoomArea to get if all areas have been explored.</param>
     /// <returns>Random unvisited RoomArea, or defaultArea if none exist.</returns>
-    private RoomArea GetUnexploredRoomArea(RoomArea defaultArea)
+    public RoomArea GetUnexploredRoomArea(RoomArea defaultArea)
     {
         var areas = new List<RoomArea>();
-        foreach (var room in RoomGrid)
+        foreach (var room in _rooms)
         {
-            // TODO: improve RoomGrid?
             if (room != null)
             {
                 var roomAreas = room.GetComponentsInChildren<RoomArea>();
@@ -225,37 +150,7 @@ public class Dungeon : SingletonObject<Dungeon>
         }
 
         return areas.Count == 0 ? defaultArea : areas.GetRandom();
-    }
-
-    private GridTile GetTargetTile(RoomArea roomArea, IDungeonCard card)
-    {
-        var grid = Grid;
-        GridTile tile = null;
-        if (card.DungeonEventType == DungeonEventType.SpawnNear)
-        {
-            var tiles = roomArea.GetAreaTiles();
-            tile = tiles.Where(a => grid.CanOccupy(a.XCoord, a.YCoord)).ToList().GetRandom();
-        }
-        else if (card.DungeonEventType == DungeonEventType.SpawnOnCorner)
-        {
-            var tiles = roomArea.GetCornerTiles();
-            tile = tiles.GetRandom();
-        }
-        else if (card.DungeonEventType == DungeonEventType.SpawnOnWideOpen)
-        {
-            var tiles = roomArea.GetWideOpenTiles();
-            tile = tiles.GetRandom();
-
-            if (tile == null)
-            {
-                // Fall back to corner tiles
-                tiles = roomArea.GetCornerTiles();
-                tile = tiles.GetRandom();
-            }
-        }
-
-        return tile;
-    }
+    }    
 
     public void SpawnEntity(TileEntity entity, GridTile tile)
     {
@@ -271,12 +166,31 @@ public class Dungeon : SingletonObject<Dungeon>
     private void Awake()
     {
         Instance = this;
+        var generator = GetComponent<DungeonGenerator>();
+        generator.DungeonGenerated += OnDungeonGenerated;
+
+        _cardController = GetComponentInChildren<CardEventController>();
+        Debug.Assert(_cardController != null, "Dungeon needs a CardEventController child object!");
     }
 
-    [UsedImplicitly]
-    private void Start()
+    /// <summary>
+    /// Called when dungeon is done generating
+    /// </summary>
+    private void OnDungeonGenerated(object sender, List<Room> e)
     {
-        Invoke("StartDungeon", 0.5f);
+        // Get generated rooms and create listeners for room events
+        _rooms = e;
+        foreach (var room in _rooms)
+        {
+            room.PlayerEnteredRoom += OnPlayerEnteredRoom;
+        }
+
+        StartDungeon();
+    }
+
+    private void OnPlayerEnteredRoom(object sender, RoomArea e)
+    {
+        StartCoroutine(_cardController.PerformDungeonEvents(e));
     }
 
     [UsedImplicitly]

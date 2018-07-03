@@ -244,6 +244,23 @@ public class StateManager : SingletonObject<StateManager>
     public bool AreMenusOpen { get { return IsState(GameState.AwaitingDialogClose) || Game.UI.IsMenuActive; } }
 
     public bool CanPlayerAct { get { return IsState(GameState.AwaitingCommand) && !AreMenusOpen; } }
+
+    // TODO: replace this with something less global
+    public IEnumerator WaitUntilState(GameState state)
+    {
+        while (State != state)
+        {
+            yield return null;
+        }
+    }
+
+    public IEnumerator WaitUntilNotState(GameState state)
+    {
+        while (State == state)
+        {
+            yield return null;
+        }
+    }
 }
 
 public enum TriggeredEvent

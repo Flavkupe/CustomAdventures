@@ -1,17 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
 public class Deck<T> where T : class, ICard
 {
-    private float yOffset;
-    private float xOffset;
-    private float zOffset = -0.001f;
+    private float _yOffset;
+    private float _xOffset;
+    private float _zOffset = -0.001f;
 
     public GameObject DeckHolder;
-    private Stack<T> deck = new Stack<T>();
+    private readonly Stack<T> _deck = new Stack<T>();
 
-    public int CardCount { get { return deck.Count; } }
+    public int CardCount => _deck.Count;
 
     public void Init(IList<T> cards)
     {
@@ -21,14 +22,14 @@ public class Deck<T> where T : class, ICard
 
     public void Shuffle()
     {
-        List<T> cards = new List<T>(deck);
+        List<T> cards = new List<T>(_deck);
         cards.Shuffle();
         RestackDeck(cards);        
     }
 
     public void ShuffleCardInto(T card)
     {       
-        List<T> cards = new List<T>(deck);
+        List<T> cards = new List<T>(_deck);
         cards.Add(card);
         cards.Shuffle();
         RestackDeck(cards);
@@ -36,7 +37,7 @@ public class Deck<T> where T : class, ICard
 
     public bool IsEmpty()
     {
-        return deck.Count == 0;
+        return _deck.Count == 0;
     }
 
     public T DrawCard()
@@ -47,12 +48,12 @@ public class Deck<T> where T : class, ICard
         }
 
         IncrementOffset();
-        return deck.Pop();
+        return _deck.Pop();
     }
 
-    public R DrawOfType<R>() where R : class, T
+    public TR DrawOfType<TR>() where TR : class, T
     {
-        R card = deck.FirstOrDefault(a => a.GetType() == typeof(R)) as R;
+        TR card = _deck.FirstOrDefault(a => a.GetType() == typeof(TR)) as TR;
         RemoveCard(card);
         return card;
     }
@@ -63,7 +64,7 @@ public class Deck<T> where T : class, ICard
         if (card != null)
         {
             Stack<T> newDeck = new Stack<T>();
-            foreach (T item in deck)
+            foreach (T item in _deck)
             {
                 if (item != card)
                 {
@@ -78,35 +79,35 @@ public class Deck<T> where T : class, ICard
 
     private void ResetOffset()
     {
-        yOffset = 0.0f;
-        xOffset = 0.0f;
-        zOffset = 0.0f;
+        _yOffset = 0.0f;
+        _xOffset = 0.0f;
+        _zOffset = 0.0f;
     }
 
     private void IncrementOffset()
     {
-        yOffset += 0.01f;
-        xOffset += 0.01f;
-        zOffset += 0.02f;
+        _yOffset += 0.01f;
+        _xOffset += 0.01f;
+        _zOffset += 0.02f;
     }
 
     private void DecrementOffset()
     {
-        yOffset -= 0.01f;
-        xOffset -= 0.01f;
-        zOffset -= 0.02f;
+        _yOffset -= 0.01f;
+        _xOffset -= 0.01f;
+        _zOffset -= 0.02f;
     }
 
     private void RestackDeck(IList<T> cards)
     {
-        deck.Clear();
+        _deck.Clear();
         ResetOffset();
         PushCards(cards);
     }
 
     public void PushToBottom(IList<T> cards)
     {
-        List<T> current = deck.ToList();
+        List<T> current = _deck.ToList();
         current.AddRange(cards);
         RestackDeck(current);
     }
@@ -124,15 +125,43 @@ public class Deck<T> where T : class, ICard
 
     public void PushCard(T card)
     {
-        deck.Push(card);
+        _deck.Push(card);
         var cardTransform = card.Object.transform;
         cardTransform.position = DeckHolder.transform.position;
         cardTransform.SetParent(DeckHolder.transform, true);
         cardTransform.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
         card.SetFaceDown();
-        cardTransform.localPosition = cardTransform.transform.localPosition.IncrementBy(xOffset, yOffset, zOffset);
+        cardTransform.localPosition = cardTransform.transform.localPosition.IncrementBy(_xOffset, _yOffset, _zOffset);
         
         DecrementOffset();
+    }
+
+    public List<T> DrawCards(int numDrawn, Func<T, bool> drawConditionFunc = null)
+    {
+        var cards = new List<T>();
+        var invalidCards = new List<T>();
+        for (var i = 0; i < numDrawn; i++)
+        {
+            if (IsEmpty())
+            {
+                break;
+            }
+
+            var card = DrawCard();
+            if (drawConditionFunc != null && !drawConditionFunc(card))
+            {
+                i--; // don't count the draw
+                invalidCards.Add(card);
+            }
+            else
+            {
+                cards.Add(card);
+            }
+        }
+
+        PushToBottom(invalidCards);
+
+        return cards;
     }
 
     public void ScaleDeck(float scaleMultiplier)

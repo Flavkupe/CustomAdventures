@@ -1,8 +1,5 @@
-﻿public class TreasureCard : DungeonCard<TreasureCardData>
+﻿using System.Collections;
+
+public class TreasureCard : DungeonSpawnCard<TreasureCardData, Treasure>
 {
-    public override void ExecuteTileSpawnEvent(GridTile tile, DungeonCardExecutionContext context)
-    {
-        var treasure = Data.InstantiateEntity();
-        treasure.SpawnOnGrid(Game.Dungeon, tile);
-    }
 }
