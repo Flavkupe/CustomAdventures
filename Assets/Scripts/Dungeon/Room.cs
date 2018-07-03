@@ -19,26 +19,20 @@ public class Room : MonoBehaviour, IHasCoords
     public bool BossRoom = false;
     public bool EntranceRoom = false;
 
-    public bool IsNormalRoom
-    {
-        get { return !BossRoom && !EntranceRoom; }
-    }
+    public bool IsNormalRoom => !BossRoom && !EntranceRoom;
 
     public int XCoord { get; set; }
     public int YCoord { get; set; }
     
-    public int LeftGridXCoord { get { return XCoord * Dims; } }
-    public int BottomGridYCoord { get { return YCoord * Dims; } }
+    public int LeftGridXCoord => XCoord * Dims;
+    public int BottomGridYCoord => YCoord * Dims;
 
-    List<GridTile> _tileList = null;
+    private List<GridTile> _tileList;
+
+    private Dungeon _dungeon;
 
     public GridTile[] GetTiles()
     {
-        if (_tileList != null)
-        {
-            // return _tileList.ToArray();
-        }
-
         GridTile[] tiles = GetComponentsInChildren<GridTile>();
         if (tiles.Length == 0)
         {
@@ -63,7 +57,7 @@ public class Room : MonoBehaviour, IHasCoords
     {
         int currX = LeftGridXCoord + x;
         int currY = BottomGridYCoord + y;
-        GridTile tile = Game.Dungeon.Grid.Get(currX, currY).Tile;
+        GridTile tile = _dungeon.Grid.Get(currX, currY).Tile;
         return tile;
     }
 
@@ -128,11 +122,13 @@ public class Room : MonoBehaviour, IHasCoords
             (int)a.transform.localPosition.y == (int)connector.transform.localPosition.y);
     }
 
-    public void InitRoomTiles()
+    public void InitRoom(Dungeon dungeon, GridTile genericGridTileTemplate)
     {
+        _dungeon = dungeon;
+
         // TODO: we can probably make this 100x more efficient; tons of useless operations here... just 
         // take the props directly from the Tilemap fields set above!
-        foreach(Tilemap tilemap in GetComponentsInChildren<Tilemap>())
+        foreach (Tilemap tilemap in GetComponentsInChildren<Tilemap>())
         {
             for (var x = tilemap.cellBounds.x; x < tilemap.cellBounds.xMax; x++)
             {
@@ -142,7 +138,7 @@ public class Room : MonoBehaviour, IHasCoords
                     RuleTile ruleTile = tilemap.GetTile<RuleTile>(new Vector3Int(x, y, 0));
                     if (ruleTile != null)
                     {
-                        var gridTile = ruleTile.InstantiateGridTile(Game.Dungeon.GenericTileTemplate, this);
+                        var gridTile = ruleTile.InstantiateGridTile(genericGridTileTemplate, this);
                         gridTile.transform.localPosition = new Vector3(x + 1, y + 1); // TODO: why do they need + 1...?
                         gridTile.Show(false);
                     }
@@ -171,7 +167,7 @@ public class Room : MonoBehaviour, IHasCoords
                 {
                     // TODO: why do we need the + 1...?
                     var tile = GridTileFromLocalCoord(x + 1, y + 1);
-                    propTile.RollSpawn(Game.Dungeon, tile);
+                    propTile.RollSpawn(_dungeon, tile);
                 }
             });
 
@@ -183,6 +179,7 @@ public class Room : MonoBehaviour, IHasCoords
     {
         if (Entities == null)
         {
+            // TODO: better to make a special Script for these, and for that script to also have special behavior
             Entities = GetComponentsInChildren<Tilemap>(true).FirstOrDefault(a => a.name == "Entities");
         }
     }

@@ -12,15 +12,12 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.3.1f1</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -468,6 +465,11 @@
     <Compile Include="Assets\Scripts\Cards\LootCards\LootCard.cs" />
     <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCard.cs" />
     <Compile Include="Assets\Scripts\Cards\LootCards\WeaponCardData.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\Dungeon.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\DungeonPrefabTemplates.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\MapGen\DungeonGenerator.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\Room.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\RoomArea.cs" />
     <Compile Include="Assets\Scripts\Effects\AnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffectData.cs" />
@@ -500,12 +502,10 @@
     <Compile Include="Assets\Scripts\Managers\CardDrawManager.cs" />
     <Compile Include="Assets\Scripts\Managers\DebugManager.cs" />
     <Compile Include="Assets\Scripts\Managers\DeckManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\DungeonManager.cs" />
     <Compile Include="Assets\Scripts\Managers\SoundManager.cs" />
     <Compile Include="Assets\Scripts\Managers\StateManager.cs" />
     <Compile Include="Assets\Scripts\Managers\TextManager.cs" />
     <Compile Include="Assets\Scripts\Managers\UIManager.cs" />
-    <Compile Include="Assets\Scripts\Misc\DungeonPrefabTemplates.cs" />
     <Compile Include="Assets\Scripts\Misc\FloatyText.cs" />
     <Compile Include="Assets\Scripts\Misc\FloatyTextGenerator.cs" />
     <Compile Include="Assets\Scripts\MonoBehaviourEx.cs" />
@@ -514,10 +514,6 @@
     <Compile Include="Assets\Scripts\Props\AmenityData.cs" />
     <Compile Include="Assets\Scripts\Props\DecorativePropData.cs" />
     <Compile Include="Assets\Scripts\Props\PropData.cs" />
-    <Compile Include="Assets\Scripts\Rooms\MapGen\DungeonGenerator.cs" />
-    <Compile Include="Assets\Scripts\Rooms\Room.cs" />
-    <Compile Include="Assets\Scripts\Rooms\RoomArea.cs" />
-    <Compile Include="Assets\Scripts\Rooms\RoomGrid.cs" />
     <Compile Include="Assets\Scripts\Sound\SoundGenerator.cs" />
     <Compile Include="Assets\Scripts\State\Decision.cs" />
     <Compile Include="Assets\Scripts\State\GameContext.cs" />

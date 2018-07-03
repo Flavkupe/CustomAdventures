@@ -130,7 +130,7 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
         grid.ClearTileEntity(this.XCoord, this.YCoord);
     }
 
-    public virtual void SpawnOnGrid(DungeonManager dungeon, GridTile tile)
+    public virtual void SpawnOnGrid(Dungeon dungeon, GridTile tile)
     {
         dungeon.SpawnEntity(this, tile);
     }

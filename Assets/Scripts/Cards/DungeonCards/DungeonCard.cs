@@ -34,7 +34,7 @@ public abstract class DungeonCard<T> : Card<T>, IDungeonCard where T : DungeonCa
 
 public class DungeonCardExecutionContext
 {
-    public DungeonManager Dungeon;
+    public Dungeon Dungeon;
     public Player Player;
 }
 

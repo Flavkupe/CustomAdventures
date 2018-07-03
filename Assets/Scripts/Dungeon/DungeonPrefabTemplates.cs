@@ -10,6 +10,14 @@ public class DungeonPrefabTemplates : ScriptableObject
         public ThoughtBubble ThoughtBubble;
     }
 
+    [Serializable]
+    public class DungeonPartPrefabs
+    {
+        public GridTile GridTile;
+    }
+
     public EntityPartPrefabs EntityParts;
+
+    public DungeonPartPrefabs DungeonParts;
 }
 

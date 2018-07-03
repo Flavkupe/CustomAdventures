@@ -5,7 +5,8 @@ using UnityEngine;
 using System.Linq;
 using JetBrains.Annotations;
 
-public class DungeonManager : SingletonObject<DungeonManager>
+[RequireComponent(typeof(DungeonGenerator))]
+public class Dungeon : SingletonObject<Dungeon>
 {
     public DungeonPrefabTemplates Templates;
 
@@ -28,7 +29,7 @@ public class DungeonManager : SingletonObject<DungeonManager>
     public TileGrid Grid;
     public Room[,] RoomGrid;
 
-    private List<Enemy> _enemies = new List<Enemy>();
+    private readonly List<Enemy> _enemies = new List<Enemy>();
 
     public void RemoveEnemy(Enemy enemy)
     {
@@ -70,8 +71,9 @@ public class DungeonManager : SingletonObject<DungeonManager>
     }
 
     private List<TileEntity> _validSelectionTargets;
-    private List<TileEntity> _selectedTargets = new List<TileEntity>();
-    public List<TileEntity> SelectedTargets { get { return _selectedTargets; } }
+    private readonly List<TileEntity> _selectedTargets = new List<TileEntity>();
+    public List<TileEntity> SelectedTargets => _selectedTargets;
+
     public IEnumerator AwaitTargetSelection(Action cancellationCallback, List<TileEntity> entities, int numToSelect)
     {
         _selectedTargets.Clear();

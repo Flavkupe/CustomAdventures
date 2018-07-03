@@ -135,7 +135,7 @@ public class Enemy : TileAI
         // TODO
     }
 
-    public override void SpawnOnGrid(DungeonManager dungeon, GridTile tile)
+    public override void SpawnOnGrid(Dungeon dungeon, GridTile tile)
     {
         base.SpawnOnGrid(dungeon, tile);
         dungeon.RegisterEnemy(this);

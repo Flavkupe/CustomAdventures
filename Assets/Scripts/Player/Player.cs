@@ -401,7 +401,6 @@ public class Player : TileActor, IDungeonActor
 
     public DungeonCardData[] GetEntranceCards()
     {
-        // TODO: other classes
         return EntranceCards;
     }
 
@@ -458,7 +457,7 @@ public class Player : TileActor, IDungeonActor
     /// Call this method exactly once, after the dungeon starts. Use this to register
     /// all startup events for the dungeon.
     /// </summary>
-    public void DungeonStarted(DungeonManager dungeon)
+    public void DungeonStarted(Dungeon dungeon)
     {
         dungeon.EnemyListPopulated += OnInitializeCombatTurn;
         dungeon.AllEnemyTurnsComplete += OnInitializeCombatTurn;

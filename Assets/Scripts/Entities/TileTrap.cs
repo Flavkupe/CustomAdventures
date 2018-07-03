@@ -23,7 +23,7 @@ public class TileTrap : PassableTileEntity
         yield return null;
     }
 
-    public override void SpawnOnGrid(DungeonManager dungeon, GridTile tile)
+    public override void SpawnOnGrid(Dungeon dungeon, GridTile tile)
     {
         dungeon.SpawnPassableEntity(this, tile);
     }

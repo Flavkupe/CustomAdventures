@@ -4,11 +4,13 @@ using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine.Tilemaps;
 
-public class DungeonGenerator: SingletonObject<DungeonGenerator>
+[RequireComponent(typeof(Dungeon))]
+[RequireComponent(typeof(TileGrid))]
+public class DungeonGenerator: MonoBehaviourEx
 {
     public int NumRooms = 4;
     public int RoomDims = 16;
-    public int Dims { get { return RoomDims * NumRooms; } }
+    public int Dims => RoomDims * NumRooms;
     public GridTile GenericTileTemplate;
     public Room[] PossibleRoomTemplates;
 
@@ -19,15 +21,13 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
     private readonly List<GridTile> _toClearLater = new List<GridTile>();
     private int _numRoomsCreated;
 
-    [UsedImplicitly]
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private Dungeon _dungeon;
 
     [UsedImplicitly]
     private void Start()
     {
+        _dungeon = GetComponent<Dungeon>();
+
         if (PossibleRoomTemplates.Length == 0)
         {
             var allRooms = Resources.LoadAll<Room>("Rooms");
@@ -43,18 +43,17 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         // At least 2 rooms (start and boss rooms)
         NumRooms = Mathf.Max(NumRooms, 2);
 
-        _grid = Game.Dungeon.Grid;
+        _grid = _dungeon.Grid;
 
         _grid.Init(Dims, Dims);
 
         _roomGrid = new Room[NumRooms, NumRooms];
-
-        Game.Dungeon.RoomGrid = _roomGrid;
+        _dungeon.RoomGrid = _roomGrid;
 
         // First room needs a down
         var firstRoomTemplate = PossibleRoomTemplates.Where(a => a.EntranceRoom).FirstOrDefault(a => a.HasConnectorToDirection(Direction.Down));
         var firstRoom = Instantiate(firstRoomTemplate);
-        firstRoom.InitRoomTiles();
+        firstRoom.InitRoom(_dungeon, _dungeon.Templates.DungeonParts.GridTile);
         firstRoom.XCoord = 0;
         firstRoom.YCoord = 0;
         firstRoom.transform.position = new Vector3(0, 0);
@@ -137,7 +136,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
                 {
                     tile.XCoord = roomOffsetX + (int)tile.transform.localPosition.x;
                     tile.YCoord = roomOffsetY + (int)tile.transform.localPosition.y;
-                    tile.name = string.Format("Tile_{0}_{1}", tile.XCoord, tile.YCoord);
+                    tile.name = $"Tile_{tile.XCoord}_{tile.YCoord}";
                     _grid.PutTile(tile);
                 }
 
@@ -179,7 +178,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         }
 
         Room newRoom = Instantiate(possibleRooms.ToList().GetRandom());
-        newRoom.InitRoomTiles();
+        newRoom.InitRoom(_dungeon, _dungeon.Templates.DungeonParts.GridTile);
         newRoom.XCoord = currRoom.XCoord;
         newRoom.YCoord = currRoom.YCoord;
         newRoom.ShiftInDirection(connector.ConnectsTo.Value);
@@ -213,7 +212,7 @@ public class DungeonGenerator: SingletonObject<DungeonGenerator>
         int x = tile.XCoord;
         int y = tile.YCoord;
         tile.RemoveConnector();        
-        foreach (GridTile neighbor in _grid.GetNeighbors(x, y))
+        foreach (var neighbor in _grid.GetNeighbors(x, y))
         {
             if (neighbor != null && (neighbor.IsConnectorTile() || neighbor.IsConnectorNeighbor))
             {

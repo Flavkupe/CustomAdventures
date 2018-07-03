@@ -1,5 +1,5 @@
 ﻿public class GameContext
 {
-    public DungeonManager Dungeon;
+    public Dungeon Dungeon;
     public Player Player;
 }
