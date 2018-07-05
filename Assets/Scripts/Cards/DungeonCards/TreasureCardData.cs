@@ -8,9 +8,8 @@ public class TreasureCardData : EntityCardData<Treasure>
 
     public int Level = 1;
 
-    public int NumTreasures = 1;
-
-    public LootCardType[] LootTypes;
+    [Tooltip("Properties for the kind of loot expected from this treasure")]
+    public LootEventProperties LootProperties;
 
     public override DungeonCardType DungeonCardType { get { return DungeonCardType.Treasure; } }
     public override Type BackingCardType { get { return typeof(TreasureCard); } }

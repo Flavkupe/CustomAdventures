@@ -1,22 +1,25 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class EarnGoldCard : LootCard<EarnGoldCardData>
 {
     private int stackSize = 0;
 
-    public override void ExecuteLootGetEvent()
+    protected override IEnumerator ExecuteGetLootEvent(LootCardExecutionContext context)
     {
         InventoryItem item = Data.BackingItem.CreateClone();
         item.CurrentStackSize = stackSize;
 
-        if (Game.Player.Inventory.TryMoveToInventory(item, true))
+        if (context.Player.Inventory.TryMoveToInventory(item, true))
         {
             // TODO: message?
         }
         else
         {
-            Game.Player.Inventory.DiscardItem(item, false);
+            context.Player.Inventory.DiscardItem(item, false);
         }
+
+        yield return null;
     }
 
     protected override void InitData()

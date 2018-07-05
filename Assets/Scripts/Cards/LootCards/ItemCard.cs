@@ -1,17 +1,21 @@
-﻿public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> where TItemCardDataType : ItemCardData
+﻿using System.Collections;
+
+public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> where TItemCardDataType : ItemCardData
 {
-    public override void ExecuteLootGetEvent()
+    protected override IEnumerator ExecuteGetLootEvent(LootCardExecutionContext context)
     {
         InventoryItem item = Data.BackingItem.CreateClone();
-        if (Game.Player.Inventory.TryMoveToInventory(item, true))
+        if (context.Player.Inventory.TryMoveToInventory(item, true))
         {
             item.ItemLooted();
         }
         else
         {
             item.ItemDropped();
-            Game.Player.Inventory.DiscardItem(item, false);
+            context.Player.Inventory.DiscardItem(item, false);
         }
+
+        yield return null;
     }
 
     protected override void InitData()

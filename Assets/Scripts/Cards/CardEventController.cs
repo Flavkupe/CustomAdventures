@@ -29,6 +29,29 @@ public class CardEventController : MonoBehaviourEx
         _decks = Game.Decks;
     }
 
+    public IEnumerator PerformLootEvents(LootEventProperties lootProperties)
+    {
+        Func<ILootCard, bool> drawConditionFunc = null;
+        var filter = lootProperties.CreateLootCardFilter();
+        if (filter != null && filter.PossibleTypes.Count > 0)
+        {
+            drawConditionFunc = card => filter.PossibleTypes.Contains(card.LootCardType);
+        }
+
+        var draws = lootProperties.NumTreasures;
+        var props = new DrawCoroutineProps<ILootCard>(draws, _decks.LootDeck, true, drawConditionFunc);
+        yield return DrawCardsWithMulligan(props);
+
+        // TODO: find player
+        var context = new LootCardExecutionContext(Game.Player);
+
+        // Create parallel set of routines that run in parallel
+        var set = ParallelRoutineSet.CreateSet(props.DrawResults, item => Routine.Create(item.ExecuteLootEvent, context));
+        yield return set;
+
+        props.DrawResults.ForEach(a => a.DestroyCard());
+    }
+
     public IEnumerator PerformDungeonEvents(RoomArea roomArea)
     {
         var draws = roomArea.NumDraws;

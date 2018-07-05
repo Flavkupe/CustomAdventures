@@ -118,6 +118,12 @@ public abstract class Card<TCardDataType> : MonoBehaviourEx, ICard where TCardDa
             yield return cardTriggerEffect.CreateRoutine();
         }
     }
+
+    protected AnimationEffectData GetDefaultCardTriggerEffect()
+    {
+        // TODO: put these in a better place
+        return Game.Dungeon.Templates.CardParts.Effects.DefaultCardTriggerEffect;
+    }
 }
 
 public abstract class CardData : ScriptableObject

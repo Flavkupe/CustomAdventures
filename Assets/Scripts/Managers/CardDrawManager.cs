@@ -18,39 +18,6 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
     private void Awake()
     {
         Instance = this;
-    }    
-
-    public Routine PerformLootCardDrawing(int cardNum, LootCardFilter filter = null)
-    {
-        Func<ILootCard, Routine> func = card =>
-        {
-            switch (card.LootEventType)
-            {
-                case LootEventType.GainLoot:
-                default:
-                    return Routine.CreateAction(() =>
-                    {
-                        card.ExecuteLootGetEvent();
-                        card.DestroyCard();
-                    });
-            }
-        };
-
-        Func<ILootCard, bool> drawConditionFunc = null;
-        if (filter != null && filter.PossibleTypes.Count > 0)
-        {
-            drawConditionFunc = card =>
-            {
-                if (filter.PossibleTypes.Contains(card.LootCardType))
-                {
-                    return true;
-                }
-
-                return false;
-            };
-        }
-
-        return DoCardDraw(new DrawCoroutineProps<ILootCard>(cardNum, Game.Decks.LootDeck, func, true, drawConditionFunc));
     }
 
     public Routine PerformAbilityCardDrawing(int cardNum)

@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(SoundGenerator))]
-public class Treasure : TileEntity
+public class Treasure : TileEntity, IProducesLootEvent
 {
     public TreasureCardData Data { get; set; }
 
@@ -21,6 +22,8 @@ public class Treasure : TileEntity
 
     private bool _canInteractWith = true;
 
+    public event EventHandler<LootEventProperties> LootEventRequested;
+
     //protected override void OnClicked()
     //{
     //    //Game.UI.UpdateEntityPanel(this);
@@ -33,6 +36,11 @@ public class Treasure : TileEntity
         GetComponent<SpriteRenderer>().sprite = Data.Sprite;
         GetComponent<SpriteRenderer>().sortingLayerName = "Entities";
         _soundGen = GetComponent<SoundGenerator>();
+    }
+
+    public override void SpawnOnGrid(Dungeon dungeon, GridTile tile)
+    {
+        dungeon.SpawnLootableEntity(this, tile);
     }
 
     public override bool PlayerCanInteractWith()
@@ -49,14 +57,8 @@ public class Treasure : TileEntity
     {
         yield return PlayerTwitchTowardsThis();
 
-        var filter = this.Data.LootTypes != null && this.Data.LootTypes.Length > 0 ? new LootCardFilter() : null;
-        if (filter != null)
-        {
-            this.Data.LootTypes.ToList().ForEach(a => filter.PossibleTypes.Add(a));
-        }
-
         _soundGen.PlayRandomFrom(Data.OpenSounds);
-        Game.CardDraw.PerformLootCardDrawing(this.Data.NumTreasures, filter);
+        LootEventRequested?.Invoke(this, Data.LootProperties);
         _canInteractWith = false;
         Destroy(gameObject, 1.0f);
     }

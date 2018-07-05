@@ -9,7 +9,7 @@ public abstract class DungeonSpawnCard<TDataType, TEntityType> : DungeonCard<TDa
 {
     public sealed override IEnumerator ExecuteDungeonEvent(DungeonCardExecutionContext context)
     {
-        var defaultAnimation = context.Dungeon.Templates.CardParts.Effects.DefaultCardTriggerEffect;
+        var defaultAnimation = GetDefaultCardTriggerEffect();
         yield return AnimateCardTriggerEffect(defaultAnimation);
 
         var numTimes = GetNumberOfExecutions();

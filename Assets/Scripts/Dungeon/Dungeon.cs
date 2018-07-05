@@ -150,7 +150,17 @@ public class Dungeon : SingletonObject<Dungeon>
         }
 
         return areas.Count == 0 ? defaultArea : areas.GetRandom();
-    }    
+    }
+
+    /// <summary>
+    /// Spawns an entity that can produce loot draw results, and observes those results.
+    /// Use this instead of SpawnEntity to watch for loot draws.
+    /// </summary>
+    public void SpawnLootableEntity<TEntityType>(TEntityType entity, GridTile tile) where TEntityType : TileEntity, IProducesLootEvent
+    {
+        SpawnEntity(entity, tile);
+        entity.LootEventRequested += OnLootEventRequested;
+    }
 
     public void SpawnEntity(TileEntity entity, GridTile tile)
     {
@@ -186,6 +196,11 @@ public class Dungeon : SingletonObject<Dungeon>
         }
 
         StartDungeon();
+    }
+
+    private void OnLootEventRequested(object sender, LootEventProperties e)
+    {
+        StartCoroutine(_cardController.PerformLootEvents(e));
     }
 
     private void OnPlayerEnteredRoom(object sender, RoomArea e)

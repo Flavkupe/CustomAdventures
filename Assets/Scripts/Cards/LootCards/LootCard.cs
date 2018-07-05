@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 public abstract class LootCard<T> : Card<T>, ILootCard where T : LootCardData
 {
@@ -8,14 +9,21 @@ public abstract class LootCard<T> : Card<T>, ILootCard where T : LootCardData
 
     public LootCardType LootCardType { get { return Data.LootCardType; } }
 
-    public abstract void ExecuteLootGetEvent();
+    protected abstract IEnumerator ExecuteGetLootEvent(LootCardExecutionContext context);
+
+    public IEnumerator ExecuteLootEvent(LootCardExecutionContext context)
+    {
+        var defaultAnimation = GetDefaultCardTriggerEffect();
+        yield return AnimateCardTriggerEffect(defaultAnimation);
+        yield return ExecuteGetLootEvent(context);
+    }
 }
 
 public interface ILootCard : ICard
 {
     LootEventType LootEventType { get; }
     LootCardType LootCardType { get; }
-    void ExecuteLootGetEvent();
+    IEnumerator ExecuteLootEvent(LootCardExecutionContext context);
 }
 
 public enum LootCardType
@@ -38,7 +46,12 @@ public abstract class LootCardData : CardData
     public LootEventType LootEventType;
 }
 
-public class LootCardFilter
+public class LootCardExecutionContext
 {
-    public HashSet<LootCardType> PossibleTypes = new HashSet<LootCardType>();
+    public Player Player { get; private set; }
+
+    public LootCardExecutionContext(Player player)
+    {
+        Player = player;
+    }
 }
