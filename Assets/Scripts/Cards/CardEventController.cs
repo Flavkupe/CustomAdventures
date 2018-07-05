@@ -127,13 +127,9 @@ public class CardEventController : MonoBehaviourEx
     private IEnumerator QuickDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
     {
         List<TCardType> cards = props.Deck.DrawCards(props.NumDraws);
-        var fullSize = _decks.DeckBigSize;
-
         foreach (var card in cards)
         {
             yield return _animationController.AnimateQuickSlideupDraw(card);
-            // Make card big for UI display
-            // card.Object.transform.localScale = new Vector3(fullSize, fullSize, fullSize);
         }
 
         props.DrawResults.AddRange(cards);

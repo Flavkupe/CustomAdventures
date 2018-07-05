@@ -510,7 +510,6 @@
     <Compile Include="Assets\Scripts\Inventory\InventoryItem.cs" />
     <Compile Include="Assets\Scripts\Inventory\StackableItem.cs" />
     <Compile Include="Assets\Scripts\Inventory\Weapon.cs" />
-    <Compile Include="Assets\Scripts\Managers\CardDrawManager.cs" />
     <Compile Include="Assets\Scripts\Managers\DebugManager.cs" />
     <Compile Include="Assets\Scripts\Managers\DeckManager.cs" />
     <Compile Include="Assets\Scripts\Managers\SoundManager.cs" />

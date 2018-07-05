@@ -12,8 +12,6 @@ public static class Game
 
     public static UIManager UI => UIManager.Instance;
 
-    public static CardDrawManager CardDraw => CardDrawManager.Instance;
-
     public static DebugManager Debug => DebugManager.Instance;
 
     public static SoundManager Sounds => SoundManager.Instance;
