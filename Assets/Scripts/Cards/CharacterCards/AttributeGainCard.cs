@@ -1,17 +1,21 @@
-﻿public class AttributeGainCard : CharacterCard<AttributeGainCardData>
+﻿using System.Collections;
+
+public class AttributeGainCard : CharacterCard<AttributeGainCardData>
 {
-    public override void ApplyEffect()
+    public override IEnumerator ApplyEffect(CharacterCardExecutionContext context)
     {
         if (Data.StrengthGain > 0)
         {
-            Game.Player.CurrentStats.Strength += Data.StrengthGain;
+            context.Player.CurrentStats.Strength += Data.StrengthGain;
         }
 
         if (Data.MaxHPGain > 0)
         {
-            Game.Player.BaseStats.HP += Data.MaxHPGain;
-            Game.Player.CurrentStats.HP += Data.MaxHPGain;
+            context.Player.BaseStats.HP += Data.MaxHPGain;
+            context.Player.CurrentStats.HP += Data.MaxHPGain;
         }
+
+        yield return null;
     }
 }
 

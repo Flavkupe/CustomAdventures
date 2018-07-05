@@ -75,4 +75,18 @@ public class CardAnimationController : MonoBehaviourEx
 
         yield return routines;
     }
+
+    public IEnumerator AnimateQuickSlideupDraw(ICard card)
+    {
+        yield return SlideCardUp(card, 1.5f, 15.0f);
+        yield return Routine.WaitForSeconds(0.3f, true);
+        yield return card.Object.transform.RotateCoroutine(Vector3.up, 180, 500.0f);
+        yield return Routine.WaitForSeconds(0.3f, true);
+    }
+
+    private IEnumerator SlideCardUp(ICard card, float yDist, float speed)
+    {
+        var target = card.Object.transform.position + (Vector3.up * yDist);
+        yield return card.Object.transform.MoveToSpotCoroutine(target, speed);
+    }
 }

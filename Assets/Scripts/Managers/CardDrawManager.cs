@@ -26,7 +26,7 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         {
             return Routine.CreateAction(() =>
             {
-                Game.Player.EquipAbility(card);
+                Game.Player.EquipDrawnAbilityCard(card);
             });
         };
 
@@ -34,25 +34,6 @@ public class CardDrawManager : SingletonObject<CardDrawManager>
         // Game.States.EnqueueIfNotState(GameState.CharacterMoving, () => routine);
         StartCoroutine(routine);
         return routine;
-    }
-
-    public Routine PerformCharacterCardDrawing(int cardNum)
-    {
-        Func<ICharacterCard, Routine> func = card =>
-        {
-            switch (card.CharacterCardType)
-            {
-                case CharacterCardType.AttributeGain:
-                default:
-                    return Routine.CreateAction(() =>
-                    {
-                        card.ApplyEffect();
-                        card.DestroyCard();
-                    });
-            }
-        };
-
-        return DoCardDraw(cardNum, Game.Decks.CharacterDeck, func);
     }
 
     private Routine DoCardDraw<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard

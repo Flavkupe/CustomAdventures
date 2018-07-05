@@ -29,6 +29,31 @@ public class CardEventController : MonoBehaviourEx
         _decks = Game.Decks;
     }
 
+    public IEnumerator PerformCharacterCardEvents(Player player)
+    {
+        // TODO: replace 2 with something
+        var props = new DrawCoroutineProps<ICharacterCard>(2, _decks.CharacterDeck, true);
+        yield return DrawCardsWithMulligan(props);
+
+        var context = new CharacterCardExecutionContext(player, _decks);
+        // Create parallel set of routines that run in parallel
+        var set = ParallelRoutineSet.CreateSet(props.DrawResults, item => Routine.Create(item.ApplyEffect, context));
+        yield return set;
+
+        DestroyCards(props.DrawResults);
+    }
+
+    public IEnumerator PerformAbilityCardEvents(Player player)
+    {
+        var props = new DrawCoroutineProps<IAbilityCard>(1, _decks.AbilityDeck, false);
+        yield return QuickDrawCoroutine(props);
+
+        foreach (var card in props.DrawResults)
+        {
+            player.EquipDrawnAbilityCard(card);
+        }
+    }
+
     public IEnumerator PerformLootEvents(LootEventProperties lootProperties)
     {
         Func<ILootCard, bool> drawConditionFunc = null;
@@ -49,7 +74,7 @@ public class CardEventController : MonoBehaviourEx
         var set = ParallelRoutineSet.CreateSet(props.DrawResults, item => Routine.Create(item.ExecuteLootEvent, context));
         yield return set;
 
-        props.DrawResults.ForEach(a => a.DestroyCard());
+        DestroyCards(props.DrawResults);
     }
 
     public IEnumerator PerformDungeonEvents(RoomArea roomArea)
@@ -88,7 +113,30 @@ public class CardEventController : MonoBehaviourEx
         var set = ParallelRoutineSet.CreateSet(props.DrawResults, item => Routine.Create(item.ExecuteDungeonEvent, context));
         yield return set;
 
-        props.DrawResults.ForEach(a => a.DestroyCard());
+        DestroyCards(props.DrawResults);
+    }
+
+    private void DestroyCards(IEnumerable<ICard> cards)
+    {
+        foreach (var card in cards)
+        {
+            card.DestroyCard();
+        }
+    }
+
+    private IEnumerator QuickDrawCoroutine<TCardType>(DrawCoroutineProps<TCardType> props) where TCardType : class, ICard
+    {
+        List<TCardType> cards = props.Deck.DrawCards(props.NumDraws);
+        var fullSize = _decks.DeckBigSize;
+
+        foreach (var card in cards)
+        {
+            yield return _animationController.AnimateQuickSlideupDraw(card);
+            // Make card big for UI display
+            // card.Object.transform.localScale = new Vector3(fullSize, fullSize, fullSize);
+        }
+
+        props.DrawResults.AddRange(cards);
     }
 
     private IEnumerator DrawCardsWithMulligan<TCardType>(DrawCoroutineProps<TCardType> props)

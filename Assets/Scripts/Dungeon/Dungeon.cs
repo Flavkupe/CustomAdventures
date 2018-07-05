@@ -29,6 +29,8 @@ public class Dungeon : SingletonObject<Dungeon>
 
     private CardEventController _cardController;
 
+    private Player _player;
+
     private readonly List<Enemy> _enemies = new List<Enemy>();
 
     public void RemoveEnemy(Enemy enemy)
@@ -53,7 +55,7 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public void AfterPlayerTurn()
     {
-        if (IsCombat && !Game.Player.PlayerCanMove)
+        if (IsCombat && !_player.PlayerCanMove)
         {
             Game.States.SetState(GameState.EnemyTurn);            
             RoutineChain enemyTurns = new RoutineChain(_enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
@@ -181,6 +183,9 @@ public class Dungeon : SingletonObject<Dungeon>
 
         _cardController = GetComponentInChildren<CardEventController>();
         Debug.Assert(_cardController != null, "Dungeon needs a CardEventController child object!");
+
+        _player = FindObjectOfType<Player>();
+        Debug.Assert(_player != null, "Could not find Player object!");
     }
 
     /// <summary>
@@ -198,6 +203,16 @@ public class Dungeon : SingletonObject<Dungeon>
         StartDungeon();
     }
 
+    private void OnPlayerAbilityCardNeeded(object sender, Player e)
+    {
+        StartCoroutine(_cardController.PerformAbilityCardEvents(e));
+    }
+
+    private void OnPlayerLevelupEvent(object sender, Player e)
+    {
+        StartCoroutine(_cardController.PerformCharacterCardEvents(e));
+    }
+
     private void OnLootEventRequested(object sender, LootEventProperties e)
     {
         StartCoroutine(_cardController.PerformLootEvents(e));
@@ -211,17 +226,21 @@ public class Dungeon : SingletonObject<Dungeon>
     [UsedImplicitly]
     private void StartDungeon()
     {
-        Game.Player.DungeonStarted(this);
+        _player.AbilityCardNeeded += OnPlayerAbilityCardNeeded;
+        _player.LevelupEvent += OnPlayerLevelupEvent;
+        _player.DungeonStarted(this);
     }
+
+    
 
     public List<GridTile> GetTilesNearPlayer(TileRangeType rangeType, int range)
     {
         switch (rangeType)
         {
             case TileRangeType.Radial:
-                return Grid.GetRadialTileContents(Game.Player.XCoord, Game.Player.YCoord, range).Select(a => a.Tile).ToList();
+                return Grid.GetRadialTileContents(_player.XCoord, _player.YCoord, range).Select(a => a.Tile).ToList();
             case TileRangeType.Sides:
-                return Grid.GetSideTileContents(Game.Player.XCoord, Game.Player.YCoord, range).Select(a => a.Tile).ToList();
+                return Grid.GetSideTileContents(_player.XCoord, _player.YCoord, range).Select(a => a.Tile).ToList();
             default:
                 throw new NotImplementedException();
         }
@@ -229,12 +248,12 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public List<TileEntity> GetEntitiesNearPlayer(TileRangeType rangeType, int range, TileEntityType? filter = null)
     {
-        return Grid.GetEntities(rangeType, Game.Player.XCoord, Game.Player.YCoord, range, filter);        
+        return Grid.GetEntities(rangeType, _player.XCoord, _player.YCoord, range, filter);        
     }
 
     public Inventory<PassableTileItem> GetGroundItems()
     {
-        var entities = Grid.GetTile(Game.Player.XCoord, Game.Player.YCoord).GetTileItems();
+        var entities = Grid.GetTile(_player.XCoord, _player.YCoord).GetTileItems();
         return entities;
     }
 }

@@ -17,6 +17,9 @@ public class AbilityPanelSlot : MonoBehaviour
 
     public void SetAbility(IAbilityCard ability)
     {
+        // TODO: Game.Decks
+        var fullSize = Game.Decks.DeckBigSize;
+
         this.ability = ability;
         IconImage.sprite = ability.AbilityIcon;
         IconImage.gameObject.SetActive(true);
@@ -33,6 +36,7 @@ public class AbilityPanelSlot : MonoBehaviour
             this.ability.Object.transform.position = new Vector3(worldPosition.x, worldPosition.y + 3.0f, -5.0f);
             this.ability.SetFaceUp();
             this.ability.Object.gameObject.SetActive(false);
+            this.ability.Object.transform.localScale = new Vector3(fullSize, fullSize, fullSize);
         }
     }
 

@@ -13,6 +13,8 @@ public class Player : TileActor, IDungeonActor
 
     public int AbilityThreshold = 3;
 
+    private bool _drawingAbility = false;
+
     public override TileEntityType EntityType => TileEntityType.Player;
 
     public static Player Instance { get { return instance; } private set { instance = value; } }
@@ -41,6 +43,10 @@ public class Player : TileActor, IDungeonActor
     private SoundGenerator _soundGen;
 
     private Direction _facingDirection = Direction.Right;
+
+    public event EventHandler<Player> AbilityCardNeeded;
+
+    public event EventHandler<Player> LevelupEvent;
 
     // Sounds
     public AudioClip[] DamagedSounds;
@@ -72,10 +78,11 @@ public class Player : TileActor, IDungeonActor
         InitializePlayerTurn();
     }
 
-    public void EquipAbility(IAbilityCard ability)
+    public void EquipDrawnAbilityCard(IAbilityCard ability)
     {
         _abilities.Add(ability);
-        AbilityPanel.Instance.SyncSlotsWithPlayer();
+        AbilityPanel.Instance.SyncSlotsWithPlayer(this);
+        _drawingAbility = false;
     }
 
     public void ForgetAbility(IAbilityCard ability)
@@ -83,7 +90,7 @@ public class Player : TileActor, IDungeonActor
         Debug.Assert(_abilities.Contains(ability));
         _abilities.Remove(ability);
         ability.DestroyCard();
-        AbilityPanel.Instance.SyncSlotsWithPlayer();
+        AbilityPanel.Instance.SyncSlotsWithPlayer(this);
     }
 
     public void AfterAbilityUsed(IAbilityCard ability)
@@ -179,11 +186,9 @@ public class Player : TileActor, IDungeonActor
             }
         }
 
-        if (!drawingAbilities && Abilities.Count < AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
+        if (!_drawingAbility && Abilities.Count < AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
         {
-            int numToDraw = AbilityThreshold - Abilities.Count;
-            numToDraw = Mathf.Min(Game.Decks.AbilityDeck.CardCount, numToDraw);
-            DrawAbilities(numToDraw);
+            DrawAbility();
         }
     }
 
@@ -194,14 +199,10 @@ public class Player : TileActor, IDungeonActor
         OnAfterPlayerMove();
     }
 
-    private bool drawingAbilities = false;
-    private void DrawAbilities(int num)
+    private void DrawAbility()
     {
-        if (num > 0)
-        {
-            drawingAbilities = true;
-            Game.CardDraw.PerformAbilityCardDrawing(num).Finally(() => drawingAbilities = false);
-        }
+        _drawingAbility = true;
+        AbilityCardNeeded?.Invoke(this, this);
     }
 
     public void GainXP(int exp)
@@ -218,12 +219,14 @@ public class Player : TileActor, IDungeonActor
     public void LevelUp()
     {
         CurrentStats.Level++;
+
+        LevelupEvent?.Invoke(this, this);
+
+        _soundGen.PlayClip(LevelupSound);
         Routine routine = Routine.Create(() => Routine.WaitForSeconds(0.5f));
         routine.Then(() => ShowFloatyText("LEVEL UP!", Color.yellow, FloatyTextSize.Large))
-               .Then(() => Game.CardDraw.PerformCharacterCardDrawing(2))
                .Then(() => Game.UI.UpdateUI());
-        Game.States.EnqueueIfNotState(GameState.CharacterMoving, routine);
-        _soundGen.PlayClip(LevelupSound);
+        StartCoroutine(routine);
     }
 
     private void ProcessEffects(EffectActivatorType actionTaken)
@@ -241,7 +244,7 @@ public class Player : TileActor, IDungeonActor
     }
 
     private void OnAfterPlayerMove()
-    {        
+    {
         ProcessEffects(EffectActivatorType.Steps);
         OnAfterPlayerAction(false);
     }
@@ -258,7 +261,7 @@ public class Player : TileActor, IDungeonActor
     }
 
     private void OnAfterPlayerAction(bool isFullAction)
-    {        
+    {
         if (Game.Dungeon.IsCombat)
         {
             if (!isFullAction && CurrentStats.FreeMoves > 0)
@@ -272,7 +275,7 @@ public class Player : TileActor, IDungeonActor
             }
         }
 
-        Game.Dungeon.AfterPlayerTurn();        
+        Game.Dungeon.AfterPlayerTurn();
     }
 
     private IEnumerator TryPlayerMove(Direction direction)
