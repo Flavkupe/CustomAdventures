@@ -334,14 +334,14 @@ public class TileGrid : MonoBehaviour
             return false;
         }
 
-        if (contents.Tile.IsReserved && !FitsOccupancyRule(rule, OccupancyRule.CanBeReserved))
+        if (contents.Tile.IsReserved && !rule.HasFlag(OccupancyRule.CanBeReserved))
         {
             return false;
         }
 
         if (contents.TileObject != null)
         {
-            if (contents.TileObject == Game.Player && FitsOccupancyRule(rule, OccupancyRule.CanBePlayer))
+            if (contents.TileObject == Game.Player && rule.HasFlag(OccupancyRule.CanBePlayer))
             {
                 return true;
             }
@@ -350,11 +350,6 @@ public class TileGrid : MonoBehaviour
         }
 
         return true;
-    }
-
-    private bool FitsOccupancyRule(OccupancyRule rule, OccupancyRule flag)
-    {
-        return Utils.HasFlag((int)rule, (int)OccupancyRule.CanBeReserved);
     }
 }
 

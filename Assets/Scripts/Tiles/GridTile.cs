@@ -117,4 +117,9 @@ public class GridTile : MonoBehaviour, IHasCoords
 
         Destroy(gameObject);
     }
+
+    public void Reserve()
+    {
+        IsReserved = true;
+    }
 }

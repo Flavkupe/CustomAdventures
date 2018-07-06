@@ -256,5 +256,17 @@ public class Dungeon : SingletonObject<Dungeon>
         var entities = Grid.GetTile(_player.XCoord, _player.YCoord).GetTileItems();
         return entities;
     }
-}
 
+    private int _pauseCounters;
+    public void PauseActions()
+    {
+        _pauseCounters++;
+    }
+
+    public void UnpauseActions()
+    {
+        _pauseCounters--;
+    }
+
+    public bool IsGamePaused => _pauseCounters > 0;
+}

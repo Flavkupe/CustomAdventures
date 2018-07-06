@@ -5,11 +5,9 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 
-public class Player : TileActor, IDungeonActor
+public class Player : TileActor
 {
     public GameObject Actor => this.gameObject;
-
-    private static Player instance;
 
     public int AbilityThreshold = 3;
 
@@ -17,9 +15,9 @@ public class Player : TileActor, IDungeonActor
 
     public override TileEntityType EntityType => TileEntityType.Player;
 
-    public static Player Instance { get { return instance; } private set { instance = value; } }
+    public static Player Instance { get; private set; }
 
-    private AnimatedEquipment _animatedWeapon = null;
+    private AnimatedEquipment _animatedWeapon;
 
     public List<IAbilityCard> Abilities => _abilities;
 
@@ -157,7 +155,7 @@ public class Player : TileActor, IDungeonActor
 
     private void Update ()
     {
-        if (Game.States.IsPaused || Game.States.AreMenusOpen)
+        if (Game.Dungeon.IsGamePaused || Game.States.AreMenusOpen)
         {
             return;
         }

@@ -7,8 +7,6 @@ using UnityEngine;
 
 public class StateManager : SingletonObject<StateManager>
 {
-    public bool IsPaused = false;
-
     public float MousedownSpeedMultiplier = 3.0f;
 
     private readonly Dictionary<GameState, Queue<Action>> _onStateChangeFromQueues = new Dictionary<GameState, Queue<Action>>();

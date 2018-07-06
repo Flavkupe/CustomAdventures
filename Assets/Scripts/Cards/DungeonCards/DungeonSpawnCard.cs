@@ -9,12 +9,12 @@ public abstract class DungeonSpawnCard<TDataType, TEntityType> : DungeonCard<TDa
 {
     public sealed override IEnumerator ExecuteDungeonEvent(DungeonCardExecutionContext context)
     {
-        var defaultAnimation = GetDefaultCardTriggerEffect();
-        yield return AnimateCardTriggerEffect(defaultAnimation);
+        context.Dungeon.PauseActions();
 
         var numTimes = GetNumberOfExecutions();
 
-        var routineSet = new ParallelRoutineSet();
+        var preExecutionRoutines = new RoutineChain();
+        var executionRoutines = new ParallelRoutineSet();
         for (var i = 0; i < numTimes; i++)
         {
             // Which room does the event happen in?
@@ -28,18 +28,25 @@ public abstract class DungeonSpawnCard<TDataType, TEntityType> : DungeonCard<TDa
             var tile = GetTargetTile(spawnRoomArea);
             if (tile != null)
             {
-                var cardEffectRoutine = Routine.Create(ExecuteSpawnEvent, tile, newContext);               
+                // To ensure we don't reuse this tile
+                tile.Reserve();
+
+                // Queue up pre-execute events for each tile
+                var preExecRoutine = Routine.Create(BeforeExecuteSpawnEvent, tile, newContext);
+                preExecutionRoutines.AddRoutine(preExecRoutine);
+
+                var cardEffectRoutine = Routine.Create(ExecuteSpawnEvent, tile, newContext);
                 if (Data.RoomEventType == RoomEventType.CurrentRoom)
-                {
+                { 
                     // Card travel effect
-                    var routine = Routine.Create(AnimateCardMoveToEffect, tile, context);
-                    routine.Then(cardEffectRoutine);
-                    routineSet.AddRoutine(routine);
+                    var executionRoutine = Routine.Create(AnimateCardMoveToEffect, tile, context);
+                    executionRoutine.Then(cardEffectRoutine);
+                    executionRoutines.AddRoutine(executionRoutine);
                 }
                 else
                 {
                     // No travel effect, so just do event
-                    routineSet.AddRoutine(cardEffectRoutine);
+                    executionRoutines.AddRoutine(cardEffectRoutine);
                 }
             }
             else
@@ -48,7 +55,26 @@ public abstract class DungeonSpawnCard<TDataType, TEntityType> : DungeonCard<TDa
             }
         }
 
-        yield return routineSet.AsRoutine();               
+        // First reserve all the tiles and such
+        yield return preExecutionRoutines.AsRoutine();
+
+        context.Dungeon.UnpauseActions();
+
+        var defaultAnimation = GetDefaultCardTriggerEffect();
+        yield return AnimateCardTriggerEffect(defaultAnimation);
+
+        yield return executionRoutines.AsRoutine();               
+    }
+
+    /// <summary>
+    /// Events that happen before a card triggers and travels. Should perform
+    /// tasks such as reserving tiles.
+    /// </summary>
+    /// <returns></returns>
+    protected virtual IEnumerator BeforeExecuteSpawnEvent(GridTile tile, DungeonCardExecutionContext context)
+    {
+        tile.Reserve();
+        yield return null;
     }
 
     protected virtual IEnumerator ExecuteSpawnEvent(GridTile tile, DungeonCardExecutionContext context)

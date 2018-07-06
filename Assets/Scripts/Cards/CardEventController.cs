@@ -37,7 +37,7 @@ public class CardEventController : MonoBehaviourEx
 
         var context = new CharacterCardExecutionContext(player, _decks);
         // Create parallel set of routines that run in parallel
-        var set = ParallelRoutineSet.CreateSet(props.DrawResults, item => Routine.Create(item.ApplyEffect, context));
+        var set = ParallelRoutineSet.CreateSet(props.DrawResults, card => Routine.Create(card.ApplyEffect, context));
         yield return set;
 
         DestroyCards(props.DrawResults);
@@ -71,7 +71,7 @@ public class CardEventController : MonoBehaviourEx
         var context = new LootCardExecutionContext(Game.Player);
 
         // Create parallel set of routines that run in parallel
-        var set = ParallelRoutineSet.CreateSet(props.DrawResults, item => Routine.Create(item.ExecuteLootEvent, context));
+        var set = ParallelRoutineSet.CreateSet(props.DrawResults, card => Routine.Create(card.ExecuteLootEvent, context));
         yield return set;
 
         DestroyCards(props.DrawResults);
@@ -110,7 +110,7 @@ public class CardEventController : MonoBehaviourEx
         var context = new DungeonCardExecutionContext(_dungeon, Game.Player, roomArea);
 
         // Create parallel set of routines that run in parallel
-        var set = ParallelRoutineSet.CreateSet(props.DrawResults, item => Routine.Create(item.ExecuteDungeonEvent, context));
+        var set = ParallelRoutineSet.CreateSet(props.DrawResults, card => Routine.Create(card.ExecuteDungeonEvent, context));
         yield return set;
 
         DestroyCards(props.DrawResults);
@@ -138,7 +138,7 @@ public class CardEventController : MonoBehaviourEx
     private IEnumerator DrawCardsWithMulligan<TCardType>(DrawCoroutineProps<TCardType> props)
         where TCardType : class, ICard
     {
-        Game.States.IsPaused = true;
+        _dungeon.PauseActions();
 
         // TODO: replace this state system
         yield return Game.States.WaitUntilNotState(GameState.CharacterMoving);
@@ -179,8 +179,7 @@ public class CardEventController : MonoBehaviourEx
 
         props.DrawResults.AddRange(cards);
 
-        // TODO: remove
-        Game.States.IsPaused = false;
+        _dungeon.UnpauseActions();
     }
 
     private IEnumerator MulliganCardsIntoDeck<TCardType>(Deck<TCardType> deck, List<TCardType> cards) where TCardType : class, ICard
