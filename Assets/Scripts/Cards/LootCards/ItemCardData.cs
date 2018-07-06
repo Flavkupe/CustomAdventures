@@ -14,12 +14,17 @@ public class ItemCardData : LootCardData
 
     public InventoryItemType ItemType = InventoryItemType.Misc;
 
-    public override LootCardType LootCardType { get { return LootCardType.Item; } }
+    public override LootCardType LootCardType => LootCardType.Item;
 
-    public override Type BackingCardType { get { return typeof(GeneralItemCard); } }
+    public override Type BackingCardType => typeof(GeneralItemCard);
 
     public AudioClip CustomPickupSound;
     public AudioClip CustomDropSound;
+
+    public virtual InventoryItem CreateInventoryItem()
+    {
+        return new InventoryItem<ItemCardData>(this);
+    }
 }
 
 public class EquippableItemCardData : ItemCardData

@@ -28,23 +28,11 @@ public class Armor : InventoryItem<ArmorCardData>
         }
     }
 
-    public override float DurabilityRatio
-    {
-        get { return Mathf.Clamp(_durability / (float)Data.Durability, 0.0f, 1.0f); }
-    }
+    public override float DurabilityRatio => Mathf.Clamp(_durability / (float)Data.Durability, 0.0f, 1.0f);
 
-    public override bool ShowDurability
-    {
-        get { return true; }
-    }
+    public override bool ShowDurability => true;
 
-    public override int DefenseValue
-    {
-        get 
-        {
-            return Data.Blocking;
-        }
-    }
+    public override int DefenseValue => Data.Blocking;
 
     public override void ItemEquipped()
     {

@@ -2,20 +2,17 @@
 
 public abstract class InventoryItem : StackableItem
 {   
-    public virtual InventoryItemType Type { get { return InventoryItemType.Misc; } }
+    public virtual InventoryItemType Type => InventoryItemType.Misc;
 
     public abstract ItemCardData ItemData { get; }
 
     public abstract InventoryItem CreateClone();
 
-    public virtual bool ShowDurability { get { return false; } }
+    public virtual bool ShowDurability => false;
 
-    public virtual float DurabilityRatio
-    {
-        get { return 1.0f; }
-    }
+    public virtual float DurabilityRatio => 1.0f;
 
-    public bool IsEquipment { get { return Type != InventoryItemType.Misc; } }   
+    public bool IsEquipment => Type != InventoryItemType.Misc;
 
     public TDataType GetData<TDataType>() where TDataType : ItemCardData
     {
@@ -23,8 +20,8 @@ public abstract class InventoryItem : StackableItem
         return this.ItemData as TDataType;
     }
 
-    public override string Identifier { get { return ItemData.Name; } }
-    public override int MaxStack { get { return ItemData.MaxStack; } }    
+    public override string Identifier => ItemData.Name;
+    public override int MaxStack => ItemData.MaxStack;
 
     public PassableTileItem AsPassableTileItem()
     {
@@ -42,10 +39,7 @@ public abstract class InventoryItem : StackableItem
     {
     }
 
-    public virtual int DefenseValue
-    {
-        get { return 0; }
-    }
+    public virtual int DefenseValue => 0;
 
     public virtual void ItemEquipped()
     {
@@ -87,11 +81,11 @@ public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : 
         return new InventoryItem<TCardDataType>(_data);
     }
 
-    public override InventoryItemType Type { get { return _data == null ? InventoryItemType.Misc : _data.ItemType; } }
+    public override InventoryItemType Type => _data == null ? InventoryItemType.Misc : _data.ItemType;
 
-    public TCardDataType Data { get { return _data; } }
+    public TCardDataType Data => _data;
 
-    public override ItemCardData ItemData { get { return _data; } }
+    public override ItemCardData ItemData => _data;
 
     public override void ItemLooted()
     {

@@ -36,6 +36,6 @@ public class EarnGoldCard : LootCard<EarnGoldCardData>
 
     protected virtual InventoryItem CreateBackingItem()
     {
-        return new InventoryItem<EarnGoldCardData>(Data);
+        return Data.CreateInventoryItem();
     }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public abstract class LootCard<T> : Card<T>, ILootCard where T : LootCardData
 {
-    public override CardType CardType { get { return CardType.Loot; } }
+    public override CardType CardType => CardType.Loot;
 
-    public LootEventType LootEventType { get { return Data.LootEventType; } }
+    public LootEventType LootEventType => Data.LootEventType;
 
-    public LootCardType LootCardType { get { return Data.LootCardType; } }
+    public LootCardType LootCardType => Data.LootCardType;
 
     protected abstract IEnumerator ExecuteGetLootEvent(LootCardExecutionContext context);
 

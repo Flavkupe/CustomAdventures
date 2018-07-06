@@ -26,6 +26,6 @@ public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> 
 
     protected virtual InventoryItem CreateBackingItem()
     {
-        return new InventoryItem<TItemCardDataType>(Data);
+        return Data.CreateInventoryItem();
     }
 }

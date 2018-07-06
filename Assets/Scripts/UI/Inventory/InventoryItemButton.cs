@@ -15,22 +15,47 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
 
     public Image DurabilitySlider;
 
-    public bool IsOccupied { get { return BackingItem != null; } }
+    public bool IsOccupied => BackingItem != null;
 
-    public bool IsEquipmentType { get { return Type != InventoryItemButtonType.Inventory && Type != InventoryItemButtonType.Ground; } }    
+    public bool IsEquipmentType => Type != InventoryItemButtonType.Inventory && Type != InventoryItemButtonType.Ground;
 
     public void OnPointerClick(PointerEventData e)
     {
+        //if (BackingItem != null)
+        //{            
+        //    if (e.button == PointerEventData.InputButton.Left)
+        //    {
+        //        LeftClickItem();
+        //    }
+        //    else if (e.button == PointerEventData.InputButton.Right)
+        //    {
+        //        RightClickItem();
+        //    }
+        //}
+    }
+
+    private CursorObject _dragObject;
+
+    public void OnStartDrag()
+    {
         if (BackingItem != null)
-        {            
-            if (e.button == PointerEventData.InputButton.Left)
-            {
-                LeftClickItem();
-            }
-            else if (e.button == PointerEventData.InputButton.Right)
-            {
-                RightClickItem();
-            }
+        {
+            _dragObject = Utils.InstantiateOfType<CursorObject>("drag");
+            _dragObject.SetImage(BackingItem.ItemData.Sprite);
+            Cursor.visible = false;
+            // Cursor.SetCursor(subImage.sprite.texture, Vector2.zero, CursorMode.Auto);
+            // Cursor.SetCursor(BackingItem.ItemData.Sprite.texture, Vector2.zero, CursorMode.Auto);
+        }
+    }
+
+    public void OnEndDrag()
+    {
+        Cursor.visible = true; 
+        // Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        if (_dragObject != null)
+        {
+            Destroy(_dragObject.gameObject);
+            _dragObject = null;
         }
     }
 
