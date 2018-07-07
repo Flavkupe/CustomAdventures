@@ -40,14 +40,29 @@ public class PlayerInventory
         return item as InventoryItem<TDataType>;
     }
 
-    public void UnequipInventoryItem(InventoryItemType type)
+    /// <summary>
+    /// Changes the equipment without making any other changes
+    /// </summary>
+    public void UnequipInventoryItemDirectly(InventoryItemType type)
     {
         EquipmentItems[type] = null;
     }
 
-    public void EquipInventoryItem(InventoryItem item)
+    /// <summary>
+    /// Changes the equipment without making any other changes
+    /// </summary>
+    public void EquipInventoryItemDirectly(InventoryItem item)
     {
         EquipmentItems[item.Type] = item;
+    }
+
+    /// <summary>
+    /// Adds items to inventory without making any other changes.
+    /// Returns false if there is no room.
+    /// </summary>
+    public bool AddInventoryItemDirectly(InventoryItem item)
+    {
+        return InventoryItems.TryAddItem(item);
     }
 
     public InventoryItem GetEquipmentItem(InventoryItemType type)
@@ -69,7 +84,7 @@ public class PlayerInventory
             TryMoveToInventory(current, false);
         }
         
-        EquipInventoryItem(item);
+        EquipInventoryItemDirectly(item);
         item.ItemEquipped();
 
         Game.UI.UpdateInventory();
@@ -90,7 +105,7 @@ public class PlayerInventory
     {
         if (TryMoveToInventory(item, false))
         {
-            UnequipInventoryItem(item.Type);
+            UnequipInventoryItemDirectly(item.Type);
             item.ItemUnequipped();
             Game.UI.UpdateInventory();
             Game.UI.UpdateUI();
@@ -111,7 +126,7 @@ public class PlayerInventory
         {
             if (EquipmentItems.ContainsKey(item.Type) && EquipmentItems[item.Type] == item)
             {
-                UnequipInventoryItem(item.Type);
+                UnequipInventoryItemDirectly(item.Type);
             }
         }
 
@@ -139,7 +154,7 @@ public class PlayerInventory
         return true;
     }
 
-    public bool TryLootItem(InventoryItem item)
+    public bool TryLootItemFromGround(InventoryItem item)
     {
         if (item == null)
         {
@@ -149,34 +164,24 @@ public class PlayerInventory
         if (TryMoveToInventory(item, false))
         {
             var grid = Game.Dungeon.Grid;
-            var playerX = Game.Player.XCoord;
-            var playerY = Game.Player.YCoord;
-            var tileItems = grid.Get(playerX, playerY).TileItems;
-            var tileItem = tileItems.GetFirstOrDefault(a => a.Item == item);
-            if (tileItem != null)
+            if (grid.TryClearTileItem(Game.Player.XCoord, Game.Player.YCoord, item))
             {
-                grid.ClearPassableTileItem(tileItem);
                 Game.UI.UpdateInventory();
-                return true;
-            }
-            else
-            {
-                Debug.Assert(false, "Trying to loot item not in tile!");
             }
         }
 
         return false;
     }
 
-    public bool TryMoveToInventory(InventoryItem item, bool updateUI)
+    public bool TryMoveToInventory(InventoryItem item, bool updateUI, bool autoEquip = true)
     {
         if (item == null)
         {
             return false;
         }
 
-        bool madeChanges = false;
-        if (item.IsEquipment && !IsSlotOccupied(item.Type))
+        bool madeChanges;
+        if (autoEquip && item.IsEquipment && !IsSlotOccupied(item.Type))
         {
             Equip(item);
             madeChanges = true;
@@ -192,5 +197,5 @@ public class PlayerInventory
         }
 
         return madeChanges;
-    }    
+    }
 }

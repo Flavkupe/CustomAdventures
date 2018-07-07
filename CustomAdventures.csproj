@@ -543,6 +543,7 @@
     <Compile Include="Assets\Scripts\UI\Ability\AbilityPanelSlot.cs" />
     <Compile Include="Assets\Scripts\UI\EntityPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\CursorObject.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\EquipmentButton.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\InventoryItemButton.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\InventoryPanel.cs" />
     <Compile Include="Assets\Scripts\UI\MulliganPanel.cs" />

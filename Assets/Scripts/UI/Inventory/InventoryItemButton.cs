@@ -36,26 +36,64 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
 
     private CursorObject _dragObject;
 
-    public void OnStartDrag()
+    public void OnStartDrag(PointerEventData data)
     {
         if (BackingItem != null)
         {
             _dragObject = Utils.InstantiateOfType<CursorObject>("drag");
-            _dragObject.SetImage(BackingItem.ItemData.Sprite);
+            _dragObject.transform.SetParent(Game.UI.MainCanvas.transform);
+            _dragObject.SetImage(BackingItem.ItemData.Sprite, subImage.rectTransform);
+            subImage.gameObject.SetActive(false);
+            data.selectedObject = gameObject;
             Cursor.visible = false;
-            // Cursor.SetCursor(subImage.sprite.texture, Vector2.zero, CursorMode.Auto);
-            // Cursor.SetCursor(BackingItem.ItemData.Sprite.texture, Vector2.zero, CursorMode.Auto);
         }
     }
 
-    public void OnEndDrag()
+    public void OnEndDrag(PointerEventData data)
     {
-        Cursor.visible = true; 
-        // Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        Cursor.visible = true;
         if (_dragObject != null)
         {
+            subImage.gameObject.SetActive(true);
             Destroy(_dragObject.gameObject);
             _dragObject = null;
+        }
+    }
+
+    public void OnDrop(PointerEventData data)
+    {
+        if (data.selectedObject != null)
+        {
+            var button = data.selectedObject.GetComponent<InventoryItemButton>();
+            if (button != null)
+            {
+                DropItemHere(button);
+            }
+        }
+    }
+
+    protected virtual void DropItemHere(InventoryItemButton source)
+    {
+        var otherItem = source.BackingItem;
+        if (BackingItem != null)
+        {
+            // Swap with other
+            source.OnItemPlacedHere(BackingItem);            
+        }
+        else
+        {
+            source.ClearItem();
+        }
+
+        OnItemPlacedHere(otherItem);
+    }
+
+    protected virtual void OnItemPlacedHere(InventoryItem item)
+    {
+        PlayerInventory inv = Game.Player.Inventory;
+        if (inv.TryMoveToInventory(item, true, false))
+        {
+            item.ItemLooted();
         }
     }
 
@@ -65,7 +103,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
         var item = BackingItem;
         if (this.Type == InventoryItemButtonType.Ground)
         {
-            if (Game.Player.Inventory.TryLootItem(BackingItem))
+            if (inv.TryLootItemFromGround(BackingItem))
             {
                 item.ItemLooted();
             }
@@ -74,7 +112,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
         {
             if (BackingItem == inv.GetEquipmentItem(BackingItem.Type))
             {
-                if (Game.Player.Inventory.Unequip(BackingItem.Type))
+                if (inv.Unequip(BackingItem.Type))
                 {
                     item.ItemLooted();
                     BackingItem = null;
@@ -82,7 +120,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
             }
             else
             {
-                Game.Player.Inventory.Equip(BackingItem);
+                inv.Equip(BackingItem);
             }
         }
     }

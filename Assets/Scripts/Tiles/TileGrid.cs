@@ -33,6 +33,20 @@ public class TileGrid : MonoBehaviour
         return grid[x, y];
     }
 
+    public bool TryClearTileItem(int x, int y, InventoryItem item)
+    {
+        var tileItems = Get(x, x).TileItems;
+        var tileItem = tileItems.GetFirstOrDefault(a => a.Item == item);
+        if (tileItem != null)
+        {
+            ClearPassableTileItem(tileItem);
+            return true;
+        }
+        
+        Debug.Assert(false, "Trying to get item not in tile!");
+        return false;
+    }
+
     public GridTile GetTile(int x, int y)
     {
         return grid[x, y] == null ? null : grid[x, y].Tile;

@@ -13,6 +13,8 @@ public class UIManager : SingletonObject<UIManager>
 
     public MessageDialog MessageDialog;
 
+    public Canvas MainCanvas;
+
     private UIEvent? _currentUIEvent;
 
     [UsedImplicitly]
