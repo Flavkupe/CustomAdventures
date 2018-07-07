@@ -411,12 +411,12 @@ public class Player : TileActor
         Inventory.DestroyInventoryItem(item);
         if (item.ItemData.ItemType == InventoryItemType.Weapon)
         {
-            item.ItemBroken();
+            item.PlayItemBrokenSound();
             ShowFloatyText("Weapon broke!", Color.white, FloatyTextSize.Medium);
         }
         else if (item.DefenseValue > 0)
         {
-            item.ItemBroken();
+            item.PlayItemBrokenSound();
             ShowFloatyText("Armor broke!", Color.white, FloatyTextSize.Medium);
         }
     }

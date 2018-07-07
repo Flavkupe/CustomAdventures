@@ -15,6 +15,7 @@ public class CursorObject : MonoBehaviour
         var image = GetComponent<Image>();
         image.sprite = sprite;
         image.rectTransform.sizeDelta = rectTransform.rect.size;
+        image.raycastTarget = false;
         transform.position = Input.mousePosition;
     }
 }

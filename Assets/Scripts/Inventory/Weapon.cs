@@ -46,7 +46,7 @@ public class Weapon : InventoryItem<WeaponCardData>
         Game.Player.SetAnimatedWeapon(null);
     }
 
-    public override void ItemBroken()
+    public override void PlayItemBrokenSound()
     {
         Game.Sounds.PlayFromClips(Data.BreakSounds);
         Game.Player.SetAnimatedWeapon(null);

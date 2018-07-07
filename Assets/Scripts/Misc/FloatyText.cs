@@ -44,10 +44,7 @@ public class FloatyText : MonoBehaviour
 
     private void Finished()
     {
-        if (TextFinished != null)
-        {
-            TextFinished(this, new EventArgs());
-        }
+        TextFinished?.Invoke(this, new EventArgs());
 
         Destroy(gameObject);
     }

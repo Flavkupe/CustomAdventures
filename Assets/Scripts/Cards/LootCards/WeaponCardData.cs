@@ -12,4 +12,9 @@ public class WeaponCardData : EquippableItemCardData
     public AnimatedEquipment AnimatedObject;
 
     public AudioClip[] HitSounds;
+
+    public override InventoryItem CreateInventoryItem()
+    {
+        return new Weapon(this);
+    }
 }

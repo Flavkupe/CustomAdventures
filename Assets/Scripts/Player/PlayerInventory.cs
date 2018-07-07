@@ -43,9 +43,9 @@ public class PlayerInventory
     /// <summary>
     /// Changes the equipment without making any other changes
     /// </summary>
-    public void UnequipInventoryItemDirectly(InventoryItemType type)
+    public void UnequipInventoryItemDirectly(InventoryItem item)
     {
-        EquipmentItems[type] = null;
+        EquipmentItems[item.Type] = null;
     }
 
     /// <summary>
@@ -77,16 +77,8 @@ public class PlayerInventory
 
     public void Equip(InventoryItem item)
     {
-        InventoryItems.TryRemoveItem(item);
-        if (IsSlotOccupied(item.Type))
-        {
-            var current = GetEquipmentItem(item.Type);
-            TryMoveToInventory(current, false);
-        }
-        
         EquipInventoryItemDirectly(item);
         item.ItemEquipped();
-
         Game.UI.UpdateInventory();
         Game.UI.UpdateUI();
     }
@@ -105,7 +97,7 @@ public class PlayerInventory
     {
         if (TryMoveToInventory(item, false))
         {
-            UnequipInventoryItemDirectly(item.Type);
+            UnequipInventoryItemDirectly(item);
             item.ItemUnequipped();
             Game.UI.UpdateInventory();
             Game.UI.UpdateUI();
@@ -115,7 +107,7 @@ public class PlayerInventory
         return false;
     }
 
-    public void DestroyInventoryItem(InventoryItem item)
+    public void DestroyInventoryItem(InventoryItem item, bool updateUI = true)
     {
         if (item == null)
         {
@@ -126,12 +118,15 @@ public class PlayerInventory
         {
             if (EquipmentItems.ContainsKey(item.Type) && EquipmentItems[item.Type] == item)
             {
-                UnequipInventoryItemDirectly(item.Type);
+                UnequipInventoryItemDirectly(item);
             }
         }
 
-        Game.UI.UpdateInventory();
-        Game.UI.UpdateUI();
+        if (updateUI)
+        {
+            Game.UI.UpdateInventory();
+            Game.UI.UpdateUI();
+        }
     }
 
     public bool DiscardItem(InventoryItem item, bool fromInventory = true)

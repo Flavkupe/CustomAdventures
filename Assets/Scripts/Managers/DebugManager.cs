@@ -8,7 +8,7 @@ public class DebugManager : SingletonObject<DebugManager>
 
     public LogTraceType[] EnabledLogs;
 
-    public ItemCardData ItemToGive;
+    public ItemCardData[] ItemsToGive;
 
     public void Log(string message, LogTraceType type)
     {
@@ -28,10 +28,13 @@ public class DebugManager : SingletonObject<DebugManager>
     {
         if (DebugMode)
         {
-            if (Input.GetKeyUp(KeyCode.P) && ItemToGive != null)
+            if (Input.GetKeyUp(KeyCode.P) && ItemsToGive.Length > 0)
             {
-                var item = ItemToGive.CreateInventoryItem();
-                Game.Player.Inventory.TryMoveToInventory(item, true);
+                foreach (var template in ItemsToGive)
+                {
+                    var item = template.CreateInventoryItem();
+                    Game.Player.Inventory.TryMoveToInventory(item, true, false);
+                }
             }
         }
     }

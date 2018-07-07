@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
+[RequireComponent(typeof(EventTrigger))]
+public class InventoryItemButton : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDropHandler, IEndDragHandler
 {
     public InventoryItem BackingItem;
 
@@ -18,6 +19,29 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
     public bool IsOccupied => BackingItem != null;
 
     public bool IsEquipmentType => Type != InventoryItemButtonType.Inventory && Type != InventoryItemButtonType.Ground;
+
+    private void Awake()
+    {
+        if (DurabilitySlider != null)
+        {
+            var pos = DurabilitySlider.rectTransform.localPosition;
+            DurabilitySlider.rectTransform.localPosition = new Vector3(pos.x, -15.0f, pos.y);
+        }
+
+        //var trigger = GetComponent<EventTrigger>();        
+        //var beginDrag = new EventTrigger.Entry();
+        //var endDrag = new EventTrigger.Entry();
+        //var drop = new EventTrigger.Entry();
+        //beginDrag.eventID = EventTriggerType.BeginDrag;
+        //endDrag.eventID = EventTriggerType.EndDrag;
+        //drop.eventID = EventTriggerType.Drop;
+        //beginDrag.callback.AddListener((data) => { OnStartDrag((PointerEventData)data); });        
+        //endDrag.callback.AddListener((data) => { OnEndDrag((PointerEventData)data); });
+        //drop.callback.AddListener((data) => { OnDrop((PointerEventData)data); });
+        //trigger.triggers.Add(beginDrag);
+        //trigger.triggers.Add(endDrag);
+        //trigger.triggers.Add(drop);
+    }
 
     public void OnPointerClick(PointerEventData e)
     {
@@ -35,26 +59,35 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
     }
 
     private CursorObject _dragObject;
+    private bool _successfullDrop = false;
 
-    public void OnStartDrag(PointerEventData data)
+    public void OnBeginDrag(PointerEventData data)
     {
+        Debug.Log("Start Drag " + name);
         if (BackingItem != null)
         {
+            _successfullDrop = false;
             _dragObject = Utils.InstantiateOfType<CursorObject>("drag");
             _dragObject.transform.SetParent(Game.UI.MainCanvas.transform);
             _dragObject.SetImage(BackingItem.ItemData.Sprite, subImage.rectTransform);
             subImage.gameObject.SetActive(false);
-            data.selectedObject = gameObject;
+            
+            // data.selectedObject = gameObject;
             Cursor.visible = false;
         }
     }
 
     public void OnEndDrag(PointerEventData data)
     {
+        Debug.Log("End Drag " + name);
         Cursor.visible = true;
         if (_dragObject != null)
         {
-            subImage.gameObject.SetActive(true);
+            if (!_successfullDrop)
+            {
+                subImage.gameObject.SetActive(true);
+            }
+
             Destroy(_dragObject.gameObject);
             _dragObject = null;
         }
@@ -62,9 +95,10 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
 
     public void OnDrop(PointerEventData data)
     {
-        if (data.selectedObject != null)
+        Debug.Log("On Drop " + name);
+        if (data.pointerDrag != null)
         {
-            var button = data.selectedObject.GetComponent<InventoryItemButton>();
+            var button = data.pointerDrag.GetComponent<InventoryItemButton>();
             if (button != null)
             {
                 DropItemHere(button);
@@ -72,29 +106,70 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    protected virtual void DropItemHere(InventoryItemButton source)
+    private void DropItemHere(InventoryItemButton source)
     {
+        if (source == null || source.BackingItem == null)
+        {
+            return;
+        }
+
         var otherItem = source.BackingItem;
+        if (!CanHoldItemType(otherItem))
+        {
+            // Wrong item type, so bail
+            return;
+        }
+
+        // If this slot has an item, try to swap with source.
+        // Otherwise clear the source
         if (BackingItem != null)
         {
+            if (!source.CanHoldItemType(BackingItem))
+            {
+                // other cannot hold this item, so bail
+                return;
+            }
+
             // Swap with other
-            source.OnItemPlacedHere(BackingItem);            
+            source.OnItemPlacedHere(BackingItem);
         }
         else
         {
-            source.ClearItem();
+            // Remove from other            
+            source.OnItemRemovedFromHere();
         }
 
         OnItemPlacedHere(otherItem);
+        source._successfullDrop = true;
+        Game.UI.UpdateInventory();
+    }
+
+    protected virtual void OnItemRemovedFromHere()
+    {
+        if (BackingItem != null)
+        {
+            PlayerInventory inv = Game.Player.Inventory;
+            inv.DestroyInventoryItem(BackingItem, false);
+        }
     }
 
     protected virtual void OnItemPlacedHere(InventoryItem item)
     {
         PlayerInventory inv = Game.Player.Inventory;
-        if (inv.TryMoveToInventory(item, true, false))
+        if (BackingItem != null)
         {
-            item.ItemLooted();
+            OnItemRemovedFromHere();
         }
+
+        if (inv.TryMoveToInventory(item, false, false))
+        {
+            item.PlayItemLootedSound();
+        }
+    }
+
+    protected virtual bool CanHoldItemType(InventoryItem item)
+    {
+        return true;
     }
 
     private void LeftClickItem()
@@ -105,7 +180,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
         {
             if (inv.TryLootItemFromGround(BackingItem))
             {
-                item.ItemLooted();
+                item.PlayItemLootedSound();
             }
         }
         else if (BackingItem.IsEquipment)
@@ -114,7 +189,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
             {
                 if (inv.Unequip(BackingItem.Type))
                 {
-                    item.ItemLooted();
+                    item.PlayItemLootedSound();
                     BackingItem = null;
                 }
             }
@@ -129,7 +204,7 @@ public class InventoryItemButton : MonoBehaviour, IPointerClickHandler
     {
         if (this.Type == InventoryItemButtonType.Inventory)
         {
-            BackingItem.ItemDropped();
+            BackingItem.PlayItemDroppedSound();
             Game.Player.Inventory.DiscardItem(BackingItem);
         }
     }

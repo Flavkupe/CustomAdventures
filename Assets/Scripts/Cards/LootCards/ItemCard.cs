@@ -7,11 +7,11 @@ public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> 
         InventoryItem item = Data.BackingItem.CreateClone();
         if (context.Player.Inventory.TryMoveToInventory(item, true))
         {
-            item.ItemLooted();
+            item.PlayItemLootedSound();
         }
         else
         {
-            item.ItemDropped();
+            item.PlayItemDroppedSound();
             context.Player.Inventory.DiscardItem(item, false);
         }
 

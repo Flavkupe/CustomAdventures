@@ -49,15 +49,15 @@ public abstract class InventoryItem : StackableItem
     {
     }
 
-    public virtual void ItemLooted()
+    public virtual void PlayItemLootedSound()
     {
     }
 
-    public virtual void ItemDropped()
+    public virtual void PlayItemDroppedSound()
     {
     }
 
-    public virtual void ItemBroken()
+    public virtual void PlayItemBrokenSound()
     {
     }
 }
@@ -87,7 +87,7 @@ public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : 
 
     public override ItemCardData ItemData => _data;
 
-    public override void ItemLooted()
+    public override void PlayItemLootedSound()
     {
         if (Data.CustomPickupSound != null)
         {
@@ -99,7 +99,7 @@ public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : 
         }
     }
 
-    public override void ItemDropped()
+    public override void PlayItemDroppedSound()
     {
         if (Data.CustomDropSound != null)
         {
