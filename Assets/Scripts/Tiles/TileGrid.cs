@@ -35,7 +35,7 @@ public class TileGrid : MonoBehaviour
 
     public bool TryClearTileItem(int x, int y, InventoryItem item)
     {
-        var tileItems = Get(x, x).TileItems;
+        var tileItems = Get(x, y).TileItems;
         var tileItem = tileItems.GetFirstOrDefault(a => a.Item == item);
         if (tileItem != null)
         {

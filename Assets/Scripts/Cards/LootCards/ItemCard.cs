@@ -5,13 +5,8 @@ public abstract class ItemCard<TItemCardDataType> : LootCard<TItemCardDataType> 
     protected override IEnumerator ExecuteGetLootEvent(LootCardExecutionContext context)
     {
         InventoryItem item = Data.BackingItem.CreateClone();
-        if (context.Player.Inventory.TryMoveToInventory(item, true))
+        if (!context.Player.Inventory.TryMoveToInventory(item, true))
         {
-            item.PlayItemLootedSound();
-        }
-        else
-        {
-            item.PlayItemDroppedSound();
             context.Player.Inventory.DiscardItem(item, false);
         }
 

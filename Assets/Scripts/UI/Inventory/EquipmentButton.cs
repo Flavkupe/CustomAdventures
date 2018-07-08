@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 public class EquipmentButton : InventoryItemButton
 {
+    public override bool IsEquipmentType => true;
+
     protected override void OnItemPlacedHere(InventoryItem item)
     {
         if (!CanHoldItemType(item))
@@ -24,6 +26,15 @@ public class EquipmentButton : InventoryItemButton
     protected override bool CanHoldItemType(InventoryItem item)
     {
         return item.Type == (InventoryItemType)Type;
+    }
+
+    protected override void OnItemRemovedFromHere()
+    {
+        if (BackingItem != null)
+        {
+            PlayerInventory inv = Game.Player.Inventory;
+            inv.ClearEquipmentItem(BackingItem, false);
+        }
     }
 }
 

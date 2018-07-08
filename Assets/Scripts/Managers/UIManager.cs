@@ -54,7 +54,7 @@ public class UIManager : SingletonObject<UIManager>
     [UsedImplicitly]
     private void Start ()
     {
-        UpdateUI();
+        UpdateEntityPanels();
     }
 
     [UsedImplicitly]
@@ -79,7 +79,7 @@ public class UIManager : SingletonObject<UIManager>
         }
     }
 
-    public void UpdateUI()
+    public void UpdateEntityPanels()
     {
         PlayerPanel.UpdatePanel();
         if (selectedEntity == null)

@@ -188,7 +188,7 @@ public class CardEventController : MonoBehaviourEx
         Game.Player.GetPlayerStats().Mulligans--;
         yield return _animationController.AnimateShuffleCardsIntoDeck(cards, deck.DeckHolder);
         deck.PushToBottom(cards);
-        Game.UI.UpdateUI();
+        Game.UI.UpdateEntityPanels();
     }
 
     private IEnumerator DoCardEvents<TCardType>(List<TCardType> cards, Func<TCardType, Routine> cardRoutine) where TCardType : ICard

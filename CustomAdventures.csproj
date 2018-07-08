@@ -12,13 +12,16 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectGenerator>VSTU</UnityProjectGenerator>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.3.1f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -544,9 +547,12 @@
     <Compile Include="Assets\Scripts\UI\Ability\AbilityPanelSlot.cs" />
     <Compile Include="Assets\Scripts\UI\EntityPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\CursorObject.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\GroundItemButton.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\EquipmentButton.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\Panels\GroundSlotsPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Inventory\InventoryItemButton.cs" />
-    <Compile Include="Assets\Scripts\UI\Inventory\InventoryPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\Panels\InventoryPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\Inventory\PlayerInventoryButton.cs" />
     <Compile Include="Assets\Scripts\UI\MulliganPanel.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerPanel.cs" />
     <Compile Include="Assets\Scripts\UI\UIEventButton.cs" />
@@ -602,6 +608,7 @@
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
 </Project>

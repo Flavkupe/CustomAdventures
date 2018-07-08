@@ -223,7 +223,7 @@ public class Player : TileActor
         _soundGen.PlayClip(LevelupSound);
         Routine routine = Routine.Create(() => Routine.WaitForSeconds(0.5f));
         routine.Then(() => ShowFloatyText("LEVEL UP!", Color.yellow, FloatyTextSize.Large))
-               .Then(() => Game.UI.UpdateUI());
+               .Then(() => Game.UI.UpdateEntityPanels());
         StartCoroutine(routine);
     }
 
@@ -330,7 +330,7 @@ public class Player : TileActor
             }
         }
         
-        Game.UI.UpdateUI();
+        Game.UI.UpdateEntityPanels();
     }
 
     private void InteractWith(TileEntity obj)
@@ -408,7 +408,7 @@ public class Player : TileActor
 
     public void DestroyItem(InventoryItem item)
     {
-        Inventory.DestroyInventoryItem(item);
+        Inventory.ClearInventoryItem(item);
         if (item.ItemData.ItemType == InventoryItemType.Weapon)
         {
             item.PlayItemBrokenSound();

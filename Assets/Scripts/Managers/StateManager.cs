@@ -140,7 +140,7 @@ public class StateManager : SingletonObject<StateManager>
             OnStateChanged(_state, state);
             _lastState = _state;
             _state = state;
-            Game.UI.UpdateUI();
+            Game.UI.UpdateEntityPanels();
         }    
     }
 

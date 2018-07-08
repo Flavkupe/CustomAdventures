@@ -8,7 +8,8 @@ public class InventoryPanel : MonoBehaviour
     public GridLayoutGroup InventorySlots;
     public GridLayoutGroup GroundSlots;
 
-    public InventoryItemButton InventorySlotTemplate;
+    public PlayerInventoryButton InventorySlotTemplate;
+    public GroundItemButton GroundSlotTemplate;
 
     private List<InventoryItemButton> inventoryButtons;
     private List<InventoryItemButton> equipmentButtons;
@@ -102,7 +103,7 @@ public class InventoryPanel : MonoBehaviour
             if (i >= groundButtons.Count)
             {
                 // Create new buttons as needed
-                var newButton = Instantiate(InventorySlotTemplate);
+                var newButton = Instantiate(GroundSlotTemplate);
                 newButton.transform.SetParent(GroundSlots.transform);
                 newButton.transform.localScale = new Vector3(1.0f, 1.0f);
                 newButton.Type = InventoryItemButtonType.Ground;
@@ -119,7 +120,7 @@ public class InventoryPanel : MonoBehaviour
         {
             var button = groundButtons[i];
             groundButtons.Remove(button);
-            Destroy(button.gameObject);    
+            button.DestroyButton();
         }        
     }
 }

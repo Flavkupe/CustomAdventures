@@ -80,7 +80,7 @@ public class PlayerInventory
         EquipInventoryItemDirectly(item);
         item.ItemEquipped();
         Game.UI.UpdateInventory();
-        Game.UI.UpdateUI();
+        Game.UI.UpdateEntityPanels();
     }
 
     public bool Unequip(InventoryItemType item)
@@ -100,14 +100,34 @@ public class PlayerInventory
             UnequipInventoryItemDirectly(item);
             item.ItemUnequipped();
             Game.UI.UpdateInventory();
-            Game.UI.UpdateUI();
+            Game.UI.UpdateEntityPanels();
             return true;
         }
 
         return false;
     }
 
-    public void DestroyInventoryItem(InventoryItem item, bool updateUI = true)
+    public void ClearEquipmentItem(InventoryItem item, bool updateUI = true)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        if (EquipmentItems.ContainsKey(item.Type) && EquipmentItems[item.Type] == item)
+        {
+            UnequipInventoryItemDirectly(item);
+            item.ItemUnequipped();
+        }
+
+        if (updateUI)
+        {
+            Game.UI.UpdateInventory();
+            Game.UI.UpdateEntityPanels();
+        }
+    }
+
+    public void ClearInventoryItem(InventoryItem item, bool updateUI = true)
     {
         if (item == null)
         {
@@ -116,17 +136,34 @@ public class PlayerInventory
 
         if (!InventoryItems.TryRemoveItem(item))
         {
-            if (EquipmentItems.ContainsKey(item.Type) && EquipmentItems[item.Type] == item)
-            {
-                UnequipInventoryItemDirectly(item);
-            }
+            ClearEquipmentItem(item, false);
         }
 
         if (updateUI)
         {
             Game.UI.UpdateInventory();
-            Game.UI.UpdateUI();
+            Game.UI.UpdateEntityPanels();
         }
+    }
+
+    public bool DiscardEquipment(InventoryItem item)
+    {
+        if (item == null)
+        {
+            return false;
+        }
+
+        if (!IsSlotOccupied(item.Type))
+        {
+            Debug.Assert(false, "Attempting to discard equipment that is not equiped.");
+            return false;
+        }
+
+        ClearEquipmentItem(item, false);
+        item.PlayItemDroppedSound();
+        DropOnGround(item);
+        Game.UI.UpdateInventory();
+        return true;
     }
 
     public bool DiscardItem(InventoryItem item, bool fromInventory = true)
@@ -141,12 +178,18 @@ public class PlayerInventory
             InventoryItems.TryRemoveItem(item);
         }
 
+        item.PlayItemDroppedSound();
+        DropOnGround(item);
+        Game.UI.UpdateInventory();
+        return true;
+    }
+
+    private static void DropOnGround(InventoryItem item)
+    {
         var grid = Game.Dungeon.Grid;
         var playerX = Game.Player.XCoord;
         var playerY = Game.Player.YCoord;
-        grid.PutPassableItem(playerX, playerY, item.AsPassableTileItem(), true);
-        Game.UI.UpdateInventory();
-        return true;
+        grid.PutPassableItem(playerX, playerY, item.AsPassableTileItem(), true);        
     }
 
     public bool TryLootItemFromGround(InventoryItem item)
@@ -175,15 +218,16 @@ public class PlayerInventory
             return false;
         }
 
-        bool madeChanges;
+        bool madeChanges = false;
         if (autoEquip && item.IsEquipment && !IsSlotOccupied(item.Type))
         {
             Equip(item);
             madeChanges = true;
         }
-        else
+        else if (InventoryItems.TryAddItem(item))
         {
-            madeChanges = InventoryItems.TryAddItem(item);
+            item.PlayItemLootedSound();
+            madeChanges = true;
         }
 
         if (madeChanges && updateUI)

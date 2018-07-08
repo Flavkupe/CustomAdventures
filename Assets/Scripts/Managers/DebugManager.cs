@@ -33,7 +33,10 @@ public class DebugManager : SingletonObject<DebugManager>
                 foreach (var template in ItemsToGive)
                 {
                     var item = template.CreateInventoryItem();
-                    Game.Player.Inventory.TryMoveToInventory(item, true, false);
+                    if (!Game.Player.Inventory.TryMoveToInventory(item, true, false))
+                    {
+                        Game.Player.Inventory.DiscardItem(item, false);
+                    }
                 }
             }
         }
