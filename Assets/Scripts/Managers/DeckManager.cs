@@ -60,35 +60,11 @@ public class DeckManager : SingletonObject<DeckManager>
         for (int i = 0; i < numCards; i++)
         {
             TCardDataType data = distribution.GetRandom();
-            TCardType card = CreateCardFromData<TCardType, TCardDataType>(data);
+            TCardType card = data.CreateCard<TCardType>();
             deck.PushCard(card);
         }
 
         deck.ScaleDeck(DeckSmallSize);
-    }
-
-    public TCardInterface CreateAnonymousCardFromData<TCardInterface>(CardData data) where TCardInterface : class, ICard
-    {
-        var card = InstantiateOfType<TCardInterface>(data.BackingCardType, data.Name ?? data.name);
-        if (card != null)
-        {
-            card.SetData(data);
-            card.InitCard();
-        }
-
-        return card;
-    }
-
-    public TCardType CreateCardFromData<TCardType, TCardDataType>(TCardDataType data) where TCardType : class, ICard where TCardDataType : CardData
-    {
-        TCardType card = InstantiateOfType<TCardType>(data.BackingCardType, data.Name);
-        if (card != null)
-        {
-            card.SetData(data);
-            card.InitCard();
-        }
-
-        return card;
     }
 
     public List<TCardType> DrawCards<TCardType>(int numDrawn, Deck<TCardType> deck, Func<TCardType, bool> drawConditionFunc = null) where TCardType : class, ICard

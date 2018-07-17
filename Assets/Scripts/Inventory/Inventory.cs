@@ -33,6 +33,26 @@ public class Inventory<T> where T : class, IStackable
         return false;
     }
 
+    /// <summary>
+    /// Removes one item from the stack and destroys the
+    /// item if stack size becomes 0
+    /// </summary>
+    public bool TryRemoveOneFromStack(T item)
+    {
+        if (item.StackSize > 0)
+        {
+            item.StackSize--;
+            if (item.StackSize == 0)
+            {
+                return TryRemoveItem(item);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     public bool TryAddItem(T item)
     {
         bool madeChanges = false;

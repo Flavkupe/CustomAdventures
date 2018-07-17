@@ -13,9 +13,9 @@ public class Armor : InventoryItem<ArmorCardData>
         return new Armor(Data);
     }
 
-    public override void ItemUsed()
+    public override void ItemDurabilityExpended()
     {
-        base.ItemUsed();
+        base.ItemDurabilityExpended();
 
         _durability--;
         if (_durability <= 0)

@@ -27,7 +27,7 @@ public class MultiEventCard : DungeonCard<MultiEventCardData>
         foreach (var subevent in events)
         {
             // Create the cards
-            var newCard = Game.Decks.CreateAnonymousCardFromData<IDungeonCard>(subevent);
+            var newCard = subevent.CreateAnonymousCardFromData<IDungeonCard>();
             if (newCard != null)
             {
                 cards.Add(newCard);

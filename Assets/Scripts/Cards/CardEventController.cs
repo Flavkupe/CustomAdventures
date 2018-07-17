@@ -94,7 +94,7 @@ public class CardEventController : MonoBehaviourEx
         {
             foreach (var cardData in specialCards)
             {
-                var specialCard = _decks.CreateCardFromData<IDungeonCard, DungeonCardData>(cardData);
+                var specialCard = cardData.CreateCard<IDungeonCard>();
                 _decks.DungeonDeck.PushCard(specialCard);
             }
 

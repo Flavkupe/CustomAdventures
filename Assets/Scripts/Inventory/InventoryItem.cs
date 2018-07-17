@@ -33,10 +33,36 @@ public abstract class InventoryItem : StackableItem
     }
 
     /// <summary>
-    /// Such as using consumable or attacking with weapon
+    /// Such as attacking with weapon or blocking with armor
     /// </summary>
-    public virtual void ItemUsed()
+    public virtual void ItemDurabilityExpended()
     {
+    }
+
+    /// <summary>
+    /// Attempting to use an item by right-click. Returns true
+    /// if the item was successfully used.
+    /// </summary>
+    public bool ItemUsed(ItemUseContext context)
+    {
+        var used = false;
+        if (ItemData.UsageData.Length > 0)
+        {
+            foreach (var item in ItemData.UsageData)
+            {
+                if (item.ItemUsed(this, context))
+                {                    
+                    used = true;
+                }
+            }
+        }
+
+        if (used)
+        {
+            OnAfterItemUsedSuccessfully(context);
+        }
+
+        return used;
     }
 
     public virtual int DefenseValue => 0;
@@ -59,6 +85,11 @@ public abstract class InventoryItem : StackableItem
 
     public virtual void PlayItemBrokenSound()
     {
+    }
+
+    protected virtual void OnAfterItemUsedSuccessfully(ItemUseContext context)
+    {
+        context.InventorySource.TryRemoveOneFromStack(this);
     }
 }
 
@@ -109,6 +140,20 @@ public class InventoryItem<TCardDataType> : InventoryItem where TCardDataType : 
         {
             Game.Sounds.PlayFromClips(Game.Sounds.DefaultItemDropSounds);
         }
+    }
+}
+
+public class ItemUseContext
+{
+    public Player Player { get; private set; }
+    public Dungeon Dungeon { get; private set; }
+    public Inventory<InventoryItem> InventorySource { get; private set; }
+
+    public ItemUseContext(Player player, Dungeon dungeon, Inventory<InventoryItem> source)
+    {
+        Player = player;
+        Dungeon = dungeon;
+        InventorySource = source; 
     }
 }
 

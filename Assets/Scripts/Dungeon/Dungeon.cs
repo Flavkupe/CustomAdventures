@@ -25,6 +25,9 @@ public class Dungeon : SingletonObject<Dungeon>
     public GridTile GenericTileTemplate;
     public TileGrid Grid;
 
+    // TODO: remove singleton
+    public DeckManager Decks { get { return Game.Decks; } }
+
     private List<Room> _rooms;
 
     private CardEventController _cardController;

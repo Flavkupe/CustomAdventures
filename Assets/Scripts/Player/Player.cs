@@ -118,7 +118,7 @@ public class Player : TileActor
         foreach (var item in defensiveItems)
         {
             damage -= item.DefenseValue;
-            item.ItemUsed();
+            item.ItemDurabilityExpended();
 
             if (damage <= 0)
             {
@@ -252,7 +252,7 @@ public class Player : TileActor
         ProcessEffects(EffectActivatorType.Attacks);
         if (Inventory.IsSlotOccupied(InventoryItemType.Weapon))
         {
-            Inventory.EquippedWeapon.ItemUsed();
+            Inventory.EquippedWeapon.ItemDurabilityExpended();
         }
 
         OnAfterPlayerAction(true);

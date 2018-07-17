@@ -43,15 +43,7 @@ public class MonoBehaviourEx : MonoBehaviour
 
     public T InstantiateOfType<T>(Type type, string objName = null) where T : class
     {
-        if (!typeof(T).IsAssignableFrom(type))
-        {
-            Debug.LogError($"Trying instantiate things of different type as specified! type: {type.FullName}, T: {typeof(T).FullName}");
-            return null;
-        }
-
-        var obj = new GameObject(objName ?? typeof(T).Name);
-        var newObj = obj.AddComponent(type) as T;
-        return newObj;
+        return Utils.InstantiateOfType<T>(type, objName);
     }
 
     protected void StartRoutine(IEnumerator routine)

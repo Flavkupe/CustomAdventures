@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(EventTrigger))]
-public abstract class InventoryItemButton : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDropHandler, IEndDragHandler
+public abstract class InventoryItemButton : MonoBehaviour, IBeginDragHandler, IDropHandler, IEndDragHandler
 {
     public InventoryItem BackingItem;
 
@@ -29,22 +29,7 @@ public abstract class InventoryItemButton : MonoBehaviour, IPointerClickHandler,
             var pos = DurabilitySlider.rectTransform.localPosition;
             DurabilitySlider.rectTransform.localPosition = new Vector3(pos.x, -15.0f, pos.y);
         }
-    }
-
-    public void OnPointerClick(PointerEventData e)
-    {
-        //if (BackingItem != null)
-        //{            
-        //    if (e.button == PointerEventData.InputButton.Left)
-        //    {
-        //        LeftClickItem();
-        //    }
-        //    else if (e.button == PointerEventData.InputButton.Right)
-        //    {
-        //        RightClickItem();
-        //    }
-        //}
-    }
+    }    
 
     private CursorObject _dragObject;
 

@@ -21,6 +21,9 @@ public class ItemCardData : LootCardData
     public AudioClip CustomPickupSound;
     public AudioClip CustomDropSound;
 
+    [Tooltip("What will happen when this item is used via right-click. Events happen in order")]
+    public ItemUseData[] UsageData;
+
     public virtual InventoryItem CreateInventoryItem()
     {
         return new InventoryItem<ItemCardData>(this);

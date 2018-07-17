@@ -177,6 +177,29 @@ public abstract class CardData : ScriptableObject
 
     [Tooltip("The animation effect that occurs when the card is drawn and executed")]
     public AnimationEffectData CardTriggerEffect;
+
+    public TCardType CreateCard<TCardType>() where TCardType : class, ICard
+    {
+        TCardType card = Utils.InstantiateOfType<TCardType>(this.BackingCardType, this.Name);
+        return InitCard(card);
+    }
+
+    public TCardInterface CreateAnonymousCardFromData<TCardInterface>() where TCardInterface : class, ICard
+    {
+        var card = Utils.InstantiateOfType<TCardInterface>(this.BackingCardType, this.Name ?? this.name);
+        return InitCard(card);
+    }
+
+    private TCardInterface InitCard<TCardInterface>(TCardInterface card) where TCardInterface : class, ICard
+    {
+        if (card != null)
+        {
+            card.SetData(this);
+            card.InitCard();
+        }
+
+        return card;
+    }
 }
 
 public enum CardType

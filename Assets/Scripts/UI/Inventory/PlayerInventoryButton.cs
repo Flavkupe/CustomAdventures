@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.EventSystems;
 
-public class PlayerInventoryButton : InventoryItemButton
+public class PlayerInventoryButton : InventoryItemButton, IPointerClickHandler
 {
     protected override void OnItemRemovedFromHere()
     {
@@ -24,6 +25,30 @@ public class PlayerInventoryButton : InventoryItemButton
     protected override bool CanHoldItemType(InventoryItem item)
     {
         return true;
+    }
+
+    public void OnPointerClick(PointerEventData e)
+    {
+        if (BackingItem != null)
+        {            
+            if (e.button == PointerEventData.InputButton.Right)
+            {
+                RightClickItem();
+            }
+        }
+    }
+
+    private void RightClickItem()
+    {
+        if (BackingItem != null)
+        {
+            // TODO: singletons
+            var inventory = Game.Player.Inventory.InventoryItems;
+            if (BackingItem.ItemUsed(new ItemUseContext(Game.Player, Game.Dungeon, inventory)))
+            {
+                Game.UI.UpdateInventory();
+            }
+        }
     }
 }
 
