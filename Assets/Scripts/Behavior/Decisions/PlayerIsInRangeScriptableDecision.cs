@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Decision", menuName = "Create Behavior/Decisions/Player Is In Range", order = 1)]
-public class PlayerIsInRangeDecision : ScriptableAIDecision
+[CreateAssetMenu(fileName = "ScriptableDecision", menuName = "Create Behavior/ScriptableDecisions/Player Is In Range", order = 1)]
+public class PlayerIsInRangeScriptableDecision : ScriptableAIDecision
 {
     [Tooltip("Range in which to check, based on RangeType")]
     public int Range;

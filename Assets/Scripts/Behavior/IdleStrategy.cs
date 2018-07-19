@@ -21,7 +21,7 @@ public class IdleStrategy : ActorStrategy
     public override bool Decide(TileAI subject, GameContext context)
     {
         // Idle strategy is always picked if possible
-        return Decisions == null || Decisions.Length == 0 || base.Decide(subject, context);
+        return ScriptableAiDecisions == null || ScriptableAiDecisions.Length == 0 || base.Decide(subject, context);
     }
 
     public override bool ShouldAbandon(TileAI subject, GameContext context)

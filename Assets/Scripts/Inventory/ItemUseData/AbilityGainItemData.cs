@@ -17,6 +17,11 @@ public class AbilityGainItemData : ItemUseData
             return false;
         }
 
+        if (ItemUsedSounds.Length > 0)
+        {
+            context.Player.PlaySounds(ItemUsedSounds);
+        }
+
         foreach (var ability in AbilitiesToAdd)
         {
             var card = ability.CreateCard<IAbilityCard>();

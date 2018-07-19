@@ -1,23 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public abstract class Decision : ScriptableObject
+public interface IDecision
 {
-    public bool Negate;
-
-    public bool Evaluate(TileAI subject, GameContext context)
-    {
-        var evaluation = Evaluation(subject, context);
-        return Negate ? !evaluation : evaluation;
-    }
-
-    protected abstract bool Evaluation(TileAI subject, GameContext context);
+    bool Evaluate(GameContext context);
 }
 
-/// <summary>
-/// How to interpret the Decision; do all have to be true, or at least one?
-/// </summary>
-public enum DecisionEvaluationType
+public abstract class Decision : IDecision
 {
-    AllMustBeTrue,
-    AnyCanBeTrue
+    public abstract bool Evaluate(GameContext context);
 }
+

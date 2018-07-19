@@ -213,6 +213,21 @@ public static class ExtensionFunctions
         return new Vector3(vector.x - xOffset, vector.y - yOffset, vector.z - zOffset);
     }
 
+    public static Vector3 SetX(this Vector3 vector, float x)
+    {
+        return new Vector3(x, vector.y, vector.z);
+    }
+
+    public static Vector3 SetY(this Vector3 vector, float y)
+    {
+        return new Vector3(vector.x, y, vector.z);
+    }
+
+    public static Vector3 SetZ(this Vector3 vector, float z)
+    {
+        return new Vector3(vector.x, vector.y, z);
+    }
+
     public static Vector3 IncrementBy(this Vector3 vector, float xOffset, float yOffset, float zOffset)
     {
         return new Vector3(vector.x + xOffset, vector.y + yOffset, vector.z + zOffset);

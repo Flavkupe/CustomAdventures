@@ -174,7 +174,7 @@ namespace DynamicLight2D
 			//Order
 			sortOrder = serializedObject.FindProperty("SortOrderID");
 
-			//Events State
+			//Events ScriptableState
 			_lastEventsState = useEvents.boolValue;
 			
 			// Bounds

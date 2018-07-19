@@ -234,8 +234,6 @@ public class Dungeon : SingletonObject<Dungeon>
         _player.DungeonStarted(this);
     }
 
-    
-
     public List<GridTile> GetTilesNearPlayer(TileRangeType rangeType, int range)
     {
         switch (rangeType)

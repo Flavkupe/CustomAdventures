@@ -2,9 +2,9 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Decision", menuName = "Create Behavior/Decisions/Composite", order = 0)]
-public class CompositeDecision : Decision
+public class CompositeScriptableAiDecision : ScriptableAIDecision
 {
-    public Decision[] Decisions;
+    public ScriptableAIDecision[] ScriptableAiDecisions;
 
     public DecisionEvaluationType DecisionEvaluation;
 
@@ -14,10 +14,10 @@ public class CompositeDecision : Decision
         switch(DecisionEvaluation)
         {
             case DecisionEvaluationType.AllMustBeTrue:
-                evaluation = Decisions.All(a => a.Evaluate(subject, context));
+                evaluation = ScriptableAiDecisions.All(a => a.Evaluate(subject, context));
                 break;
             default:
-                evaluation = Decisions.Any(a => a.Evaluate(subject, context));
+                evaluation = ScriptableAiDecisions.Any(a => a.Evaluate(subject, context));
                 break;
         }
 

@@ -56,6 +56,7 @@ public class InventoryPanel : MonoBehaviour
                 var slot = Instantiate(InventorySlotTemplate);
                 slot.transform.SetParent(InventorySlots.transform);
                 slot.transform.localScale = new Vector3(1.0f, 1.0f);
+                slot.transform.localPosition = slot.transform.localPosition.SetZ(0);
             }
 
             RefreshInventoryButtons();

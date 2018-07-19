@@ -83,7 +83,7 @@ public abstract class InventoryItem : StackableItem
     {
     }
 
-    public virtual void PlayItemBrokenSound()
+    public virtual void ItemBroke()
     {
     }
 

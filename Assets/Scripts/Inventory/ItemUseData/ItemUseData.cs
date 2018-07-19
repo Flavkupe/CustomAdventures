@@ -7,6 +7,8 @@ using UnityEngine;
 
 public abstract class ItemUseData : ScriptableObject
 {
+    public AudioClip[] ItemUsedSounds;
+
     public abstract bool ItemUsed(InventoryItem item, ItemUseContext context);
 }
 

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Decision", menuName = "Create Behavior/Decisions/Player Is Adjacent", order = 1)]
-public class PlayerIsAdjacentDecision : Decision
+[CreateAssetMenu(fileName = "ScriptableAIDecision", menuName = "Create Behavior/ScriptableAiDecisions/Player Is Adjacent", order = 1)]
+public class PlayerIsAdjacentScriptableAiDecision : ScriptableAIDecision
 {
     protected override bool Evaluation(TileAI subject, GameContext context)
     {

@@ -66,7 +66,7 @@ public class StateManager : SingletonObject<StateManager>
         }
         else
         {
-            // State has already different; enqueue action to happen asap
+            // ScriptableState has already different; enqueue action to happen asap
             EnqueueCoroutine(action);
         }
     }
@@ -79,7 +79,7 @@ public class StateManager : SingletonObject<StateManager>
         }
         else
         {
-            // State already at required state; enqueue action to happen asap
+            // ScriptableState already at required state; enqueue action to happen asap
             EnqueueCoroutine(action);
         }
     }
@@ -92,7 +92,7 @@ public class StateManager : SingletonObject<StateManager>
         }
         else
         {
-            // State has already different; perform action now
+            // ScriptableState has already different; perform action now
             action();
         }
     }
@@ -106,7 +106,7 @@ public class StateManager : SingletonObject<StateManager>
         }
         else
         {
-            // State already at required state; perform action now
+            // ScriptableState already at required state; perform action now
             action();
         }
     }

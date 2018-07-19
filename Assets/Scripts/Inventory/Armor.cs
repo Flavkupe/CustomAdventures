@@ -24,7 +24,7 @@ public class Armor : InventoryItem<ArmorCardData>
         }
         else
         {
-            PlayItemBrokenSound();
+            ItemBroke();
         }
     }
 
@@ -39,7 +39,7 @@ public class Armor : InventoryItem<ArmorCardData>
         Game.Sounds.PlayFromClips(Data.EquipSounds, Game.Sounds.DefaultItemPickupSounds.GetRandom());
     }
 
-    public override void PlayItemBrokenSound()
+    public override void ItemBroke()
     {
         Game.Sounds.PlayFromClips(Data.BreakSounds);
     }

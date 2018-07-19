@@ -22,10 +22,10 @@ public class ActorStrategy : ScriptableObject
     public AbilityCountdownOptions CountdownOptions;
 
     [Tooltip("What has to happen in order for this strategy to be picked. If all resolve to false, will try next strategy.")]
-    public Decision[] Decisions;
+    public ScriptableAIDecision[] ScriptableAiDecisions;
 
     [Tooltip("At the start of each turn, if any of these are true, will revert to base stat. For example, player goes off-sight.")]
-    public Decision[] ResetOn;
+    public ScriptableAIDecision[] ResetOn;
 
     [Tooltip("List of sequential actions to use each turn, if on this state.")]
     public ActorAction[] Actions;
@@ -33,7 +33,7 @@ public class ActorStrategy : ScriptableObject
     [Tooltip("Whether or not a free move can be used for this strategy. For example, for walking.")]
     public bool CanUseFreeMove = false;
 
-    [Tooltip("How to interpret the Decision; do all have to be true, or at least one?")]
+    [Tooltip("How to interpret the ScriptableAIDecision; do all have to be true, or at least one?")]
     public DecisionEvaluationType DecisionEvaluation;
 
     public bool CanTakeStrategy(TileAI subject)
@@ -47,9 +47,9 @@ public class ActorStrategy : ScriptableObject
         switch (DecisionEvaluation)
         {
             case DecisionEvaluationType.AllMustBeTrue:
-                return Decisions.All(a => a.Evaluate(subject, context));
+                return ScriptableAiDecisions.All(a => a.Evaluate(subject, context));
             default:
-                return Decisions.Any(a => a.Evaluate(subject, context));
+                return ScriptableAiDecisions.Any(a => a.Evaluate(subject, context));
         }
     }
 

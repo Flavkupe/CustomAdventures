@@ -1,14 +1,15 @@
 ﻿using System;
-using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public abstract class State : ScriptableObject
+public interface IState
 {
-    public Transition[] Transitions;
+    ITransition[] Transitions { get; }
 }
 
-[Serializable]
-public class Transition
+public abstract class State
 {
-    public Decision Decision;
-    public State Next;
+    public abstract ITransition[] Transitions { get; }
 }
