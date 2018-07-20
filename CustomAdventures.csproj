@@ -12,12 +12,15 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.3.1f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -425,7 +428,6 @@
     <Compile Include="Assets\Scripts\Behavior\BehaviorController.cs" />
     <Compile Include="Assets\Scripts\Behavior\BehaviorList.cs" />
     <Compile Include="Assets\Scripts\Behavior\CompositeScriptableAiDecision.cs" />
-    <Compile Include="Assets\Scripts\Behavior\CompositeScriptableDecision.cs" />
     <Compile Include="Assets\Scripts\Behavior\Decisions\PlayerIsAdjacentScriptableAiDecision.cs" />
     <Compile Include="Assets\Scripts\Behavior\Decisions\PlayerIsInRangeDecision.cs" />
     <Compile Include="Assets\Scripts\Behavior\Decisions\PlayerIsInRangeScriptableDecision.cs" />
@@ -478,8 +480,11 @@
     <Compile Include="Assets\Scripts\Dungeon\State\Decisions\DungeonDecision.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\DungeonEventType.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\DungeonState.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\State\DungeonStateChangeContext.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\DungeonStateController.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\DungeonStateProvider.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\State\States\AwaitingInputState.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\State\States\CardDrawingState.cs" />
     <Compile Include="Assets\Scripts\Effects\AnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffect.cs" />
     <Compile Include="Assets\Scripts\Effects\ParticleAnimationEffectData.cs" />
@@ -528,7 +533,7 @@
     <Compile Include="Assets\Scripts\Sound\SoundGenerator.cs" />
     <Compile Include="Assets\Scripts\State\Decision.cs" />
     <Compile Include="Assets\Scripts\State\GameContext.cs" />
-    <Compile Include="Assets\Scripts\State\ScriptableAIDecision.cs" />
+    <Compile Include="Assets\Scripts\Behavior\ScriptableAIDecision.cs" />
     <Compile Include="Assets\Scripts\State\ScriptableState.cs" />
     <Compile Include="Assets\Scripts\State\State.cs" />
     <Compile Include="Assets\Scripts\State\Transition.cs" />
@@ -611,6 +616,9 @@
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Scripts\Dungeon\State\NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

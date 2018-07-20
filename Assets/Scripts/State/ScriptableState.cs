@@ -13,7 +13,7 @@ public class ScriptableTransition
     public ScriptableState Next;
 }
 
-public abstract class ScriptableDecision : ScriptableObject, IDecision
+public abstract class ScriptableDecision : ScriptableObject, IDecision<GameContext>
 {
     public bool Negate;
 

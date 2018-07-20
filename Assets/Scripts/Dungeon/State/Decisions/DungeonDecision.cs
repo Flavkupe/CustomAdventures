@@ -5,14 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-public abstract class DungeonDecision : Decision
+public abstract class DungeonDecision : Decision<DungeonStateChangeContext>
 {
+
+
+
+    public class Decisions
+    {
+        public static AreCardsDoneMovingDecision AreCardsDoneMovingDecision => new AreCardsDoneMovingDecision();
+        public static DidCardsStartMovingDecision DidCardsStartMovingDecision => new DidCardsStartMovingDecision();
+    }
 }
 
-public class AreCardsMovingDecision : DungeonDecision
+public class AreCardsDoneMovingDecision : DungeonDecision
 {
-    public override bool Evaluate(GameContext context)
+    public override bool Evaluate(DungeonStateChangeContext context)
     {
-        return false;
+        return context.EventType == DungeonEventType.CardDrawComplete;
+    }
+}
+
+public class DidCardsStartMovingDecision : DungeonDecision
+{
+    public override bool Evaluate(DungeonStateChangeContext context)
+    {
+        return context.EventType == DungeonEventType.CardDrawStarted;
     }
 }

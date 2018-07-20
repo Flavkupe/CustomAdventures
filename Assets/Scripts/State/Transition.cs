@@ -5,20 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-public interface ITransition
+public interface ITransition<TChangeContext>
 {
-    IDecision Decision { get; }
-    IState Next { get; }
+    IDecision<TChangeContext> Decision { get; }
+    IState<TChangeContext> Next { get; }
 }
 
-public class Transition : ITransition
+public class Transition<TChangeContext> : ITransition<TChangeContext>
 {
-    public Transition(IDecision decision, IState next)
+    public Transition(IDecision<TChangeContext> decision, IState<TChangeContext> next)
     {
         Decision = decision;
         Next = next;
     }
 
-    public IDecision Decision { get; }
-    public IState Next { get; }
+    public IDecision<TChangeContext> Decision { get; }
+    public IState<TChangeContext> Next { get; }
 }

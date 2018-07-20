@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public interface IDecision
+public interface IDecision<in TChangeContext>
 {
-    bool Evaluate(GameContext context);
+    bool Evaluate(TChangeContext context);
 }
 
-public abstract class Decision : IDecision
+public abstract class Decision<TChangeContext> : IDecision<TChangeContext>
 {
-    public abstract bool Evaluate(GameContext context);
+    public abstract bool Evaluate(TChangeContext context);
 }
 
