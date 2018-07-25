@@ -13,11 +13,7 @@ public class DungeonStateTransition : Transition<DungeonStateChangeContext>
     }
 }
 
-public abstract class DungeonState : State<DungeonStateChangeContext>
+public abstract class DungeonState : State<DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
-    protected DungeonState()
-    {
-    }
-
     public abstract bool CanPerformAction(DungeonActionType actionType);
 }

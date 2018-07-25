@@ -16,4 +16,3 @@ public class DungeonStateChangeContext
 
     public GameContext GameContext { get; }
 }
-

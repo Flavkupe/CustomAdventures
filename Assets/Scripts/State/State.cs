@@ -24,11 +24,6 @@ public abstract class State<TChangeContext> : IState<TChangeContext>
         Transitions = new List<ITransition<TChangeContext>>();
     }
 
-    protected State(IEnumerable<ITransition<TChangeContext>> transitions)
-    {
-        Transitions = transitions?.ToList() ?? new List<ITransition<TChangeContext>>();
-    }
-
     public void AddTransition(ITransition<TChangeContext> transition)
     {
         Transitions.Add(transition);
@@ -39,15 +34,34 @@ public abstract class State<TChangeContext> : IState<TChangeContext>
         Transitions.AddRange(transitions);
     }
 
-    public abstract void Update(GameContext context);
+    public virtual void Update(GameContext context)
+    {
+    }
 
-    public abstract void EventOccurred(TChangeContext context);
+    public virtual void EventOccurred(TChangeContext context)
+    {
+    }
 
     protected List<ITransition<TChangeContext>> Transitions { get; }
 
-    public abstract IState<TChangeContext> GetNextState(TChangeContext context);
+    public IState<TChangeContext> GetNextState(TChangeContext context)
+    {
+        foreach (var transition in Transitions)
+        {
+            if (transition.Decision.Evaluate(context))
+            {
+                return transition.Next;
+            }
+        }
 
-    public abstract void StateEntered(IState<TChangeContext> previousState, TChangeContext context);
+        return this;
+    }
 
-    public abstract void StateExited(IState<TChangeContext> newState, TChangeContext context);
+    public virtual void StateEntered(IState<TChangeContext> previousState, TChangeContext context)
+    {
+    }
+
+    public virtual void StateExited(IState<TChangeContext> newState, TChangeContext context)
+    {
+    }
 }

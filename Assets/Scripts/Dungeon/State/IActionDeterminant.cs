@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public enum DungeonEventType
+public interface IActionDeterminant<in TActionType>
 {
-    EnemyTurnStart,
-    EnemyTurnEnd,
+    bool CanPerformAction(TActionType actionType);
 }
 

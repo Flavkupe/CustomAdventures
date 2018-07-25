@@ -7,28 +7,25 @@ using System.Threading.Tasks;
 
 public abstract class DungeonDecision : Decision<DungeonStateChangeContext>
 {
-
-
-
     public class Decisions
     {
-        public static AreCardsDoneMovingDecision AreCardsDoneMovingDecision => new AreCardsDoneMovingDecision();
-        public static DidCardsStartMovingDecision DidCardsStartMovingDecision => new DidCardsStartMovingDecision();
+        public static DidEnemyTurnStartDecision DidEnemyTurnStartDecision => new DidEnemyTurnStartDecision();
+        public static DidEnemyTurnEndDecision DidEnemyTurnEndDecision => new DidEnemyTurnEndDecision();
     }
 }
 
-public class AreCardsDoneMovingDecision : DungeonDecision
+public class DidEnemyTurnStartDecision : DungeonDecision
 {
     public override bool Evaluate(DungeonStateChangeContext context)
     {
-        return context.EventType == DungeonEventType.CardDrawComplete;
+        return context.EventType == DungeonEventType.EnemyTurnStart;
     }
 }
 
-public class DidCardsStartMovingDecision : DungeonDecision
+public class DidEnemyTurnEndDecision : DungeonDecision
 {
     public override bool Evaluate(DungeonStateChangeContext context)
     {
-        return context.EventType == DungeonEventType.CardDrawStarted;
+        return context.EventType == DungeonEventType.EnemyTurnEnd;
     }
 }

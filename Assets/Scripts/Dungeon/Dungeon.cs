@@ -26,13 +26,16 @@ public class Dungeon : SingletonObject<Dungeon>
     public TileGrid Grid;
 
     // TODO: remove singleton
-    public DeckManager Decks { get { return Game.Decks; } }
+    public DeckManager Decks => Game.Decks;
 
     private List<Room> _rooms;
 
     private CardEventController _cardController;
 
     private Player _player;
+
+    private AnimationStateController _animationStates = new AnimationStateController();
+    private DungeonStateController _dungeonStates = new DungeonStateController();
 
     private readonly List<Enemy> _enemies = new List<Enemy>();
 
@@ -61,7 +64,7 @@ public class Dungeon : SingletonObject<Dungeon>
         if (IsCombat && !_player.PlayerCanMove)
         {
             Game.States.SetState(GameState.EnemyTurn);            
-            RoutineChain enemyTurns = new RoutineChain(_enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
+            var enemyTurns = new RoutineChain(_enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
             enemyTurns.Then(() =>
             {
                 AllEnemyTurnsComplete?.Invoke(this, null);
