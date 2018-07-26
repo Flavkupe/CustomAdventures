@@ -16,4 +16,9 @@ public class DungeonStateTransition : Transition<DungeonStateChangeContext>
 public abstract class DungeonState : State<DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
     public abstract bool CanPerformAction(DungeonActionType actionType);
+
+    protected void RaiseEventOccurred(DungeonEventType newEvent, DungeonStateChangeContext context)
+    {
+        RaiseEventOccurred(new DungeonStateChangeContext(newEvent, context.GameContext));
+    }
 }

@@ -13,16 +13,18 @@ public class DungeonStateController : StateController<DungeonStateChangeContext>
 
         awaitingInputState.AddTransitions(new[]
         {
-            new DungeonStateTransition(DungeonDecision.Decisions.DidEnemyTurnStartDecision, awaitingAIState)
+            new DungeonStateTransition(DungeonDecision.Decisions.DidEnemyTurnStart, awaitingAIState)
         });
 
         awaitingAIState.AddTransitions(new[]
         {
-            new DungeonStateTransition(DungeonDecision.Decisions.DidEnemyTurnEndDecision, awaitingInputState)
+            new DungeonStateTransition(DungeonDecision.Decisions.DidEnemyTurnEnd, awaitingInputState)
         });
 
         FirstState = awaitingInputState;
         CurrentState = FirstState;
+
+        RegisterStates(awaitingInputState, awaitingAIState);
     }
 
     public void SendEvent(DungeonEventType eventType, GameContext context)

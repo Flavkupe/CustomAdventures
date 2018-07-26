@@ -12,16 +12,23 @@ public interface IState<TChangeContext>
 
     void StateExited(IState<TChangeContext> newState, TChangeContext context);
 
-    void EventOccurred(TChangeContext context);
+    void HandleNewEvent(TChangeContext context);
 
     void Update(GameContext context);
 }
 
 public abstract class State<TChangeContext> : IState<TChangeContext>
 {
+    public event EventHandler<TChangeContext> EventOccurred;
+
     protected State()
     {
         Transitions = new List<ITransition<TChangeContext>>();
+    }
+
+    protected void RaiseEventOccurred(TChangeContext context)
+    {
+        EventOccurred?.Invoke(this, context);
     }
 
     public void AddTransition(ITransition<TChangeContext> transition)
@@ -38,7 +45,7 @@ public abstract class State<TChangeContext> : IState<TChangeContext>
     {
     }
 
-    public virtual void EventOccurred(TChangeContext context)
+    public virtual void HandleNewEvent(TChangeContext context)
     {
     }
 

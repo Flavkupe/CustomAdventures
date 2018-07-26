@@ -61,7 +61,7 @@ public class Player : TileActor
         _soundGen = GetComponent<SoundGenerator>();
     }
 
-    private void InitializePlayerTurn()
+    public void InitializePlayerTurn()
     {
         var baseStats = GetModifiedStats(true);
         CurrentStats.FullActions = baseStats.FullActions;
@@ -69,11 +69,6 @@ public class Player : TileActor
 
         // TODO: revamp!
         Game.States.SetState(GameState.AwaitingCommand);
-    }
-
-    private void OnInitializeCombatTurn(object source, EventArgs args)
-    {
-        InitializePlayerTurn();
     }
 
     public void EquipDrawnAbilityCard(IAbilityCard ability)
@@ -296,8 +291,8 @@ public class Player : TileActor
         }
     }
 
-    public bool PlayerCanAct => Game.States.CanPlayerAct && !Game.Dungeon.IsCombat || CurrentStats.FullActions > 0;
-    public bool PlayerCanMove => PlayerCanAct || CurrentStats.FreeMoves > 0;
+    public bool PlayerHasActions => Game.States.CanPlayerAct && !Game.Dungeon.IsCombat || CurrentStats.FullActions > 0;
+    public bool PlayerHasMoves => PlayerHasActions || CurrentStats.FreeMoves > 0;
 
     public void PlayerMoveCommand(Direction direction)
     {
@@ -307,13 +302,13 @@ public class Player : TileActor
         }
 
         TileGrid grid = Game.Dungeon.Grid;
-        if (PlayerCanMove && CanMove(direction))
+        if (PlayerHasMoves && CanMove(direction))
         {
             // Set state to ensure we don't queue multiple moves
             Game.States.SetState(GameState.CharacterMoving);
             Game.States.EnqueueCoroutine(() => TryPlayerMove(direction));
         }
-        else if (PlayerCanAct)
+        else if (PlayerHasActions)
         {
             TileEntity obj = grid.GetAdjacentObject(XCoord, YCoord, direction);
             if (obj != null)
@@ -461,9 +456,6 @@ public class Player : TileActor
     /// </summary>
     public void DungeonStarted(Dungeon dungeon)
     {
-        dungeon.EnemyListPopulated += OnInitializeCombatTurn;
-        dungeon.AllEnemyTurnsComplete += OnInitializeCombatTurn;
-
         // TODO: revamp with FSM!
         if (dungeon.IsCombat)
         {

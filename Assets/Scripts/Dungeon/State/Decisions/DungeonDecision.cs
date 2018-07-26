@@ -9,23 +9,32 @@ public abstract class DungeonDecision : Decision<DungeonStateChangeContext>
 {
     public class Decisions
     {
-        public static DidEnemyTurnStartDecision DidEnemyTurnStartDecision => new DidEnemyTurnStartDecision();
-        public static DidEnemyTurnEndDecision DidEnemyTurnEndDecision => new DidEnemyTurnEndDecision();
+        public static DidEnemyTurnStart DidEnemyTurnStart => new DidEnemyTurnStart();
+        public static DidEnemyTurnEnd DidEnemyTurnEnd => new DidEnemyTurnEnd();
     }
-}
 
-public class DidEnemyTurnStartDecision : DungeonDecision
-{
-    public override bool Evaluate(DungeonStateChangeContext context)
+    public class DidEnemyTurnStart : DungeonDecision
     {
-        return context.EventType == DungeonEventType.EnemyTurnStart;
+        public override bool Evaluate(DungeonStateChangeContext context)
+        {
+            var gameContext = context.GameContext;
+            if (context.EventType == DungeonEventType.AfterPlayerTurn)
+            {
+                if (gameContext.Dungeon.IsCombat && !gameContext.Player.PlayerHasMoves)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
-}
 
-public class DidEnemyTurnEndDecision : DungeonDecision
-{
-    public override bool Evaluate(DungeonStateChangeContext context)
+    public class DidEnemyTurnEnd : DungeonDecision
     {
-        return context.EventType == DungeonEventType.EnemyTurnEnd;
+        public override bool Evaluate(DungeonStateChangeContext context)
+        {
+            return context.EventType == DungeonEventType.AllEnemiesTurnEnd;
+        }
     }
 }

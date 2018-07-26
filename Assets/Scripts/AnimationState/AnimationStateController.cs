@@ -23,6 +23,8 @@ public class AnimationStateController : StateController<AnimationStateChangeCont
 
         FirstState = idleState;
         CurrentState = FirstState;
+
+        RegisterStates(cardDrawState, idleState);
     }
 
     public void SendEvent(AnimationEventType eventType, GameContext context)

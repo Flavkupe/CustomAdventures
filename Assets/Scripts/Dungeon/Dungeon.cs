@@ -34,10 +34,14 @@ public class Dungeon : SingletonObject<Dungeon>
 
     private Player _player;
 
-    private AnimationStateController _animationStates = new AnimationStateController();
-    private DungeonStateController _dungeonStates = new DungeonStateController();
+    private AnimationStateController _animationStateController = new AnimationStateController();
+    private readonly DungeonStateController _dungeonStateController = new DungeonStateController();
+
+    private GameContext _context = new GameContext();
 
     private readonly List<Enemy> _enemies = new List<Enemy>();
+    public List<Enemy> Enemies => _enemies;
+
 
     public void RemoveEnemy(Enemy enemy)
     {
@@ -61,21 +65,23 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public void AfterPlayerTurn()
     {
-        if (IsCombat && !_player.PlayerCanMove)
-        {
-            Game.States.SetState(GameState.EnemyTurn);            
-            var enemyTurns = new RoutineChain(_enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
-            enemyTurns.Then(() =>
-            {
-                AllEnemyTurnsComplete?.Invoke(this, null);
-            });
+        _dungeonStateController.SendEvent(DungeonEventType.AfterPlayerTurn, GetGameContext());
 
-            Game.States.EnqueueCoroutine(enemyTurns);
-        }
-        else if (!Game.States.AreMenusOpen)
-        {
-            Game.States.SetState(GameState.AwaitingCommand);
-        }
+        //if (IsCombat && !_player.PlayerHasMoves)
+        //{
+        //    Game.States.SetState(GameState.EnemyTurn);            
+        //    var enemyTurns = new RoutineChain(_enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
+        //    enemyTurns.Then(() =>
+        //    {
+        //        AllEnemyTurnsComplete?.Invoke(this, null);
+        //    });
+
+        //    Game.States.EnqueueCoroutine(enemyTurns);
+        //}
+        //else if (!Game.States.AreMenusOpen)
+        //{
+        //    Game.States.SetState(GameState.AwaitingCommand);
+        //}
     }
 
     private List<TileEntity> _validSelectionTargets;
@@ -180,6 +186,11 @@ public class Dungeon : SingletonObject<Dungeon>
         Grid.PutPassableEntity(tile.XCoord, tile.YCoord, entity, true);
     }
 
+    public GameContext GetGameContext()
+    {
+        return _context;
+    }
+
     [UsedImplicitly]
     private void Awake()
     {
@@ -192,6 +203,20 @@ public class Dungeon : SingletonObject<Dungeon>
 
         _player = FindObjectOfType<Player>();
         Debug.Assert(_player != null, "Could not find Player object!");
+    }
+
+    [UsedImplicitly]
+    private void Start()
+    {
+        _context.Dungeon = this;
+        _context.Player = _player;
+        _context.UI = Game.UI;
+    }
+
+    [UsedImplicitly]
+    private void Update()
+    {
+        _dungeonStateController.Update(GetGameContext());
     }
 
     /// <summary>

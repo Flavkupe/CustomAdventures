@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public abstract class StateController<TContextType>
 {
@@ -16,6 +17,8 @@ public abstract class StateController<TContextType>
 
         if (newState != CurrentState)
         {
+            Debug.Log($"Exiting state {CurrentState.GetType().Name}");
+            Debug.Log($"Entering state {newState.GetType().Name}");
             CurrentState.StateExited(newState, context);
             newState.StateEntered(CurrentState, context);
             CurrentState = newState;
@@ -38,9 +41,17 @@ public abstract class StateController<TContextType>
         return false;
     }
 
+    protected void RegisterStates(params State<TContextType>[] states)
+    {
+        foreach (var state in states)
+        {
+            state.EventOccurred += (obj, type) => EventOccurred(type);
+        }
+    }
+
     protected void EventOccurred(TContextType eventContext)
     {
-        CurrentState.EventOccurred(eventContext);
+        CurrentState.HandleNewEvent(eventContext);
         CheckState(eventContext);
     }
 }

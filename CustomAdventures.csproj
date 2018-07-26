@@ -416,9 +416,9 @@
     <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\ExternalAssets\TextMesh Pro\Examples\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\MessageDialog.cs" />
-    <Compile Include="Assets\Scripts\AnimationState\AnimationEventType.cs" />
-    <Compile Include="Assets\Scripts\AnimationState\AnimationStateChangeContext.cs" />
     <Compile Include="Assets\Scripts\AnimationState\AnimationStateController.cs" />
+    <Compile Include="Assets\Scripts\AnimationState\Context\AnimationEventType.cs" />
+    <Compile Include="Assets\Scripts\AnimationState\Context\AnimationStateChangeContext.cs" />
     <Compile Include="Assets\Scripts\AnimationState\Decisions\DungeonDecision.cs" />
     <Compile Include="Assets\Scripts\AnimationState\States\AnimationState.cs" />
     <Compile Include="Assets\Scripts\AnimationState\States\CardDrawingState.cs" />
@@ -483,13 +483,11 @@
     <Compile Include="Assets\Scripts\Dungeon\MapGen\DungeonGenerator.cs" />
     <Compile Include="Assets\Scripts\Dungeon\Room.cs" />
     <Compile Include="Assets\Scripts\Dungeon\RoomArea.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\State\Context\DungeonActionType.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\State\Context\DungeonEventType.cs" />
+    <Compile Include="Assets\Scripts\Dungeon\State\Context\DungeonStateChangeContext.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\Decisions\DungeonDecision.cs" />
-    <Compile Include="Assets\Scripts\Dungeon\State\DungeonActionType.cs" />
-    <Compile Include="Assets\Scripts\Dungeon\State\DungeonEventType.cs" />
-    <Compile Include="Assets\Scripts\Dungeon\State\DungeonState.cs" />
-    <Compile Include="Assets\Scripts\Dungeon\State\DungeonStateChangeContext.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\DungeonStateController.cs" />
-    <Compile Include="Assets\Scripts\Dungeon\State\IActionDeterminant.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\States\AwaitingAIState.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\States\AwaitingInputState.cs" />
     <Compile Include="Assets\Scripts\Dungeon\State\States\DungeonState.cs" />
@@ -541,6 +539,7 @@
     <Compile Include="Assets\Scripts\Sound\SoundGenerator.cs" />
     <Compile Include="Assets\Scripts\State\Decision.cs" />
     <Compile Include="Assets\Scripts\State\GameContext.cs" />
+    <Compile Include="Assets\Scripts\State\IActionDeterminant.cs" />
     <Compile Include="Assets\Scripts\State\ScriptableState.cs" />
     <Compile Include="Assets\Scripts\State\State.cs" />
     <Compile Include="Assets\Scripts\State\StateController.cs" />
