@@ -12,12 +12,15 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.3.1f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -533,6 +536,14 @@
     <Compile Include="Assets\Scripts\MonoBehaviourEx.cs" />
     <Compile Include="Assets\Scripts\Player\Player.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInventory.cs" />
+    <Compile Include="Assets\Scripts\Player\State\Context\PlayerEventType.cs" />
+    <Compile Include="Assets\Scripts\Player\State\Context\PlayerStateChangeContext.cs" />
+    <Compile Include="Assets\Scripts\Player\State\Decisions\PlayerDecision.cs" />
+    <Compile Include="Assets\Scripts\Player\State\PlayerStateController.cs" />
+    <Compile Include="Assets\Scripts\Player\State\States\PlayerAwaitingTurnState.cs" />
+    <Compile Include="Assets\Scripts\Player\State\States\PlayerCombatTurnState.cs" />
+    <Compile Include="Assets\Scripts\Player\State\States\PlayerExploreState.cs" />
+    <Compile Include="Assets\Scripts\Player\State\States\PlayerState.cs" />
     <Compile Include="Assets\Scripts\Props\AmenityData.cs" />
     <Compile Include="Assets\Scripts\Props\DecorativePropData.cs" />
     <Compile Include="Assets\Scripts\Props\PropData.cs" />
@@ -624,6 +635,7 @@
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
 </Project>

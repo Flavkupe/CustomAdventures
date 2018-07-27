@@ -42,7 +42,7 @@ public abstract class State<TChangeContext> : IState<TChangeContext>
     }
 
     public virtual void Update(GameContext context)
-    {
+    {        
     }
 
     public virtual void HandleNewEvent(TChangeContext context)

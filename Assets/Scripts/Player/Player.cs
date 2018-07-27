@@ -46,6 +46,8 @@ public class Player : TileActor
 
     public event EventHandler<Player> LevelupEvent;
 
+    public PlayerStateController StateController { get; } = new PlayerStateController();
+
     // Sounds
     public AudioClip[] DamagedSounds;
     public AudioClip[] UnarmedHitSounds;
@@ -150,6 +152,8 @@ public class Player : TileActor
 
     private void Update ()
     {
+        StateController.Update(Game.Dungeon.GetGameContext());
+
         if (Game.Dungeon.IsGamePaused || Game.States.AreMenusOpen)
         {
             return;
