@@ -554,6 +554,7 @@
     <Compile Include="Assets\Scripts\State\ScriptableState.cs" />
     <Compile Include="Assets\Scripts\State\State.cs" />
     <Compile Include="Assets\Scripts\State\StateController.cs" />
+    <Compile Include="Assets\Scripts\State\StateEventQueue.cs" />
     <Compile Include="Assets\Scripts\State\Transition.cs" />
     <Compile Include="Assets\Scripts\Status\InstantEffectData.cs" />
     <Compile Include="Assets\Scripts\Status\Persistent\EnchantmentEffectData.cs" />

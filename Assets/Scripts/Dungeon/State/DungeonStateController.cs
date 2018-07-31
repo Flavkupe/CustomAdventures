@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 public class DungeonStateController : StateController<DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
-    public DungeonStateController()
+    public DungeonStateController() : base("Dungeon")
     {
         var awaitingInputState = new AwaitingInputState();
         var awaitingAIState = new AwaitingAIState();

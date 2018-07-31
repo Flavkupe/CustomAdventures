@@ -22,7 +22,7 @@ public class Player : TileActor
     public List<IAbilityCard> Abilities => _abilities;
 
     [SerializeField]
-    private PlayerStats _stats = new PlayerStats();
+    private readonly PlayerStats _stats = new PlayerStats();
 
     private PlayerStats _basePlayerStats { get; } = new PlayerStats();
 
@@ -46,6 +46,8 @@ public class Player : TileActor
 
     public event EventHandler<Player> LevelupEvent;
 
+    public event EventHandler AfterPlayerAction;
+
     public PlayerStateController StateController { get; } = new PlayerStateController();
 
     // Sounds
@@ -67,10 +69,7 @@ public class Player : TileActor
     {
         var baseStats = GetModifiedStats(true);
         CurrentStats.FullActions = baseStats.FullActions;
-        CurrentStats.FreeMoves = baseStats.FreeMoves;
-
-        // TODO: revamp!
-        Game.States.SetState(GameState.AwaitingCommand);
+        CurrentStats.FreeMoves = baseStats.FreeMoves;        
     }
 
     public void EquipDrawnAbilityCard(IAbilityCard ability)
@@ -90,8 +89,9 @@ public class Player : TileActor
 
     public void AfterAbilityUsed(IAbilityCard ability)
     {
+        // TODO: put in player state... somehow?
         ProcessEffects(EffectActivatorType.Attacks);
-        OnAfterPlayerAction(true);
+        // OnAfterPlayerAction(true);
     }
 
     public void UseAbility(IAbilityCard ability)
@@ -154,46 +154,10 @@ public class Player : TileActor
     {
         StateController.Update(Game.Dungeon.GetGameContext());
 
-        if (Game.Dungeon.IsGamePaused || Game.States.AreMenusOpen)
-        {
-            return;
-        }
-
-        if (Game.States.State == GameState.AwaitingCommand)
-        {
-            if (Input.GetKey(KeyCode.W))
-            {
-                PlayerMoveCommand(Direction.Up);
-            }
-            else if (Input.GetKey(KeyCode.S))
-            {
-                PlayerMoveCommand(Direction.Down);
-            }
-            else if (Input.GetKey(KeyCode.A))
-            {
-                PlayerMoveCommand(Direction.Left);
-            }
-            else if (Input.GetKey(KeyCode.D))
-            {
-                PlayerMoveCommand(Direction.Right);
-            }
-            else if (Input.GetKey(KeyCode.Space))
-            {
-                PlayerSkipTurn();
-            }
-        }
-
         if (!_drawingAbility && Abilities.Count < AbilityThreshold && Game.Decks.AbilityDeck.CardCount > 0)
         {
             DrawAbility();
         }
-    }
-
-    private void PlayerSkipTurn()
-    {
-        CurrentStats.FreeMoves = 0;
-        CurrentStats.FullActions = 0;
-        OnAfterPlayerMove();
     }
 
     private void DrawAbility()
@@ -204,7 +168,7 @@ public class Player : TileActor
 
     public void GainXP(int exp)
     {
-        ShowFloatyText(exp.ToString() + " XP", Color.white, FloatyTextSize.Medium);
+        ShowFloatyText(exp + " XP", Color.white, FloatyTextSize.Medium);
         _stats.EXP += exp;
 
         if ((_stats.EXP / 10) + 1 > CurrentStats.Level)
@@ -226,7 +190,7 @@ public class Player : TileActor
         StartCoroutine(routine);
     }
 
-    private void ProcessEffects(EffectActivatorType actionTaken)
+    public void ProcessEffects(EffectActivatorType actionTaken)
     {
         foreach (PersistentStatusEffect effect in Effects.ToList())
         {
@@ -234,123 +198,15 @@ public class Player : TileActor
         }
     }
 
-    private void OnAfterPlayerInteract()
+    public void ActionTaken()
     {
-        ProcessEffects(EffectActivatorType.Steps);
-        OnAfterPlayerAction(true);
-    }
-
-    private void OnAfterPlayerMove()
-    {
-        ProcessEffects(EffectActivatorType.Steps);
-        OnAfterPlayerAction(false);
-    }
-
-    private void OnAfterPlayerAttack()
-    {
-        ProcessEffects(EffectActivatorType.Attacks);
-        if (Inventory.IsSlotOccupied(InventoryItemType.Weapon))
-        {
-            Inventory.EquippedWeapon.ItemDurabilityExpended();
-        }
-
-        OnAfterPlayerAction(true);
-    }
-
-    private void OnAfterPlayerAction(bool isFullAction)
-    {
-        if (Game.Dungeon.IsCombat)
-        {
-            if (!isFullAction && CurrentStats.FreeMoves > 0)
-            {
-                CurrentStats.FreeMoves--;
-            }
-            else
-            {
-                CurrentStats.FullActions--;
-                CurrentStats.FreeMoves = 0;
-            }
-        }
-
-        Game.Dungeon.AfterPlayerTurn();
-    }
-
-    private IEnumerator TryPlayerMove(Direction direction)
-    {
-        if (Game.Dungeon.IsCombat)
-        {
-            var adjacentEnemies = Game.Dungeon.GetEntitiesNearPlayer(TileRangeType.Sides, 1, TileEntityType.Enemy);
-            yield return ActivateOpportunityAttacks(adjacentEnemies.OfType<Enemy>());
-        }
-
-        yield return TryMove(direction);        
-        OnAfterPlayerMove();        
-    }
-
-    private IEnumerator ActivateOpportunityAttacks(IEnumerable<Enemy> enemies)
-    {
-        foreach (var enemy in enemies)
-        {
-            yield return enemy.AttackPlayer();
-        }
+        AfterPlayerAction?.Invoke(this, null);
     }
 
     public bool PlayerHasActions => Game.States.CanPlayerAct && !Game.Dungeon.IsCombat || CurrentStats.FullActions > 0;
     public bool PlayerHasMoves => PlayerHasActions || CurrentStats.FreeMoves > 0;
 
-    public void PlayerMoveCommand(Direction direction)
-    {
-        if (direction == Direction.Left || direction == Direction.Right)
-        {
-            FaceDirection(direction);
-        }
-
-        TileGrid grid = Game.Dungeon.Grid;
-        if (PlayerHasMoves && CanMove(direction))
-        {
-            // Set state to ensure we don't queue multiple moves
-            Game.States.SetState(GameState.CharacterMoving);
-            Game.States.EnqueueCoroutine(() => TryPlayerMove(direction));
-        }
-        else if (PlayerHasActions)
-        {
-            TileEntity obj = grid.GetAdjacentObject(XCoord, YCoord, direction);
-            if (obj != null)
-            {
-                if (obj.PlayerCanInteractWith())
-                {
-                    Game.States.SetState(GameState.CharacterActing);
-                    InteractWith(obj);
-                }
-            }
-            else
-            {
-                // Boundry
-            }
-        }
-        
-        Game.UI.UpdateEntityPanels();
-    }
-
-    private void InteractWith(TileEntity obj)
-    {
-        var interaction = obj.GetPlayerInteraction(this);
-        var routine = Routine.Create(obj.PlayerInteractWith, this);
-        
-        if (interaction == PlayerInteraction.Attack)
-        {
-            PlayAttackEffects();
-            routine.Then(() => OnAfterPlayerAttack());
-        }
-        else if (interaction == PlayerInteraction.InteractWithObject)
-        {
-            routine.Then(() => OnAfterPlayerInteract());
-        }
-        
-        Game.States.EnqueueCoroutine(routine);
-    }
-
-    private void PlayAttackEffects()
+    public void PlayAttackEffects()
     {
         var weapon = Inventory.EquippedWeapon;
         if (weapon != null)
@@ -444,7 +300,7 @@ public class Player : TileActor
         _animatedWeapon.FaceDirection(_facingDirection);
     }
 
-    private void FaceDirection(Direction direction)
+    public void FaceDirection(Direction direction)
     {
         GetComponent<SpriteRenderer>().flipX = direction == Direction.Left;
         _facingDirection = direction;
@@ -452,6 +308,11 @@ public class Player : TileActor
         {
             _animatedWeapon.FaceDirection(direction);
         }
+    }
+
+    private void Start()
+    {
+        StateController.Start();
     }
 
     /// <summary>

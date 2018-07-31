@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 public class AnimationStateController : StateController<AnimationStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
-    public AnimationStateController()
+    public AnimationStateController() : base("Animation")
     {
         var cardDrawState = new CardDrawingState();
         var idleState = new NoAnimationState();

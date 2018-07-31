@@ -63,27 +63,6 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public bool IsCombat => _enemies.Count > 0;
 
-    public void AfterPlayerTurn()
-    {
-        _dungeonStateController.SendEvent(DungeonEventType.AfterPlayerTurn, GetGameContext());
-
-        //if (IsCombat && !_player.PlayerHasMoves)
-        //{
-        //    Game.States.SetState(GameState.EnemyTurn);            
-        //    var enemyTurns = new RoutineChain(_enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
-        //    enemyTurns.Then(() =>
-        //    {
-        //        AllEnemyTurnsComplete?.Invoke(this, null);
-        //    });
-
-        //    Game.States.EnqueueCoroutine(enemyTurns);
-        //}
-        //else if (!Game.States.AreMenusOpen)
-        //{
-        //    Game.States.SetState(GameState.AwaitingCommand);
-        //}
-    }
-
     private List<TileEntity> _validSelectionTargets;
     private readonly List<TileEntity> _selectedTargets = new List<TileEntity>();
     public List<TileEntity> SelectedTargets => _selectedTargets;
@@ -211,6 +190,8 @@ public class Dungeon : SingletonObject<Dungeon>
         _context.Dungeon = this;
         _context.Player = _player;
         _context.UI = Game.UI;
+
+        _dungeonStateController.Start();
     }
 
     [UsedImplicitly]
@@ -254,11 +235,17 @@ public class Dungeon : SingletonObject<Dungeon>
         StartCoroutine(_cardController.PerformDungeonEvents(e));
     }
 
+    private void OnPlayerActionTaken(object sender, EventArgs e)
+    {
+        _dungeonStateController.SendEvent(DungeonEventType.AfterPlayerAction, GetGameContext());
+    }
+
     [UsedImplicitly]
     private void StartDungeon()
     {
         _player.AbilityCardNeeded += OnPlayerAbilityCardNeeded;
         _player.LevelupEvent += OnPlayerLevelupEvent;
+        _player.AfterPlayerAction += OnPlayerActionTaken;
         _player.DungeonStarted(this);
     }
 

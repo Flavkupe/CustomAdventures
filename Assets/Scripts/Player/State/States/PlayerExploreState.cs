@@ -1,4 +1,7 @@
-﻿public class PlayerExploreState : PlayerState
+﻿using System.Collections;
+using System.Linq;
+
+public class PlayerExploreState : PlayerState
 {
     public override bool CanPerformAction(DungeonActionType actionType)
     {
@@ -11,5 +14,11 @@
             default:
                 return true;
         }
+    }
+
+    protected override void OnAfterPlayerAction(GameContext context, bool isFullAction)
+    {
+        base.OnAfterPlayerAction(context, isFullAction);
+        context.Player.ActionTaken();
     }
 }

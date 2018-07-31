@@ -7,8 +7,10 @@ using Assets.Scripts.Player.State.Context;
 
 public class PlayerStateController : StateController<PlayerStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
-    public PlayerStateController()
+    public PlayerStateController() : base("Player")
     {
+        
+
         var exploreState = new PlayerExploreState();
         var awaitingTurnState = new PlayerAwaitingTurnState();
         var combatTurnState = new PlayerCombatTurnState();

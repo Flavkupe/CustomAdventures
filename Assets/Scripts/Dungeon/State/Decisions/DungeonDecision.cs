@@ -18,7 +18,7 @@ public abstract class DungeonDecision : Decision<DungeonStateChangeContext>
         public override bool Evaluate(DungeonStateChangeContext context)
         {
             var gameContext = context.GameContext;
-            if (context.EventType == DungeonEventType.AfterPlayerTurn)
+            if (context.EventType == DungeonEventType.AfterPlayerAction)
             {
                 if (gameContext.Dungeon.IsCombat && !gameContext.Player.PlayerHasMoves)
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ public interface IState<TChangeContext>
 public abstract class State<TChangeContext> : IState<TChangeContext>
 {
     public event EventHandler<TChangeContext> EventOccurred;
+    public event EventHandler<Routine> RequestRoutine;
 
     protected State()
     {
@@ -29,6 +31,16 @@ public abstract class State<TChangeContext> : IState<TChangeContext>
     protected void RaiseEventOccurred(TChangeContext context)
     {
         EventOccurred?.Invoke(this, context);
+    }
+
+    protected void EnqueueRoutine(Routine routine)
+    {
+        RequestRoutine?.Invoke(this, routine);
+    }
+
+    protected void EnqueueCoroutine(IEnumerator coroutine)
+    {
+        RequestRoutine?.Invoke(this, Routine.Create(coroutine));
     }
 
     public void AddTransition(ITransition<TChangeContext> transition)

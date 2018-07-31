@@ -28,7 +28,7 @@ public class AwaitingInputState : DungeonState
 
     public override void HandleNewEvent(DungeonStateChangeContext context)
     {
-        if (context.EventType == DungeonEventType.AfterPlayerTurn)
+        if (context.EventType == DungeonEventType.AfterPlayerAction)
         {
             Game.States.SetState(GameState.AwaitingCommand);
         }
