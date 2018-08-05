@@ -22,3 +22,19 @@ public class Transition<TChangeContext> : ITransition<TChangeContext>
     public IDecision<TChangeContext> Decision { get; }
     public IState<TChangeContext> Next { get; }
 }
+
+/// <summary>
+/// A transition that goes back to the previous state, whatever it was
+/// </summary>
+public class ReturnTransition<TChangeContext> : ITransition<TChangeContext>
+{
+    private StateController<TChangeContext> _controller;
+    public ReturnTransition(IDecision<TChangeContext> decision, StateController<TChangeContext> controller)
+    {
+        _controller = controller;
+        Decision = decision;
+    }
+
+    public IDecision<TChangeContext> Decision { get; }
+    public IState<TChangeContext> Next => _controller.PreviousState;
+}

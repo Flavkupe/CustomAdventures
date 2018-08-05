@@ -15,16 +15,21 @@ public interface IState<TChangeContext>
 
     void HandleNewEvent(TChangeContext context);
 
+    void AddTransitions(IEnumerable<ITransition<TChangeContext>> transitions);
+
+    void AddTransition(ITransition<TChangeContext> transition);
+
     void Update(GameContext context);
 }
 
-public abstract class State<TChangeContext> : IState<TChangeContext>
+public class State<TChangeContext> : IState<TChangeContext>
 {
     public event EventHandler<TChangeContext> EventOccurred;
     public event EventHandler<Routine> RequestRoutine;
 
-    protected State()
+    public State(StateController<TChangeContext> contoller)
     {
+        contoller.RegisterState(this);
         Transitions = new List<ITransition<TChangeContext>>();
     }
 

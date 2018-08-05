@@ -34,14 +34,12 @@ public class Dungeon : SingletonObject<Dungeon>
 
     private Player _player;
 
-    private AnimationStateController _animationStateController = new AnimationStateController();
-    private readonly DungeonStateController _dungeonStateController = new DungeonStateController();
-
     private GameContext _context = new GameContext();
 
     private readonly List<Enemy> _enemies = new List<Enemy>();
     public List<Enemy> Enemies => _enemies;
-
+    private AnimationStateController AnimationStateController { get; } = new AnimationStateController();
+    private DungeonStateController DungeonStateController { get; } = new DungeonStateController();
 
     public void RemoveEnemy(Enemy enemy)
     {
@@ -182,6 +180,11 @@ public class Dungeon : SingletonObject<Dungeon>
 
         _player = FindObjectOfType<Player>();
         Debug.Assert(_player != null, "Could not find Player object!");
+
+        _cardController.CardDrawStart += OnCardDrawStart;
+        _cardController.CardDrawEnd += OnCardDrawEnd;
+        _cardController.PlayerInputRequested += OnPlayerInputRequested;
+        _cardController.PlayerInputAcquired += OnPlayerInputAcquired;
     }
 
     [UsedImplicitly]
@@ -191,13 +194,35 @@ public class Dungeon : SingletonObject<Dungeon>
         _context.Player = _player;
         _context.UI = Game.UI;
 
-        _dungeonStateController.Start();
+        _context.DungeonActionChecks = new ActionCheckerContainer<DungeonActionType>(AnimationStateController, DungeonStateController, _player.StateController);
+        DungeonStateController.Start();
+        AnimationStateController.Start();
+    }
+
+    private void OnPlayerInputRequested(object sender, EventArgs e)
+    {
+        _player.StateController.SendEvent(PlayerEventType.MouseInputRequested, GetGameContext());
+    }
+
+    private void OnPlayerInputAcquired(object sender, EventArgs e)
+    {
+        _player.StateController.SendEvent(PlayerEventType.MouseInputAcquired, GetGameContext());
+    }
+
+    private void OnCardDrawEnd(object sender, EventArgs e)
+    {
+        AnimationStateController.SendEvent(AnimationEventType.AnimationEnd, GetGameContext());
+    }
+
+    private void OnCardDrawStart(object sender, EventArgs e)
+    {
+        AnimationStateController.SendEvent(AnimationEventType.AnimationStart, GetGameContext());
     }
 
     [UsedImplicitly]
     private void Update()
     {
-        _dungeonStateController.Update(GetGameContext());
+        DungeonStateController.Update(GetGameContext());
     }
 
     /// <summary>
@@ -227,6 +252,7 @@ public class Dungeon : SingletonObject<Dungeon>
 
     private void OnLootEventRequested(object sender, LootEventProperties e)
     {
+        Debug.Log("OnLootEventRequested!");
         StartCoroutine(_cardController.PerformLootEvents(e));
     }
 
@@ -237,7 +263,7 @@ public class Dungeon : SingletonObject<Dungeon>
 
     private void OnPlayerActionTaken(object sender, EventArgs e)
     {
-        _dungeonStateController.SendEvent(DungeonEventType.AfterPlayerAction, GetGameContext());
+        DungeonStateController.SendEvent(DungeonEventType.AfterPlayerAction, GetGameContext());
     }
 
     [UsedImplicitly]

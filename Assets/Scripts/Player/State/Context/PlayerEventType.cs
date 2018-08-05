@@ -1,9 +1,14 @@
-﻿namespace Assets.Scripts.Player.State.Context
+﻿
+public enum PlayerEventType
 {
-    public enum PlayerEventType
-    {
-        AfterMove,
+    AfterMove,
 
-        AITurnsComplete,
-    }
+    AITurnsComplete,
+    UIInteractionComplete,
+
+    MouseInputRequested,
+    MouseInputAcquired,
+
+    StartedAnimation,
+    EndedAnimation
 }

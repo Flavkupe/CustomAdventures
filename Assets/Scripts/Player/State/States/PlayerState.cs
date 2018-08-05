@@ -12,8 +12,20 @@ public class PlayerStateTransition : Transition<PlayerStateChangeContext>
     }
 }
 
+public class PlayerReturnStateTransition : ReturnTransition<PlayerStateChangeContext>
+{
+    public PlayerReturnStateTransition(IDecision<PlayerStateChangeContext> decision, StateController<PlayerStateChangeContext> controller)
+        : base(decision, controller)
+    {
+    }
+}
+
 public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
+    public PlayerState(StateController<PlayerStateChangeContext> controller): base(controller)
+    {
+    }
+
     private bool _moving;
 
     public abstract bool CanPerformAction(DungeonActionType actionType);
@@ -36,22 +48,26 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
             return true;
         }
 
+        if (!context.DungeonActionChecks.CanPerformAction(DungeonActionType.PlayerMove))
+        {
+            return true;
+        }
+
         if (Input.GetKey(KeyCode.W))
         {
-            moved = ProcessMoveCommand(Direction.Up, context);
-            
+            moved = OnDirectionInput(Direction.Up, context);            
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            moved = ProcessMoveCommand(Direction.Down, context);
+            moved = OnDirectionInput(Direction.Down, context);
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            moved = ProcessMoveCommand(Direction.Left, context);
+            moved = OnDirectionInput(Direction.Left, context);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            moved = ProcessMoveCommand(Direction.Right, context);
+            moved = OnDirectionInput(Direction.Right, context);
         }
 
         if (moved)
@@ -62,7 +78,7 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
         return moved;
     }
 
-    protected virtual bool ProcessMoveCommand(Direction direction, GameContext context)
+    protected bool TryMoveToDirection(Direction direction, GameContext context)
     {
         var player = context.Player;
         if (direction == Direction.Left || direction == Direction.Right)
@@ -85,7 +101,33 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
         return false;
     }
 
-    protected IEnumerator TryMovePlayerEntity(Direction direction, GameContext context)
+    protected bool TryInteractWithDirection(Direction direction, GameContext context)
+    {
+        var player = context.Player;
+        var obj = context.Dungeon.Grid.GetAdjacentObject(player.XCoord, player.YCoord, direction);
+        if (obj != null)
+        {
+            if (obj.PlayerCanInteractWith())
+            {
+                Game.States.SetState(GameState.CharacterActing);
+                PlayerInteractWith(context, obj);
+                return true;
+            }
+        }
+        else
+        {
+            // Boundry
+        }
+
+        return false;
+    }
+
+    protected virtual bool OnDirectionInput(Direction direction, GameContext context)
+    {
+        return false;
+    }
+
+    private IEnumerator TryMovePlayerEntity(Direction direction, GameContext context)
     {
         yield return OnBeforePlayerMove(context);
         yield return context.Player.TryMove(direction);
@@ -141,6 +183,7 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
             routine.Then(() => OnAfterPlayerInteract(context));
         }
 
-        Game.States.EnqueueCoroutine(routine);
+        EnqueueRoutine(routine);
+        // Game.States.EnqueueCoroutine(routine);
     }
 }

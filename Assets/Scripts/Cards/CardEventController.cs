@@ -13,14 +13,20 @@ public class CardEventController : MonoBehaviourEx
 
     private DeckManager _decks;
 
+    public event EventHandler CardDrawStart;
+    public event EventHandler CardDrawEnd;
+    public event EventHandler PlayerInputRequested;
+    public event EventHandler PlayerInputAcquired;
+    
     private CardAnimationController _animationController;
-
     private Dungeon _dungeon;
 
     private void Awake()
     {
         _animationController = GetComponent<CardAnimationController>();
-        _dungeon = GetComponentInParent<Dungeon>();        
+        _dungeon = GetComponentInParent<Dungeon>();
+        _animationController.CardDrawStart += CardDrawStart;
+        _animationController.CardDrawEnd += CardDrawEnd;
     }
 
     private void Start()
@@ -143,6 +149,7 @@ public class CardEventController : MonoBehaviourEx
         // TODO: replace this state system
         yield return Game.States.WaitUntilNotState(GameState.CharacterMoving);
 
+        PlayerInputRequested?.Invoke(null, null);
         List<TCardType> cards;
         while (true)
         {
@@ -179,6 +186,7 @@ public class CardEventController : MonoBehaviourEx
 
         props.DrawResults.AddRange(cards);
 
+        PlayerInputAcquired?.Invoke(null, null);
         _dungeon.UnpauseActions();
     }
 
@@ -189,18 +197,6 @@ public class CardEventController : MonoBehaviourEx
         yield return _animationController.AnimateShuffleCardsIntoDeck(cards, deck.DeckHolder);
         deck.PushToBottom(cards);
         Game.UI.UpdateEntityPanels();
-    }
-
-    private IEnumerator DoCardEvents<TCardType>(List<TCardType> cards, Func<TCardType, Routine> cardRoutine) where TCardType : ICard
-    {
-        // TODO TODO Left off here... need to find a way to put the event actions on the cards themselves
-        var routineSet = new ParallelRoutineSet();
-        foreach (var card in cards)
-        {
-            routineSet.AddRoutine(cardRoutine(card));
-        }
-
-        yield return routineSet.AsRoutine();
     }
 
     private class DrawCoroutineProps<TCardType> where TCardType : class, ICard

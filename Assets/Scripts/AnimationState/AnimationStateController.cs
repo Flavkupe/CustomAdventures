@@ -8,8 +8,8 @@ public class AnimationStateController : StateController<AnimationStateChangeCont
 {
     public AnimationStateController() : base("Animation")
     {
-        var cardDrawState = new CardDrawingState();
-        var idleState = new NoAnimationState();
+        var cardDrawState = new CardDrawingState(this);
+        var idleState = new NoAnimationState(this);
 
         cardDrawState.AddTransitions(new[]
         {
@@ -19,12 +19,10 @@ public class AnimationStateController : StateController<AnimationStateChangeCont
         idleState.AddTransitions(new[]
         {
             new AnimationStateTransition(AnimationDecision.Decisions.DidCardsStartMovingDecision, cardDrawState)
-        });
+        });   
 
         FirstState = idleState;
         CurrentState = FirstState;
-
-        RegisterStates(cardDrawState, idleState);
     }
 
     public void SendEvent(AnimationEventType eventType, GameContext context)

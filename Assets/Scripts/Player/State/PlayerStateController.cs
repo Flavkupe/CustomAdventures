@@ -9,15 +9,13 @@ public class PlayerStateController : StateController<PlayerStateChangeContext>, 
 {
     public PlayerStateController() : base("Player")
     {
-        
-
-        var exploreState = new PlayerExploreState();
-        var awaitingTurnState = new PlayerAwaitingTurnState();
-        var combatTurnState = new PlayerCombatTurnState();
+        var exploreState = new PlayerExploreState(this);
+        var awaitingTurnState = new PlayerAwaitingTurnState(this);
+        var combatTurnState = new PlayerCombatTurnState(this);
 
         exploreState.AddTransitions(new[]
         {
-            new PlayerStateTransition(PlayerDecision.Decisions.DidPlayerTurnStart, combatTurnState)
+            new PlayerStateTransition(PlayerDecision.Decisions.DidPlayerTurnStart, combatTurnState),
         });
 
         awaitingTurnState.AddTransitions(new[]
@@ -29,14 +27,16 @@ public class PlayerStateController : StateController<PlayerStateChangeContext>, 
         combatTurnState.AddTransitions(new[]
         {
             new PlayerStateTransition(PlayerDecision.Decisions.DidCombatEnd, exploreState),
-            new PlayerStateTransition(PlayerDecision.Decisions.DidPlayerTurnEnd, awaitingTurnState)
+            new PlayerStateTransition(PlayerDecision.Decisions.DidPlayerTurnEnd, awaitingTurnState),
+        });
+
+        AnyState.AddTransitions(new[] {
+            CreateEventAwaitTransition(PlayerEventType.MouseInputRequested, PlayerEventType.MouseInputAcquired),
+            CreateEventAwaitTransition(PlayerEventType.StartedAnimation, PlayerEventType.EndedAnimation),
         });
 
         FirstState = exploreState;
         CurrentState = FirstState;
-
-        // Don't forget to register states...!
-        RegisterStates(exploreState, awaitingTurnState, combatTurnState);
     }
 
     public void SendEvent(PlayerEventType eventType, GameContext context)
@@ -48,5 +48,10 @@ public class PlayerStateController : StateController<PlayerStateChangeContext>, 
     public bool CanPerformAction(DungeonActionType actionType)
     {
         return CanPerformActionInState(actionType);
+    }
+
+    private PlayerStateTransition CreateEventAwaitTransition(PlayerEventType triggerEvent, PlayerEventType awaitedEvent)
+    {
+        return new PlayerStateTransition(PlayerDecision.Decisions.DidEventOccur(triggerEvent), new PlayerAwaitingEventsState(awaitedEvent, this));
     }
 }

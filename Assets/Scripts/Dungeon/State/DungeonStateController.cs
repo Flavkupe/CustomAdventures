@@ -8,8 +8,8 @@ public class DungeonStateController : StateController<DungeonStateChangeContext>
 {
     public DungeonStateController() : base("Dungeon")
     {
-        var awaitingInputState = new AwaitingInputState();
-        var awaitingAIState = new AwaitingAIState();
+        var awaitingInputState = new AwaitingInputState(this);
+        var awaitingAIState = new AwaitingAIState(this);
 
         awaitingInputState.AddTransitions(new[]
         {
@@ -23,8 +23,6 @@ public class DungeonStateController : StateController<DungeonStateChangeContext>
 
         FirstState = awaitingInputState;
         CurrentState = FirstState;
-
-        RegisterStates(awaitingInputState, awaitingAIState);
     }
 
     public void SendEvent(DungeonEventType eventType, GameContext context)

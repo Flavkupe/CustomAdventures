@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,8 +14,12 @@ public class CardAnimationController : MonoBehaviourEx
 
     public float CardMoveSpeed = 15.0f;
 
+    public event EventHandler CardDrawStart;
+    public event EventHandler CardDrawEnd;
+
     public IEnumerator AnimateCardDraws(IEnumerable<ICard> cards, GameObject deckHolder, float deckMoveSpeed = 10.0f)
     {
+        CardDrawStart?.Invoke(null, null);
         float targetX = 0.0f;
         Vector3 initPos = deckHolder.transform.position;
         yield return MoveDeckToPosition(deckHolder, CardDrawPos.transform.position, DeckBigSize - DeckSmallSize, deckMoveSpeed);
@@ -38,6 +43,7 @@ public class CardAnimationController : MonoBehaviourEx
         yield return new WaitForSecondsSpeedable(0.5f);
 
         Game.States.TriggerEvent(TriggeredEvent.CardDrawDone);
+        CardDrawEnd?.Invoke(null, null);
     }
 
     private IEnumerator MoveDeckToPosition(GameObject deckHolder, Vector3 target, float sizeChange, float deckMoveSpeed = 10.0f)

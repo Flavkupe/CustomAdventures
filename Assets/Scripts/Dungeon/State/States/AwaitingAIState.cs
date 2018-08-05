@@ -7,6 +7,10 @@ using UnityEngine;
 
 public class AwaitingAIState : DungeonState
 {
+    public AwaitingAIState(StateController<DungeonStateChangeContext> contoller) : base(contoller)
+    {
+    }
+
     public override void StateEntered(IState<DungeonStateChangeContext> previousState, DungeonStateChangeContext context)
     {
         EnqueueEnemyTurns(context);

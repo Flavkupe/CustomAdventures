@@ -1,5 +1,11 @@
-﻿public class PlayerAwaitingTurnState : PlayerState
+﻿using Assets.Scripts.Player.State.Context;
+
+public class PlayerAwaitingTurnState : PlayerState
 {
+    public PlayerAwaitingTurnState(StateController<PlayerStateChangeContext> controller) : base(controller)
+    {
+    }
+
     public override bool CanPerformAction(DungeonActionType actionType)
     {
         switch (actionType)

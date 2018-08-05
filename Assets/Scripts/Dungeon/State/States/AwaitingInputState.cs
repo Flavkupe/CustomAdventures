@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 public class AwaitingInputState : DungeonState
 {
+    public AwaitingInputState(StateController<DungeonStateChangeContext> contoller) : base(contoller)
+    {
+    }
+
     public override void StateEntered(IState<DungeonStateChangeContext> previousState, DungeonStateChangeContext context)
     {
         Game.States.SetState(GameState.AwaitingCommand);

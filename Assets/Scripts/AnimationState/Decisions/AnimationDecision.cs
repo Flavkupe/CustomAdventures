@@ -11,6 +11,10 @@ public abstract class AnimationDecision : Decision<AnimationStateChangeContext>
     {
         public static AreCardsDoneMovingDecision AreCardsDoneMovingDecision => new AreCardsDoneMovingDecision();
         public static DidCardsStartMovingDecision DidCardsStartMovingDecision => new DidCardsStartMovingDecision();
+        public static DidEventOccur<AnimationStateChangeContext, AnimationEventType> DidEventOccur(AnimationEventType eventType)
+        {
+            return new DidEventOccur<AnimationStateChangeContext, AnimationEventType>(eventType, a => a.EventType);
+        }
     }
 }
 
@@ -29,3 +33,5 @@ public class DidCardsStartMovingDecision : AnimationDecision
         return context.EventType == AnimationEventType.AnimationStart;
     }
 }
+
+

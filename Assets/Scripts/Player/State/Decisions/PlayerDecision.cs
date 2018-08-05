@@ -8,6 +8,10 @@ public abstract class PlayerDecision : Decision<PlayerStateChangeContext>
         public static DidPlayerTurnStart DidPlayerTurnStart => new DidPlayerTurnStart();
         public static DidPlayerTurnEnd DidPlayerTurnEnd => new DidPlayerTurnEnd();
         public static DidCombatEnd DidCombatEnd => new DidCombatEnd();
+        public static DidEventOccur<PlayerStateChangeContext, PlayerEventType> DidEventOccur(PlayerEventType eventType)
+        {
+            return new DidEventOccur<PlayerStateChangeContext, PlayerEventType>(eventType, a => a.EventType);
+        }
     }
 
     public class DidPlayerTurnStart : PlayerDecision

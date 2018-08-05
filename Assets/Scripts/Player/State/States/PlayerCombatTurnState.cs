@@ -1,10 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Player.State.Context;
 using UnityEngine;
 
 public class PlayerCombatTurnState : PlayerState
 {
+    public PlayerCombatTurnState(StateController<PlayerStateChangeContext> controller) : base(controller)
+    {
+    }
+
     public override bool CanPerformAction(DungeonActionType actionType)
     {
         switch (actionType)
@@ -36,9 +42,9 @@ public class PlayerCombatTurnState : PlayerState
         return false;
     }
 
-    protected override bool ProcessMoveCommand(Direction direction, GameContext context)
+    protected override bool OnDirectionInput(Direction direction, GameContext context)
     {
-        if (base.ProcessMoveCommand(direction, context))
+        if (TryMoveToDirection(direction, context))
         {
             return true;
         }
@@ -46,19 +52,9 @@ public class PlayerCombatTurnState : PlayerState
         var player = context.Player;
         if (player.PlayerHasActions)
         {
-            var obj = context.Dungeon.Grid.GetAdjacentObject(player.XCoord, player.YCoord, direction);
-            if (obj != null)
+            if (TryInteractWithDirection(direction, context))
             {
-                if (obj.PlayerCanInteractWith())
-                {
-                    Game.States.SetState(GameState.CharacterActing);
-                    PlayerInteractWith(context, obj);
-                    return true;
-                }
-            }
-            else
-            {
-                // Boundry
+                return true;
             }
         }
 
