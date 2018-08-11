@@ -14,7 +14,7 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public event EventHandler AllEnemyTurnsComplete;
 
-    public event EventHandler<TileEntity> TileSelected;
+    public event EventHandler<TileEntity> TileEntityClicked;
 
     /// <summary>
     /// Event that fires when list of enemies goes from 0 to more than 0.
@@ -63,65 +63,14 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public bool IsCombat => _enemies.Count > 0;
 
-    private List<TileEntity> _validSelectionTargets;
-    private readonly List<TileEntity> _selectedTargets = new List<TileEntity>();
-    public List<TileEntity> SelectedTargets => _selectedTargets;
-
-    public void PerformGridSelection(List<TileEntity> entities, int numToSelect, ActionOnEntities doOnSelected)
+    public void PerformGridSelection(List<TileEntity> entities, EntitySelectionOptions options, ActionOnEntities doOnSelected)
     {
-        DungeonStateController.SwitchToTileSelection(GetGameContext(), numToSelect, doOnSelected);
+        DungeonStateController.SwitchToTileSelection(GetGameContext(), options, doOnSelected);
     }
 
-    public IEnumerator AwaitTargetSelection(Action cancellationCallback, List<TileEntity> entities, int numToSelect)
+    public void EntityClicked(TileEntity tileEntity)
     {
-        _selectedTargets.Clear();
-        _validSelectionTargets = entities;
-        //numToSelect = Math.Min(this._validSelectionTargets.Count, numToSelect);
-        //if (numToSelect == 0)
-        //{
-        //    // Nothing available to select!
-        //    cancellationCallback();
-        //    yield break;
-        //}
-
-        Game.States.SetState(GameState.AwaitingSelection);
-
-        while (_selectedTargets.Count < numToSelect)
-        {
-            if (Input.GetMouseButtonUp(1))
-            {
-                cancellationCallback();
-                yield break;
-            }
-
-            yield return null;
-        }
-
-        foreach (TileEntity target in _selectedTargets)
-        {
-            // Reset selected state after all found
-            target.Selected = false;
-        }
-    }
-
-    public void AfterToggledSelection(TileEntity tileEntity)
-    {
-        TileSelected?.Invoke(this, tileEntity);
-
-        //if (Game.States.State != GameState.AwaitingSelection || !_validSelectionTargets.Contains(tileEntity))
-        //{
-        //    tileEntity.Selected = false;
-        //    return;
-        //}
-
-        //if (!tileEntity.Selected && _selectedTargets.Contains(tileEntity))
-        //{
-        //    _selectedTargets.Remove(tileEntity);
-        //}
-        //else if (tileEntity.Selected && !_selectedTargets.Contains(tileEntity))
-        //{
-        //    _selectedTargets.Add(tileEntity);
-        //}
+        TileEntityClicked?.Invoke(this, tileEntity);
     }
 
     /// <summary>
@@ -170,6 +119,11 @@ public class Dungeon : SingletonObject<Dungeon>
     public void SpawnPassableEntity(PassableTileEntity entity, GridTile tile)
     {
         Grid.PutPassableEntity(tile.XCoord, tile.YCoord, entity, true);
+    }
+
+    public void EnqueueAnimation(Routine animation)
+    {
+        AnimationStateController.AddAnimationRoutine(animation, GetGameContext());
     }
 
     public GameContext GetGameContext()

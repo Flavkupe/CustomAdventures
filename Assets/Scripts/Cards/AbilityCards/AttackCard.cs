@@ -21,27 +21,7 @@ public class AttackCard : AbilityCard<AttackCardData>
         List<TileEntity> entities = context.Dungeon.GetEntitiesNearPlayer(Data.RangeType, Data.Range, Data.AffectedTargetType);
         List<GridTile> tiles = context.Dungeon.GetTilesNearPlayer(Data.RangeType, Data.Range);
         tiles.ForEach(a => a.Show(true));
-
-        context.Dungeon.PerformGridSelection(entities, new EntitySelectionOptions(1, entities), DoDamageRoutine);
-
-        Routine cardUseRoutine = Routine.CreateCancellable(Game.Dungeon.AwaitTargetSelection, entities, 1);
-
-        
-
-        cardUseRoutine.Then(damageRoutine);
-        cardUseRoutine.Then(() => 
-        {
-            AfterCardUsed();
-        });
-
-        cardUseRoutine.Finally(() => 
-        {
-            tiles.ForEach(a => a.Show(false));
-            Game.Dungeon.SelectedTargets.Clear();
-        });
-
-        cardUseRoutine.OnReject(() => Game.States.SetState(GameState.AwaitingCommand));
-        Game.States.EnqueueCoroutine(cardUseRoutine);
+        context.Dungeon.PerformGridSelection(entities, new EntitySelectionOptions(1, entities, tiles), AfterTargetSelected);
     }
 
     private void ActivateInstant(GameContext context)
@@ -60,14 +40,14 @@ public class AttackCard : AbilityCard<AttackCardData>
             AfterCardUsed();
         });
 
-        Game.States.EnqueueCoroutine(animationsRoutine);
+        context.Dungeon.EnqueueAnimation(animationsRoutine);
     }
 
-    private IEnumerator DoDamageRoutine(List<TileEntity> entities)
+    private IEnumerator AfterTargetSelected(List<TileEntity> entities)
     {
         yield return DoAnimationOnAll(entities);
         DamageTargets(entities);
-
+        AfterCardUsed();
     }
 
     private IEnumerator DoAnimationOnTarget(TileEntity entity)

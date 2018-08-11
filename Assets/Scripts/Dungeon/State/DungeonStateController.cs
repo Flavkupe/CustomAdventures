@@ -1,10 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Assets.Scripts.Dungeon.State.Context;
-
-public class DungeonStateController : StateController<DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
+﻿public class DungeonStateController : StateController<DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
     private readonly AwaitingInputState awaitingInputState;
     private readonly AwaitingAIState awaitingAIState;
@@ -49,7 +43,7 @@ public class DungeonStateController : StateController<DungeonStateChangeContext>
 
     public void SwitchToTileSelection(GameContext context, EntitySelectionOptions options, ActionOnEntities doOnSelected)
     {
+        awaitingGridSelection.StartSelection(context, options, doOnSelected);
         ChangeState(awaitingGridSelection, new DungeonStateChangeContext(DungeonEventType.SelectionStarted, context));
-        awaitingGridSelection.StartSelection(context, numToSelect, doOnSelected);
     }
 }

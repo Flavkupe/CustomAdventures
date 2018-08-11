@@ -9,8 +9,8 @@ public abstract class AnimationDecision : Decision<AnimationStateChangeContext>
 {
     public class Decisions
     {
-        public static AreCardsDoneMovingDecision AreCardsDoneMovingDecision => new AreCardsDoneMovingDecision();
-        public static DidCardsStartMovingDecision DidCardsStartMovingDecision => new DidCardsStartMovingDecision();
+        public static DidAllAnimationsEndDecision DidAllAnimationsEndDecision => new DidAllAnimationsEndDecision();
+        public static DidAnimationStartDecision DidAnimationStartDecision => new DidAnimationStartDecision();
         public static DidEventOccur<AnimationStateChangeContext, AnimationEventType> DidEventOccur(AnimationEventType eventType)
         {
             return new DidEventOccur<AnimationStateChangeContext, AnimationEventType>(eventType, a => a.EventType);
@@ -18,15 +18,16 @@ public abstract class AnimationDecision : Decision<AnimationStateChangeContext>
     }
 }
 
-public class AreCardsDoneMovingDecision : AnimationDecision
+public class DidAllAnimationsEndDecision : AnimationDecision
 {
     public override bool Evaluate(AnimationStateChangeContext context)
     {
-        return context.EventType == AnimationEventType.AnimationEnd;
+        // Animation is actually done when AnimationEnd message passes and no more animations are in queue
+        return context.EventType == AnimationEventType.AnimationEnd && context.Controller.QueueIdle;
     }
 }
 
-public class DidCardsStartMovingDecision : AnimationDecision
+public class DidAnimationStartDecision : AnimationDecision
 {
     public override bool Evaluate(AnimationStateChangeContext context)
     {

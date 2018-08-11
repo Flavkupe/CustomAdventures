@@ -21,6 +21,8 @@ public abstract class StateController<TContextType>
 
     private string _name;
 
+    public bool QueueIdle => _eventQueue.Idle;
+
     public void Start()
     {
         var obj = new GameObject(_name);
@@ -92,6 +94,11 @@ public abstract class StateController<TContextType>
     }
 
     private void OnRequestRoutine(object sender, Routine routine)
+    {
+        EnqueueRoutine(routine);
+    }
+
+    protected void EnqueueRoutine(Routine routine)
     {
         if (routine != null)
         {

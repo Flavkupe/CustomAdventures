@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class CardDrawingState : AnimationState
+public class BlockingAnimationState : AnimationState
 {
-    public CardDrawingState(StateController<AnimationStateChangeContext> contoller) : base(contoller)
+    public BlockingAnimationState(StateController<AnimationStateChangeContext> contoller) : base(contoller)
     {
     }
 
@@ -18,6 +18,7 @@ public class CardDrawingState : AnimationState
             case DungeonActionType.PlayerMove:
             case DungeonActionType.EntityMove:
             case DungeonActionType.UseItem:
+            case DungeonActionType.UseAbility:
                 return false;
             default:
                 return true;

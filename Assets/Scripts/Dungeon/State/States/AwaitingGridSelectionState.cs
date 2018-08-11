@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Dungeon.State.Context;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class AwaitingGridSelectionState : DungeonState
 {
-    private int _numToSelect;
     private ActionOnEntities _doOnSelected;
 
     private EntitySelectionOptions _options;
@@ -18,16 +14,20 @@ public class AwaitingGridSelectionState : DungeonState
 
     public override void StateEntered(IState<DungeonStateChangeContext> previousState, DungeonStateChangeContext context)
     {
-        _selectedTargets.Clear();
         base.StateEntered(previousState, context);
-        context.GameContext.Dungeon.TileSelected += OnTileSelected;
+        _selectedTargets.Clear();
+        context.GameContext.Dungeon.Grid.UnselectAllTileEntities();
+        context.GameContext.Dungeon.TileEntityClicked += OnTileSelected;
+        _options.TileRange.ForEach(tile => tile.Show(true));
     }
 
     public override void StateExited(IState<DungeonStateChangeContext> newState, DungeonStateChangeContext context)
     {
         base.StateExited(newState, context);
-        context.GameContext.Dungeon.TileSelected -= OnTileSelected;
+        context.GameContext.Dungeon.TileEntityClicked -= OnTileSelected;
         _selectedTargets.Clear();
+        context.GameContext.Dungeon.Grid.UnselectAllTileEntities();
+        _options.TileRange.ForEach(tile => tile.Show(false));
     }
 
     private void OnTileSelected(object sender, TileEntity e)
@@ -42,12 +42,16 @@ public class AwaitingGridSelectionState : DungeonState
         {
             _selectedTargets.Add(e);
         }
+        else if (!e.Selected && _selectedTargets.Contains(e))
+        {
+            _selectedTargets.Remove(e);
+        }
 
-        if (_selectedTargets.Count >= _numToSelect)
+        if (_selectedTargets.Count >= _options.NumToSelect)
         {
             // Perform event, then after events done, change state back
             var performOnSelected = Routine.Create(() => _doOnSelected(_selectedTargets));
-            performOnSelected.Then(() => RaiseEventOccurred(DungeonEventType.SelectionCompleted, Game.Dungeon.GetGameContext()));
+            performOnSelected.Finally(() => RaiseEventOccurred(DungeonEventType.SelectionCompleted, Game.Dungeon.GetGameContext()));
             EnqueueRoutine(performOnSelected);
         }
     }
@@ -74,6 +78,8 @@ public class AwaitingGridSelectionState : DungeonState
     public override void Update(GameContext context)
     {
         base.Update(context);
+
+        // Right-click to cancel
         if (Input.GetMouseButtonUp(1))
         {
             RaiseEventOccurred(DungeonEventType.SelectionCancelled, context);

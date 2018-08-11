@@ -137,8 +137,7 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
 
     private void OnMouseUp()
     {
-        Selected = !Selected;
-        Game.Dungeon.AfterToggledSelection(this);
+        Game.Dungeon.EntityClicked(this);
     }
 
     protected IEnumerator PlayerTwitchTowardsThis()

@@ -8,4 +8,5 @@ public enum DungeonActionType
     EntityMove,
     OpenMenu,
     UseItem,
+    UseAbility,
 }

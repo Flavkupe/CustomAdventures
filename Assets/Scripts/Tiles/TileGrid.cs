@@ -365,6 +365,18 @@ public class TileGrid : MonoBehaviour
 
         return true;
     }
+
+    public void UnselectAllTileEntities()
+    {
+        foreach(var tile in GetAllTiles())
+        {
+            var entity = tile?.GetTileEntity();
+            if (entity != null)
+            {
+                entity.Selected = false;
+            }
+        }
+    }
 }
 
 [Flags]

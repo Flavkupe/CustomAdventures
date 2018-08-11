@@ -11,6 +11,8 @@ public class StateEventQueue : MonoBehaviour
     private readonly Queue<Routine> _routineQueue = new Queue<Routine>();
     private bool _processingCoroutine;
 
+    public bool Idle => _routineQueue.Count == 0 && !_processingCoroutine;
+
     public void Enqueue(Routine routine)
     {
         _routineQueue.Enqueue(routine);
