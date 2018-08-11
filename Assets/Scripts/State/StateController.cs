@@ -34,13 +34,25 @@ public abstract class StateController<TContextType>
         AnyState = new State<TContextType>(this);
     }
 
+    protected void ChangeState(IState<TContextType> newState, TContextType context)
+    {
+        if (newState != CurrentState)
+        {
+            Debug.Log($"{_name} Exiting state {CurrentState.GetType().Name}");
+            Debug.Log($"{_name} Entering state {newState.GetType().Name}");
+            _previous = CurrentState;
+            CurrentState.StateExited(newState, context);
+            newState.StateEntered(CurrentState, context);
+            CurrentState = newState;
+        }
+    }
+
     protected void CheckState(TContextType context)
     {
         var newState = CurrentState.GetNextState(context);
-
         if (newState == AnyState)
         {
-            Debug.LogError($"Can't transition into AnyState!");
+            Debug.LogError("Can't transition into AnyState!");
             return;
         }
 
@@ -54,15 +66,7 @@ public abstract class StateController<TContextType>
             }
         }
 
-        if (newState != CurrentState)
-        {
-            Debug.Log($"{_name} Exiting state {CurrentState.GetType().Name}");
-            Debug.Log($"{_name} Entering state {newState.GetType().Name}");
-            _previous = CurrentState;
-            CurrentState.StateExited(newState, context);
-            newState.StateEntered(CurrentState, context);
-            CurrentState = newState;
-        }
+        ChangeState(newState, context);
     }
 
     public void Update(GameContext context)

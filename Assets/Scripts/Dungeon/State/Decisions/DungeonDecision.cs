@@ -11,6 +11,11 @@ public abstract class DungeonDecision : Decision<DungeonStateChangeContext>
     {
         public static DidEnemyTurnStart DidEnemyTurnStart => new DidEnemyTurnStart();
         public static DidEnemyTurnEnd DidEnemyTurnEnd => new DidEnemyTurnEnd();
+
+        public static DidEventOccur<DungeonStateChangeContext, DungeonEventType> DidEventOccur(DungeonEventType eventType)
+        {
+            return new DidEventOccur<DungeonStateChangeContext, DungeonEventType>(eventType, a => a.EventType);
+        }
     }
 
     public class DidEnemyTurnStart : DungeonDecision

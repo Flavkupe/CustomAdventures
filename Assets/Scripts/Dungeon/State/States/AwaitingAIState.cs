@@ -36,7 +36,7 @@ public class AwaitingAIState : DungeonState
         var enemyTurns = new RoutineChain(enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
         enemyTurns.Then(() =>
         {
-            RaiseEventOccurred(DungeonEventType.AllEnemiesTurnEnd, context);
+            RaiseEventOccurred(DungeonEventType.AllEnemiesTurnEnd, context.GameContext);
         });
 
         Game.States.EnqueueCoroutine(enemyTurns);

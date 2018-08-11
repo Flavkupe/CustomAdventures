@@ -10,5 +10,9 @@ public enum DungeonEventType
     EnemyTurnStart,
     EnemyTurnEnd,
     AllEnemiesTurnEnd,
+
+    SelectionCancelled,
+    SelectionStarted,
+    SelectionCompleted,
 }
 

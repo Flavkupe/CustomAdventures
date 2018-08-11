@@ -3,32 +3,35 @@ using System.Collections.Generic;
 
 public class AttackCard : AbilityCard<AttackCardData>
 {
-    public override void ActivateAbility()
+    public override void ActivateAbility(GameContext context)
     {
         switch (Data.ActivationType)
         {
             case AbilityActivationType.Instant:
-                ActivateInstant();
+                ActivateInstant(context);
                 break;
             case AbilityActivationType.TargetEntity:
-                ActivateTargeted();
+                ActivateTargeted(context);
                 break;
         }
     }
 
-    private void ActivateTargeted()
+    private void ActivateTargeted(GameContext context)
     {
-        List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(Data.RangeType, Data.Range, Data.AffectedTargetType);
-        List<GridTile> tiles = Game.Dungeon.GetTilesNearPlayer(Data.RangeType, Data.Range);
+        List<TileEntity> entities = context.Dungeon.GetEntitiesNearPlayer(Data.RangeType, Data.Range, Data.AffectedTargetType);
+        List<GridTile> tiles = context.Dungeon.GetTilesNearPlayer(Data.RangeType, Data.Range);
         tiles.ForEach(a => a.Show(true));
-       
+
+        context.Dungeon.PerformGridSelection(entities, new EntitySelectionOptions(1, entities), DoDamageRoutine);
+
         Routine cardUseRoutine = Routine.CreateCancellable(Game.Dungeon.AwaitTargetSelection, entities, 1);
-        Routine damageRoutine = Routine.Create(DoAnimationOnAllSelected);
-        damageRoutine.Then(() => DamageTargets(Game.Dungeon.SelectedTargets));
+
+        
+
         cardUseRoutine.Then(damageRoutine);
         cardUseRoutine.Then(() => 
         {
-            AfterCardUsed();            
+            AfterCardUsed();
         });
 
         cardUseRoutine.Finally(() => 
@@ -41,7 +44,7 @@ public class AttackCard : AbilityCard<AttackCardData>
         Game.States.EnqueueCoroutine(cardUseRoutine);
     }
 
-    private void ActivateInstant()
+    private void ActivateInstant(GameContext context)
     {
         List<TileEntity> entities = Game.Dungeon.GetEntitiesNearPlayer(Data.RangeType, Data.Range, Data.AffectedTargetType);
         ParallelRoutineSet routines = new ParallelRoutineSet();
@@ -60,6 +63,13 @@ public class AttackCard : AbilityCard<AttackCardData>
         Game.States.EnqueueCoroutine(animationsRoutine);
     }
 
+    private IEnumerator DoDamageRoutine(List<TileEntity> entities)
+    {
+        yield return DoAnimationOnAll(entities);
+        DamageTargets(entities);
+
+    }
+
     private IEnumerator DoAnimationOnTarget(TileEntity entity)
     {
         if (Data.AnimationEffect != null)
@@ -69,9 +79,8 @@ public class AttackCard : AbilityCard<AttackCardData>
         }
     }
 
-    private IEnumerator DoAnimationOnAllSelected()
+    private IEnumerator DoAnimationOnAll(List<TileEntity> entities)
     {
-        List<TileEntity> entities = Game.Dungeon.SelectedTargets;
         foreach (var entity in entities)
         {
             yield return DoAnimationOnTarget(entity);

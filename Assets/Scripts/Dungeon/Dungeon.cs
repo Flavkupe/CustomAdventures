@@ -14,6 +14,8 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public event EventHandler AllEnemyTurnsComplete;
 
+    public event EventHandler<TileEntity> TileSelected;
+
     /// <summary>
     /// Event that fires when list of enemies goes from 0 to more than 0.
     /// This indicates an event like combat starting.
@@ -65,6 +67,11 @@ public class Dungeon : SingletonObject<Dungeon>
     private readonly List<TileEntity> _selectedTargets = new List<TileEntity>();
     public List<TileEntity> SelectedTargets => _selectedTargets;
 
+    public void PerformGridSelection(List<TileEntity> entities, int numToSelect, ActionOnEntities doOnSelected)
+    {
+        DungeonStateController.SwitchToTileSelection(GetGameContext(), numToSelect, doOnSelected);
+    }
+
     public IEnumerator AwaitTargetSelection(Action cancellationCallback, List<TileEntity> entities, int numToSelect)
     {
         _selectedTargets.Clear();
@@ -99,20 +106,22 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public void AfterToggledSelection(TileEntity tileEntity)
     {
-        if (Game.States.State != GameState.AwaitingSelection || !_validSelectionTargets.Contains(tileEntity))
-        {
-            tileEntity.Selected = false;
-            return;
-        }
+        TileSelected?.Invoke(this, tileEntity);
 
-        if (!tileEntity.Selected && _selectedTargets.Contains(tileEntity))
-        {
-            _selectedTargets.Remove(tileEntity);
-        }
-        else if (tileEntity.Selected && !_selectedTargets.Contains(tileEntity))
-        {
-            _selectedTargets.Add(tileEntity);
-        }
+        //if (Game.States.State != GameState.AwaitingSelection || !_validSelectionTargets.Contains(tileEntity))
+        //{
+        //    tileEntity.Selected = false;
+        //    return;
+        //}
+
+        //if (!tileEntity.Selected && _selectedTargets.Contains(tileEntity))
+        //{
+        //    _selectedTargets.Remove(tileEntity);
+        //}
+        //else if (tileEntity.Selected && !_selectedTargets.Contains(tileEntity))
+        //{
+        //    _selectedTargets.Add(tileEntity);
+        //}
     }
 
     /// <summary>

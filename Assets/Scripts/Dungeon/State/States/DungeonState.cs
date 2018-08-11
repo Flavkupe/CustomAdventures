@@ -21,8 +21,8 @@ public abstract class DungeonState : State<DungeonStateChangeContext>, IActionDe
 
     public abstract bool CanPerformAction(DungeonActionType actionType);
 
-    protected void RaiseEventOccurred(DungeonEventType newEvent, DungeonStateChangeContext context)
+    protected void RaiseEventOccurred(DungeonEventType newEvent, GameContext context)
     {
-        RaiseEventOccurred(new DungeonStateChangeContext(newEvent, context.GameContext));
+        RaiseEventOccurred(new DungeonStateChangeContext(newEvent, context));
     }
 }

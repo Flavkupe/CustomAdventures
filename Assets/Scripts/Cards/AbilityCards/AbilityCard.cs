@@ -11,7 +11,7 @@ public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCa
     // TODO: based on character class and card
     public bool ForgetOnUse => true;
 
-    public abstract void ActivateAbility();
+    public abstract void ActivateAbility(GameContext context);
 
     protected void AfterCardUsed()
     {
@@ -32,7 +32,7 @@ public interface IAbilityCard : ICard
 
     bool ForgetOnUse { get; }
 
-    void ActivateAbility();
+    void ActivateAbility(GameContext context);
 }
 
 public enum AbilityActivationType

@@ -86,7 +86,6 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
             player.FaceDirection(direction);
         }
 
-        var grid = context.Dungeon.Grid;
         if (player.PlayerHasMoves && player.CanMove(direction))
         {
             // Set state to ensure we don't queue multiple moves

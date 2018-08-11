@@ -97,7 +97,7 @@ public class Player : TileActor
     public void UseAbility(IAbilityCard ability)
     {
         Debug.Assert(_abilities.Contains(ability));
-        ability.ActivateAbility();
+        ability.ActivateAbility(Game.Dungeon.GetGameContext());
     }
 
     public override void DoHealing(int healing)

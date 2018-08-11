@@ -1,15 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.Dungeon.State.Context;
 
 public class DungeonStateController : StateController<DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
+    private readonly AwaitingInputState awaitingInputState;
+    private readonly AwaitingAIState awaitingAIState;
+    private readonly AwaitingGridSelectionState awaitingGridSelection;
+
     public DungeonStateController() : base("Dungeon")
     {
-        var awaitingInputState = new AwaitingInputState(this);
-        var awaitingAIState = new AwaitingAIState(this);
+        awaitingInputState = new AwaitingInputState(this);
+        awaitingAIState = new AwaitingAIState(this);
+        awaitingGridSelection = new AwaitingGridSelectionState(this);
 
         awaitingInputState.AddTransitions(new[]
         {
@@ -19,6 +24,12 @@ public class DungeonStateController : StateController<DungeonStateChangeContext>
         awaitingAIState.AddTransitions(new[]
         {
             new DungeonStateTransition(DungeonDecision.Decisions.DidEnemyTurnEnd, awaitingInputState)
+        });
+
+        awaitingGridSelection.AddTransitions(new[]
+        {
+            new DungeonStateTransition(DungeonDecision.Decisions.DidEventOccur(DungeonEventType.SelectionCancelled), awaitingInputState),
+            new DungeonStateTransition(DungeonDecision.Decisions.DidEventOccur(DungeonEventType.SelectionCompleted), awaitingInputState),
         });
 
         FirstState = awaitingInputState;
@@ -34,5 +45,11 @@ public class DungeonStateController : StateController<DungeonStateChangeContext>
     public bool CanPerformAction(DungeonActionType actionType)
     {
         return CanPerformActionInState(actionType);
+    }
+
+    public void SwitchToTileSelection(GameContext context, EntitySelectionOptions options, ActionOnEntities doOnSelected)
+    {
+        ChangeState(awaitingGridSelection, new DungeonStateChangeContext(DungeonEventType.SelectionStarted, context));
+        awaitingGridSelection.StartSelection(context, numToSelect, doOnSelected);
     }
 }
