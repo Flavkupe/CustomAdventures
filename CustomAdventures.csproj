@@ -591,6 +591,12 @@
     <Compile Include="Assets\Scripts\UI\Inventory\PlayerInventoryButton.cs" />
     <Compile Include="Assets\Scripts\UI\MulliganPanel.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\State\Context\UIStateChangeContext.cs" />
+    <Compile Include="Assets\Scripts\UI\State\Decisions\UIDecision.cs" />
+    <Compile Include="Assets\Scripts\UI\State\States\BlockingUIOpenState.cs" />
+    <Compile Include="Assets\Scripts\UI\State\States\IdleUIState.cs" />
+    <Compile Include="Assets\Scripts\UI\State\States\UIState.cs" />
+    <Compile Include="Assets\Scripts\UI\State\UIStateController.cs" />
     <Compile Include="Assets\Scripts\UI\UIEventButton.cs" />
     <Compile Include="Assets\Scripts\Utils\CooldownTimer.cs" />
     <Compile Include="Assets\Scripts\Utils\Logging\DefaultLogger.cs" />
@@ -644,6 +650,7 @@
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\ExternalAssets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
 </Project>

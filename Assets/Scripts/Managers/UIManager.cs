@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using Assets.Scripts.UI.State;
+using Assets.Scripts.UI.State.Context;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class UIManager : SingletonObject<UIManager>
@@ -16,6 +18,10 @@ public class UIManager : SingletonObject<UIManager>
     public Canvas MainCanvas;
 
     private UIEvent? _currentUIEvent;
+
+    public UIStateController UIStateController { get; } = new UIStateController();
+
+    private GameContext GameContext => Game.Dungeon.GetGameContext();
 
     [UsedImplicitly]
     private void Awake()
@@ -55,6 +61,7 @@ public class UIManager : SingletonObject<UIManager>
     private void Start ()
     {
         UpdateEntityPanels();
+        UIStateController.Start();
     }
 
     [UsedImplicitly]
@@ -65,18 +72,40 @@ public class UIManager : SingletonObject<UIManager>
 
     [UsedImplicitly]
     private void Update ()
-    {       
+    {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
+            TryToggleInventoryMenu();
+        }
+    }
+
+    private void TryToggleInventoryMenu()
+    {
+        if (IsMenuActive || UIStateController.CanPerformAction(DungeonActionType.OpenMenu))
+        {
             // Toggle inventory pane
+            var uiEvent = IsMenuActive ? UIEventType.InterfaceClosed : UIEventType.InterfaceOpened;
+            UIStateController.SendEvent(uiEvent, GameContext);
             InventoryPanel.gameObject.SetActive(!InventoryPanel.gameObject.activeSelf);
-            if (InventoryPanel.gameObject.activeSelf)
+            if (IsMenuActive)
             {
                 // Note: activeSelf doesn't activate until next frame, so this happens when the UI
                 //  is actually shown.
                 StartCoroutine(this.DoNextFrame(UpdateInventory));
             }
         }
+    }
+
+    public void ShowDialog(string message)
+    {
+        MessageDialog.Show(message);
+        UIStateController.SendEvent(UIEventType.DialogShown, GameContext);
+    }
+
+    public void CloseDialog()
+    {
+        MessageDialog.Close();
+        UIStateController.SendEvent(UIEventType.DialogClosed, GameContext);
     }
 
     public void UpdateEntityPanels()

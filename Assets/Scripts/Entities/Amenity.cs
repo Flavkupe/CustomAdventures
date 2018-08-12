@@ -27,7 +27,7 @@ public class Amenity : TileEntity
         {
             if (!string.IsNullOrWhiteSpace(Data.CantUseDialogMessage))
             {
-                Game.UI.MessageDialog.Show(Data.CantUseDialogMessage);
+                Game.UI.ShowDialog(Data.CantUseDialogMessage);
             }
 
             var message = Data.StatusEffects.Length == 0 ? "This does nothing!" : Data.CantUseMessage;

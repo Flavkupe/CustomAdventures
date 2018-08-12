@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using JetBrains.Annotations;
+using Assets.Scripts.UI.State;
 
 [RequireComponent(typeof(DungeonGenerator))]
 public class Dungeon : SingletonObject<Dungeon>
@@ -157,7 +158,7 @@ public class Dungeon : SingletonObject<Dungeon>
         _context.Player = _player;
         _context.UI = Game.UI;
 
-        _context.DungeonActionChecks = new ActionCheckerContainer<DungeonActionType>(AnimationStateController, DungeonStateController, _player.StateController);
+        _context.DungeonActionChecks = new ActionCheckerContainer<DungeonActionType>(AnimationStateController, DungeonStateController, _player.StateController, Game.UI.UIStateController);
         DungeonStateController.Start();
         AnimationStateController.Start();
     }
