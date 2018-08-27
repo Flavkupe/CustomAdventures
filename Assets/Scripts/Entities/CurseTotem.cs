@@ -38,8 +38,6 @@ public class CurseTotem : TileEntity
 
     public override IEnumerator PlayerInteractWith(Player player)
     {
-        yield return PlayerTwitchTowardsThis();
-
         _soundGen.PlayRandomFrom(Data.BreakSounds);
 
         // Find and expire matching effect
@@ -49,5 +47,6 @@ public class CurseTotem : TileEntity
         _renderer.enabled = false;
         _canInteractWith = false;
         Destroy(gameObject, 1.0f);
+        yield return null;
     }
 }

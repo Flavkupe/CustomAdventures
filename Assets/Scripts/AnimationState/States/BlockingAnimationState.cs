@@ -19,6 +19,7 @@ public class BlockingAnimationState : AnimationState
             case DungeonActionType.EntityMove:
             case DungeonActionType.UseItem:
             case DungeonActionType.UseAbility:
+            case DungeonActionType.PerformCardDraw:
                 return false;
             default:
                 return true;

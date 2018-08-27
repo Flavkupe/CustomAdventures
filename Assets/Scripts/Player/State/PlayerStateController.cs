@@ -20,19 +20,18 @@ public class PlayerStateController : StateController<PlayerStateChangeContext>, 
 
         awaitingTurnState.AddTransitions(new[]
         {
-            new PlayerStateTransition(PlayerDecision.Decisions.DidCombatEnd, exploreState),
             new PlayerStateTransition(PlayerDecision.Decisions.DidPlayerTurnStart, combatTurnState)
         });
 
         combatTurnState.AddTransitions(new[]
         {
-            new PlayerStateTransition(PlayerDecision.Decisions.DidCombatEnd, exploreState),
             new PlayerStateTransition(PlayerDecision.Decisions.DidPlayerTurnEnd, awaitingTurnState),
         });
 
         AnyState.AddTransitions(new[] {
             CreateEventAwaitTransition(PlayerEventType.MouseInputRequested, PlayerEventType.MouseInputAcquired),
             CreateEventAwaitTransition(PlayerEventType.StartedAnimation, PlayerEventType.EndedAnimation),
+            new PlayerStateTransition(PlayerDecision.Decisions.DidCombatEnd, exploreState),
         });
 
         FirstState = exploreState;

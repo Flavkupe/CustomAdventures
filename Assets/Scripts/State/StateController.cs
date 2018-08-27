@@ -6,7 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public abstract class StateController<TContextType>
+public interface IStateController
+{
+    string Name { get; }
+    string StateName { get; }
+}
+
+public abstract class StateController<TContextType> : IStateController
 {
     public IState<TContextType> CurrentState { get; protected set; }
     public IState<TContextType> PreviousState => _previous ?? CurrentState;
@@ -22,6 +28,9 @@ public abstract class StateController<TContextType>
     private string _name;
 
     public bool QueueIdle => _eventQueue.Idle;
+
+    public string Name => _name;
+    public string StateName => CurrentState.GetType().Name;
 
     public void Start()
     {

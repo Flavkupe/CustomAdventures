@@ -143,8 +143,6 @@ public class DeckManager : SingletonObject<DeckManager>
         yield return MoveDeckToPosition(deckHolder, initPos, DeckSmallSize - DeckBigSize);
 
         yield return new WaitForSecondsSpeedable(0.5f);
-
-        Game.States.TriggerEvent(TriggeredEvent.CardDrawDone);
     }
 
     [UsedImplicitly]

@@ -30,9 +30,9 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
 
     public abstract bool CanPerformAction(DungeonActionType actionType);
 
-    protected void RaiseEventOccurred(PlayerEventType newEvent, DungeonStateChangeContext context)
+    protected void RaiseEventOccurred(PlayerEventType newEvent, GameContext context)
     {
-        RaiseEventOccurred(new PlayerStateChangeContext(newEvent, context.GameContext));
+        RaiseEventOccurred(new PlayerStateChangeContext(newEvent, context));
     }
 
     public sealed override void Update(GameContext context)
@@ -86,10 +86,9 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
             player.FaceDirection(direction);
         }
 
-        if (player.PlayerHasMoves && player.CanMove(direction))
+        if (player.CanMove(direction))
         {
             // Set state to ensure we don't queue multiple moves
-            Game.States.SetState(GameState.CharacterMoving);
             var moveRoutine = Routine.Create(TryMovePlayerEntity, direction, context);
             moveRoutine.Then(() => _moving = false);
             _moving = true;
@@ -108,7 +107,6 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
         {
             if (obj.PlayerCanInteractWith())
             {
-                Game.States.SetState(GameState.CharacterActing);
                 PlayerInteractWith(context, obj);
                 return true;
             }
@@ -170,19 +168,34 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
     {
         var player = context.Player;
         var interaction = obj.GetPlayerInteraction(player);
-        var routine = Routine.Create(obj.PlayerInteractWith, player);
+        var interactionRoutine = Routine.Create(obj.PlayerInteractWith, player);
 
+        bool doesTwitch = false;
         if (interaction == PlayerInteraction.Attack)
         {
+            doesTwitch = true;
             player.PlayAttackEffects();
-            routine.Then(() => OnAfterPlayerAttack(context));
+            interactionRoutine.Then(() => OnAfterPlayerAttack(context));
         }
         else if (interaction == PlayerInteraction.InteractWithObject)
         {
-            routine.Then(() => OnAfterPlayerInteract(context));
+            doesTwitch = true;
+            interactionRoutine.Then(() => OnAfterPlayerInteract(context));
         }
 
-        EnqueueRoutine(routine);
-        // Game.States.EnqueueCoroutine(routine);
+        Routine fullInteractionRoutine;
+        if (doesTwitch)
+        {
+            fullInteractionRoutine = Routine.Create(player.TwitchTowards, obj, 5.0f);
+            fullInteractionRoutine.Then(interactionRoutine);
+        }
+        else
+        {
+            fullInteractionRoutine = interactionRoutine;
+        }
+
+        RaiseEventOccurred(PlayerEventType.StartedAnimation, context);
+        fullInteractionRoutine.Finally(() => RaiseEventOccurred(PlayerEventType.EndedAnimation, context));
+        EnqueueRoutine(fullInteractionRoutine);
     }
 }

@@ -19,7 +19,8 @@ public abstract class PlayerDecision : Decision<PlayerStateChangeContext>
         public override bool Evaluate(PlayerStateChangeContext context)
         {
             var gameContext = context.GameContext;
-            if (context.EventType == PlayerEventType.AITurnsComplete)
+            if (context.EventType == PlayerEventType.AITurnsComplete ||
+                context.EventType == PlayerEventType.InitializeCombat)
             {
                 if (gameContext.Dungeon.IsCombat)
                 {
@@ -49,7 +50,7 @@ public abstract class PlayerDecision : Decision<PlayerStateChangeContext>
     {
         public override bool Evaluate(PlayerStateChangeContext context)
         {
-            return context.GameContext.Dungeon.IsCombat;
+            return !context.GameContext.Dungeon.IsCombat;
         }
     }
 }

@@ -13,7 +13,6 @@ public class MessageDialog : MonoBehaviour
 
     public void Show(string message)
     {
-        Game.States.SetState(GameState.AwaitingDialogClose);
         Contents.SetActive(true);
         Text.text = message;
     }
@@ -21,7 +20,6 @@ public class MessageDialog : MonoBehaviour
     public void Close()
     {
         Contents.SetActive(false);
-        Game.States.SetState(GameState.AwaitingCommand);
     }
 
     public void SelectionOK()

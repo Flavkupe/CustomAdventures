@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,8 +147,12 @@ public class CardEventController : MonoBehaviourEx
     {
         _dungeon.PauseActions();
 
+
+        var actionChecks = Game.Dungeon.GetGameContext().DungeonActionChecks;
+        yield return CoroutineUtils.WaitUntil(() => actionChecks.CanPerformAction(DungeonActionType.PerformCardDraw));
+
         // TODO: replace this state system
-        yield return Game.States.WaitUntilNotState(GameState.CharacterMoving);
+        // yield return Game.States.WaitUntilNotState(GameState.CharacterMoving);
 
         PlayerInputRequested?.Invoke(null, null);
         List<TCardType> cards;

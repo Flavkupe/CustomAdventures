@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/// <summary>
+/// State in which the player's input is being awaited, such as waiting for keypresses for movement
+/// </summary>
 public class AwaitingInputState : DungeonState
 {
     public AwaitingInputState(StateController<DungeonStateChangeContext> contoller) : base(contoller)
@@ -12,8 +15,6 @@ public class AwaitingInputState : DungeonState
 
     public override void StateEntered(IState<DungeonStateChangeContext> previousState, DungeonStateChangeContext context)
     {
-        Game.States.SetState(GameState.AwaitingCommand);
-        context.GameContext.Player.InitializePlayerTurn();
     }
 
     public override bool CanPerformAction(DungeonActionType actionType)
@@ -22,19 +23,12 @@ public class AwaitingInputState : DungeonState
         {
             case DungeonActionType.PlayerMove:
             case DungeonActionType.UseItem:
+            case DungeonActionType.PerformCardDraw:
                 return true;
             case DungeonActionType.EntityMove:
             case DungeonActionType.OpenMenu:
             default:
                 return false;
-        }
-    }
-
-    public override void HandleNewEvent(DungeonStateChangeContext context)
-    {
-        if (context.EventType == DungeonEventType.AfterPlayerAction)
-        {
-            Game.States.SetState(GameState.AwaitingCommand);
         }
     }
 }

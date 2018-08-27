@@ -19,7 +19,6 @@ public class Amenity : TileEntity
     {
         if (_usable && Data.StatusEffects.Length > 0)
         {
-            yield return PlayerTwitchTowardsThis();
             yield return UseThis();
             _usable = false;
         }

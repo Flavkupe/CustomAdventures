@@ -124,10 +124,9 @@ public class Enemy : TileAI
 
     public override IEnumerator PlayerInteractWith(Player player)
     {
-        var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
-        yield return Game.Player.TwitchTowards(playerDirection);
         int damage = Game.Player.GetAttackStrength();
         DoDamage(damage);
+        yield return null;
     }
 
     public override void AfterAppliedStatusEffect(StatusEffectData effect)

@@ -69,7 +69,7 @@ public class Player : TileActor
     {
         var baseStats = GetModifiedStats(true);
         CurrentStats.FullActions = baseStats.FullActions;
-        CurrentStats.FreeMoves = baseStats.FreeMoves;        
+        CurrentStats.FreeMoves = baseStats.FreeMoves;
     }
 
     public void EquipDrawnAbilityCard(IAbilityCard ability)
@@ -150,7 +150,7 @@ public class Player : TileActor
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    private void Update ()
+    private void Update()
     {
         StateController.Update(Game.Dungeon.GetGameContext());
 
@@ -238,14 +238,20 @@ public class Player : TileActor
         return damage;
     }
 
+    
+
+    public IEnumerator TwitchTowards(TileEntity other, float speed = 5.0f)
+    {
+        var playerDirection = transform.position.GetRelativeDirection(other.transform.position);
+        yield return TwitchTowards(playerDirection, speed);
+    }
+
     public override IEnumerator TwitchTowards(Direction direction, float speed = 5.0f)
     {
-        StateController.SendEvent(PlayerEventType.StartedAnimation, Game.Dungeon.GetGameContext());
         // Unparent Camera for twitch so that camera doesn't twitch too
         InterfaceObjects.transform.SetParent(null);
         yield return base.TwitchTowards(direction, speed);
         InterfaceObjects.transform.SetParent(transform);
-        StateController.SendEvent(PlayerEventType.EndedAnimation, Game.Dungeon.GetGameContext());
     }
 
     public void PlayClip(AudioClip clip)
@@ -329,7 +335,18 @@ public class Player : TileActor
             this.InitializePlayerTurn();
         }
 
-        Game.States.SetState(GameState.AwaitingCommand);
+        dungeon.EnemyListPopulated += HandleCombatShouldStart;
+        dungeon.EnemyListChanged += HandleEnemyListChanged;
+    }
+
+    private void HandleEnemyListChanged(object sender, List<Enemy> e)
+    {
+        StateController.SendEvent(PlayerEventType.CombatStateChanged, Game.Dungeon.GetGameContext());
+    }
+
+    private void HandleCombatShouldStart(object sender, EventArgs e)
+    {
+        StateController.SendEvent(PlayerEventType.InitializeCombat, Game.Dungeon.GetGameContext());
     }
 }
 

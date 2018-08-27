@@ -10,5 +10,8 @@ public enum PlayerEventType
     MouseInputAcquired,
 
     StartedAnimation,
-    EndedAnimation
+    EndedAnimation,
+
+    InitializeCombat,
+    CombatStateChanged,
 }

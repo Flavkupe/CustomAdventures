@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+/// <summary>
+/// State where the AI animation is being awaited, such as enemy movement.
+/// </summary>
 public class AwaitingAIState : DungeonState
 {
     public AwaitingAIState(StateController<DungeonStateChangeContext> contoller) : base(contoller)
@@ -23,6 +26,7 @@ public class AwaitingAIState : DungeonState
             case DungeonActionType.PlayerMove:
             case DungeonActionType.EntityMove:
             case DungeonActionType.UseItem:
+            case DungeonActionType.PerformCardDraw:
                 return false;
             default:
                 return true;
@@ -31,7 +35,6 @@ public class AwaitingAIState : DungeonState
 
     private void EnqueueEnemyTurns(DungeonStateChangeContext context)
     {
-        Game.States.SetState(GameState.EnemyTurn);
         var enemies = context.GameContext.Dungeon.Enemies;
         var enemyTurns = new RoutineChain(enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
         enemyTurns.Then(() =>
@@ -39,7 +42,7 @@ public class AwaitingAIState : DungeonState
             RaiseEventOccurred(DungeonEventType.AllEnemiesTurnEnd, context.GameContext);
         });
 
-        Game.States.EnqueueCoroutine(enemyTurns);
+        EnqueueCoroutine(enemyTurns);
     }
 }
 

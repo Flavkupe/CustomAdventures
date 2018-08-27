@@ -3,6 +3,9 @@ using System.Linq;
 using Assets.Scripts.Player.State.Context;
 using UnityEngine;
 
+/// <summary>
+/// State in which the player is exploring the dungeon and can take inputs
+/// </summary>
 public class PlayerExploreState : PlayerState
 {
     public PlayerExploreState(StateController<PlayerStateChangeContext> controller) : base(controller)

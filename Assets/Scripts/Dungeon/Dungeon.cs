@@ -13,8 +13,6 @@ public class Dungeon : SingletonObject<Dungeon>
 
     public event EventHandler<List<Enemy>> EnemyListChanged;
 
-    public event EventHandler AllEnemyTurnsComplete;
-
     public event EventHandler<TileEntity> TileEntityClicked;
 
     /// <summary>
@@ -130,6 +128,16 @@ public class Dungeon : SingletonObject<Dungeon>
     public GameContext GetGameContext()
     {
         return _context;
+    }
+
+    public IEnumerable<IStateController> GetStateControllers()
+    {
+        return new List<IStateController> {
+            AnimationStateController,
+            DungeonStateController,
+            _player.StateController,
+            Game.UI.UIStateController,
+        };
     }
 
     [UsedImplicitly]

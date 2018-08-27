@@ -42,7 +42,6 @@ public class CardAnimationController : MonoBehaviourEx
 
         yield return new WaitForSecondsSpeedable(0.5f);
 
-        Game.States.TriggerEvent(TriggeredEvent.CardDrawDone);
         CardDrawEnd?.Invoke(null, null);
     }
 

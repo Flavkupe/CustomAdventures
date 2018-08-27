@@ -14,8 +14,9 @@ public class PlayerPanel : MonoBehaviour
 HP: {1}
 Mulligans: {2}
 Weapon: {3}
-GameState: {4}
-", stats.Level, stats.HP, stats.Mulligans, weaponName, Game.States.State.ToString());
+Moves: {4}
+Actions: {5}
+", stats.Level, stats.HP, stats.Mulligans, weaponName, stats.FreeMoves, stats.FullActions);
         TextBox.text = data;
     }
 

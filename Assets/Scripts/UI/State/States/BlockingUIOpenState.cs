@@ -21,6 +21,7 @@ namespace Assets.Scripts.UI.State.States
                 case DungeonActionType.EntityMove:
                 case DungeonActionType.OpenMenu:
                 case DungeonActionType.UseAbility:
+                case DungeonActionType.PerformCardDraw:
                 default:
                     return false;
                 case DungeonActionType.UseItem:

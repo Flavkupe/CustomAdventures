@@ -55,11 +55,10 @@ public class Treasure : TileEntity, IProducesLootEvent
 
     public override IEnumerator PlayerInteractWith(Player player)
     {
-        yield return PlayerTwitchTowardsThis();
-
         _soundGen.PlayRandomFrom(Data.OpenSounds);
         LootEventRequested?.Invoke(this, Data.LootProperties);
         _canInteractWith = false;
         Destroy(gameObject, 1.0f);
+        yield return null;
     }
 }

@@ -106,14 +106,12 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
             yield break;
         }
 
-        Game.States.SetState(GameState.CharacterMoving);
         TileGrid grid = Game.Dungeon.Grid;
         grid.MoveTo(XCoord, YCoord, direction, this);
         GridTile newTile = grid.GetTile(XCoord, YCoord);
         yield return transform.MoveToSpotCoroutine(newTile.transform.position, TileSlideSpeed, false);
 
         yield return AfterMove(newTile);
-        Game.States.RevertState();
     }
 
     public IEnumerator AfterMove(GridTile newTile)
@@ -138,17 +136,6 @@ public abstract class TileEntity : MonoBehaviourEx, IObjectOnTile
     private void OnMouseUp()
     {
         Game.Dungeon.EntityClicked(this);
-    }
-
-    protected IEnumerator PlayerTwitchTowardsThis()
-    {
-        if (this.gameObject == Game.Player.gameObject)
-        {
-            yield break;
-        }
-
-        var playerDirection = Game.Player.transform.position.GetRelativeDirection(transform.position);
-        yield return Game.Player.TwitchTowards(playerDirection);
     }
 }
 

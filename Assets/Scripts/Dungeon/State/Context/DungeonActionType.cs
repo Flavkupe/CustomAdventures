@@ -9,4 +9,6 @@ public enum DungeonActionType
     OpenMenu,
     UseItem,
     UseAbility,
+
+    PerformCardDraw,
 }

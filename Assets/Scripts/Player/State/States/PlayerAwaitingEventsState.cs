@@ -2,6 +2,9 @@
 using Assets.Scripts.Player.State.Context;
 using UnityEngine;
 
+/// <summary>
+/// State in which a specific event is being awaited, which should block all actions
+/// </summary>
 public class PlayerAwaitingEventsState : PlayerState
 {
     private PlayerEventType _evenType;

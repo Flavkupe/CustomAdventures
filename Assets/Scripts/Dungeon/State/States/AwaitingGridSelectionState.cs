@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// State in which the player is making a selection on the grid
+/// </summary>
 public class AwaitingGridSelectionState : DungeonState
 {
     private ActionOnEntities _doOnSelected;

@@ -5,6 +5,9 @@ using System.Linq;
 using Assets.Scripts.Player.State.Context;
 using UnityEngine;
 
+/// <summary>
+/// State in which it's the player's turn in combat and some decision is being awaited
+/// </summary>
 public class PlayerCombatTurnState : PlayerState
 {
     public PlayerCombatTurnState(StateController<PlayerStateChangeContext> controller) : base(controller)
@@ -22,6 +25,11 @@ public class PlayerCombatTurnState : PlayerState
             default:
                 return true;
         }
+    }
+
+    public override void StateEntered(IState<PlayerStateChangeContext> previousState, PlayerStateChangeContext context)
+    {
+        context.GameContext.Player.InitializePlayerTurn();
     }
 
     protected override bool HandleInput(GameContext context)
@@ -44,20 +52,17 @@ public class PlayerCombatTurnState : PlayerState
 
     protected override bool OnDirectionInput(Direction direction, GameContext context)
     {
-        if (TryMoveToDirection(direction, context))
+        var player = context.Player;
+        if (player.PlayerHasMoves && TryMoveToDirection(direction, context))
         {
             return true;
         }
 
-        var player = context.Player;
-        if (player.PlayerHasActions)
+        if (player.PlayerHasActions && TryInteractWithDirection(direction, context))
         {
-            if (TryInteractWithDirection(direction, context))
-            {
-                return true;
-            }
+            return true;
         }
-
+        
         return false;
     }
 
