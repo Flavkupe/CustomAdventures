@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 /// </summary>
 public class AwaitingInputState : DungeonState
 {
-    public AwaitingInputState(StateController<DungeonStateChangeContext> contoller) : base(contoller)
+    public AwaitingInputState(IStateController<DungeonStateChangeContext> contoller) : base(contoller)
     {
     }
 

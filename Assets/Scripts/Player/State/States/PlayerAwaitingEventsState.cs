@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class PlayerAwaitingEventsState : PlayerState
 {
-    private PlayerEventType _evenType;
+    private readonly PlayerEventType _evenType;
     
     public PlayerAwaitingEventsState(PlayerEventType eventType, PlayerStateController controller) : base(controller)
     {

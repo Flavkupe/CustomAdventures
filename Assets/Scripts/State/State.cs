@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 public interface IState<TChangeContext>
 {
+    event EventHandler<TChangeContext> EventOccurred;
+    event EventHandler<Routine> RequestRoutine;
+
     IState<TChangeContext> GetNextState(TChangeContext context);
 
     void StateEntered(IState<TChangeContext> previousState, TChangeContext context);
@@ -27,7 +30,7 @@ public class State<TChangeContext> : IState<TChangeContext>
     public event EventHandler<TChangeContext> EventOccurred;
     public event EventHandler<Routine> RequestRoutine;
 
-    public State(StateController<TChangeContext> contoller)
+    public State(IStateController<TChangeContext> contoller)
     {
         contoller.RegisterState(this);
         Transitions = new List<ITransition<TChangeContext>>();

@@ -8,7 +8,7 @@
 
 public abstract class AnimationState : State<AnimationStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
-    public AnimationState(StateController<AnimationStateChangeContext> contoller) : base(contoller)
+    protected AnimationState(IStateController<AnimationStateChangeContext> contoller) : base(contoller)
     {
     }
 

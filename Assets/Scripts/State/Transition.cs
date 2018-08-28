@@ -26,10 +26,10 @@ public class Transition<TChangeContext> : ITransition<TChangeContext>
 /// <summary>
 /// A transition that goes back to the previous state, whatever it was
 /// </summary>
-public class ReturnTransition<TChangeContext> : ITransition<TChangeContext>
+public class ReturnTransition<TStateType, TChangeContext> : ITransition<TChangeContext> where TStateType : class, IState<TChangeContext>
 {
-    private StateController<TChangeContext> _controller;
-    public ReturnTransition(IDecision<TChangeContext> decision, StateController<TChangeContext> controller)
+    private readonly StateController<TStateType, TChangeContext> _controller;
+    public ReturnTransition(IDecision<TChangeContext> decision, StateController<TStateType, TChangeContext> controller)
     {
         _controller = controller;
         Decision = decision;

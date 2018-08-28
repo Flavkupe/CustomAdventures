@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class PlayerExploreState : PlayerState
 {
-    public PlayerExploreState(StateController<PlayerStateChangeContext> controller) : base(controller)
+    public PlayerExploreState(IStateController<PlayerStateChangeContext> controller) : base(controller)
     {
     }
 

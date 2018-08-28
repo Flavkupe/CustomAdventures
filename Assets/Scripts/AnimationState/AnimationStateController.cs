@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class AnimationStateController : StateController<AnimationStateChangeContext>, IActionDeterminant<DungeonActionType>
+public class AnimationStateController : StateController<AnimationState, AnimationStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
     private BlockingAnimationState blockingAnimationsState;
     private NoAnimationState idleState;

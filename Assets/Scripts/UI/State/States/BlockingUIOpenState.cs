@@ -9,7 +9,7 @@ namespace Assets.Scripts.UI.State.States
 {
     public class BlockingUIOpenState : UIState
     {
-        public BlockingUIOpenState(StateController<UIStateChangeContext> contoller) : base(contoller)
+        public BlockingUIOpenState(IStateController<UIStateChangeContext> contoller) : base(contoller)
         {
         }
 

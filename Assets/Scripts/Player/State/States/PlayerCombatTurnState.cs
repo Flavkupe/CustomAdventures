@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public class PlayerCombatTurnState : PlayerState
 {
-    public PlayerCombatTurnState(StateController<PlayerStateChangeContext> controller) : base(controller)
+    public PlayerCombatTurnState(IStateController<PlayerStateChangeContext> controller) : base(controller)
     {
     }
 

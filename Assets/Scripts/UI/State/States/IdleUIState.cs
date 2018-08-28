@@ -9,7 +9,7 @@ namespace Assets.Scripts.UI.State.States
 {
     public class IdleUIState : UIState
     {
-        public IdleUIState(StateController<UIStateChangeContext> contoller) : base(contoller)
+        public IdleUIState(IStateController<UIStateChangeContext> contoller) : base(contoller)
         {
         }
 

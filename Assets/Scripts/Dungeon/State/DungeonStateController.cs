@@ -1,4 +1,4 @@
-﻿public class DungeonStateController : StateController<DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
+﻿public class DungeonStateController : StateController<DungeonState, DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
     private readonly AwaitingInputState awaitingInputState;
     private readonly AwaitingAIState awaitingAIState;

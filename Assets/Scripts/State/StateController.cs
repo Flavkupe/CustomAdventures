@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 public interface IStateController
 {
@@ -12,20 +6,27 @@ public interface IStateController
     string StateName { get; }
 }
 
-public abstract class StateController<TContextType> : IStateController
+public interface IStateController<TContextType> : IStateController
 {
-    public IState<TContextType> CurrentState { get; protected set; }
-    public IState<TContextType> PreviousState => _previous ?? CurrentState;
+    void Update(GameContext context);
 
-    private IState<TContextType> _previous = null;
+    void RegisterState(IState<TContextType> state);
+}
+
+public abstract class StateController<TStateType, TContextType> : IStateController<TContextType> where TStateType : class, IState<TContextType>
+{
+    public TStateType CurrentState { get; protected set; }
+    public TStateType PreviousState => _previous ?? CurrentState;
+
+    private TStateType _previous = null;
     
-    protected IState<TContextType> FirstState { get; set; }
+    protected TStateType FirstState { get; set; }
 
-    protected IState<TContextType> AnyState { get; }
+    protected State<TContextType> AnyState { get; }
 
     private StateEventQueue _eventQueue;
 
-    private string _name;
+    private readonly string _name;
 
     public bool QueueIdle => _eventQueue.Idle;
 
@@ -45,7 +46,7 @@ public abstract class StateController<TContextType> : IStateController
         AnyState = new State<TContextType>(this);
     }
 
-    protected void ChangeState(IState<TContextType> newState, TContextType context)
+    protected void ChangeState(TStateType newState, TContextType context)
     {
         if (newState != CurrentState)
         {
@@ -61,6 +62,12 @@ public abstract class StateController<TContextType> : IStateController
     protected void CheckState(TContextType context)
     {
         var newState = CurrentState.GetNextState(context);
+        if (!(newState is TStateType))
+        {
+            Debug.LogError("State of wrong type used!");
+            return;
+        }
+
         if (newState == AnyState)
         {
             Debug.LogError("Can't transition into AnyState!");
@@ -77,7 +84,7 @@ public abstract class StateController<TContextType> : IStateController
             }
         }
 
-        ChangeState(newState, context);
+        ChangeState((TStateType)newState, context);
     }
 
     public void Update(GameContext context)
@@ -85,7 +92,7 @@ public abstract class StateController<TContextType> : IStateController
         CurrentState.Update(context);
     }
 
-    public void RegisterState(State<TContextType> state)
+    public void RegisterState(IState<TContextType> state)
     {
         state.EventOccurred += (obj, type) => EventOccurred(type);
         state.RequestRoutine += OnRequestRoutine;

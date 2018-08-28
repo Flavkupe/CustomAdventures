@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class BlockingAnimationState : AnimationState
 {
-    public BlockingAnimationState(StateController<AnimationStateChangeContext> contoller) : base(contoller)
+    public BlockingAnimationState(IStateController<AnimationStateChangeContext> contoller) : base(contoller)
     {
     }
 

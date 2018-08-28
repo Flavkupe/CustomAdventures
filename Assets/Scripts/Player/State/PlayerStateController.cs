@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Assets.Scripts.Player.State.Context;
 
-public class PlayerStateController : StateController<PlayerStateChangeContext>, IActionDeterminant<DungeonActionType>
+public class PlayerStateController : StateController<PlayerState, PlayerStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
     public PlayerStateController() : base("Player")
     {

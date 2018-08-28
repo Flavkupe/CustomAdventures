@@ -6,7 +6,7 @@
 /// </summary>
 public class PlayerAwaitingTurnState : PlayerState
 {
-    public PlayerAwaitingTurnState(StateController<PlayerStateChangeContext> controller) : base(controller)
+    public PlayerAwaitingTurnState(IStateController<PlayerStateChangeContext> controller) : base(controller)
     {
     }
 

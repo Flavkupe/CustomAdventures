@@ -11,7 +11,7 @@ public class AwaitingGridSelectionState : DungeonState
     private EntitySelectionOptions _options;
     private readonly List<TileEntity> _selectedTargets = new List<TileEntity>();
 
-    public AwaitingGridSelectionState(StateController<DungeonStateChangeContext> contoller) : base(contoller)
+    public AwaitingGridSelectionState(IStateController<DungeonStateChangeContext> contoller) : base(contoller)
     {
     }
 

@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public class AwaitingAIState : DungeonState
 {
-    public AwaitingAIState(StateController<DungeonStateChangeContext> contoller) : base(contoller)
+    public AwaitingAIState(IStateController<DungeonStateChangeContext> contoller) : base(contoller)
     {
     }
 

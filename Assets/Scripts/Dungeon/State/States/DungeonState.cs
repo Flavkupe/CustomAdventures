@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 public class DungeonStateTransition : Transition<DungeonStateChangeContext>
 {
     public DungeonStateTransition(IDecision<DungeonStateChangeContext> decision, IState<DungeonStateChangeContext> next) 
@@ -15,7 +14,7 @@ public class DungeonStateTransition : Transition<DungeonStateChangeContext>
 
 public abstract class DungeonState : State<DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
-    public DungeonState(StateController<DungeonStateChangeContext> contoller) : base(contoller)
+    protected DungeonState(IStateController<DungeonStateChangeContext> controller) : base(controller)
     {
     }
 

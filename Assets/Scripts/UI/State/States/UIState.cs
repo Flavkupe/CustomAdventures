@@ -17,7 +17,7 @@ namespace Assets.Scripts.UI.State.States
 
     public abstract class UIState : State<UIStateChangeContext>, IActionDeterminant<DungeonActionType>
     {
-        public UIState(StateController<UIStateChangeContext> contoller) : base(contoller)
+        protected UIState(IStateController<UIStateChangeContext> contoller) : base(contoller)
         {
         }
 

@@ -4,7 +4,7 @@ using Assets.Scripts.UI.State.States;
 
 namespace Assets.Scripts.UI.State
 {
-    public class UIStateController : StateController<UIStateChangeContext>, IActionDeterminant<DungeonActionType>
+    public class UIStateController : StateController<UIState, UIStateChangeContext>, IActionDeterminant<DungeonActionType>
     {
         public UIStateController() : base("UI")
         {

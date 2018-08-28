@@ -12,9 +12,9 @@ public class PlayerStateTransition : Transition<PlayerStateChangeContext>
     }
 }
 
-public class PlayerReturnStateTransition : ReturnTransition<PlayerStateChangeContext>
+public class PlayerReturnStateTransition : ReturnTransition<PlayerState, PlayerStateChangeContext>
 {
-    public PlayerReturnStateTransition(IDecision<PlayerStateChangeContext> decision, StateController<PlayerStateChangeContext> controller)
+    public PlayerReturnStateTransition(IDecision<PlayerStateChangeContext> decision, PlayerStateController controller)
         : base(decision, controller)
     {
     }
@@ -22,7 +22,7 @@ public class PlayerReturnStateTransition : ReturnTransition<PlayerStateChangeCon
 
 public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDeterminant<DungeonActionType>
 {
-    public PlayerState(StateController<PlayerStateChangeContext> controller): base(controller)
+    protected PlayerState(IStateController<PlayerStateChangeContext> controller): base(controller)
     {
     }
 
@@ -86,17 +86,16 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
             player.FaceDirection(direction);
         }
 
-        if (player.CanMove(direction))
+        if (!player.CanMove(direction))
         {
-            // Set state to ensure we don't queue multiple moves
-            var moveRoutine = Routine.Create(TryMovePlayerEntity, direction, context);
-            moveRoutine.Then(() => _moving = false);
-            _moving = true;
-            EnqueueRoutine(moveRoutine);
-            return true;
+            return false;
         }
 
-        return false;
+        var moveRoutine = Routine.Create(TryMovePlayerEntity, direction, context);
+        moveRoutine.Then(() => _moving = false);
+        _moving = true;
+        EnqueueRoutine(moveRoutine);
+        return true;
     }
 
     protected bool TryInteractWithDirection(Direction direction, GameContext context)
