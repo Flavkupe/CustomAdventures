@@ -8,8 +8,6 @@ public static class Game
 
     public static Dungeon Dungeon => Dungeon.Instance;
 
-    public static StateManager States => StateManager.Instance;
-
     public static UIManager UI => UIManager.Instance;
 
     public static DebugManager Debug => DebugManager.Instance;

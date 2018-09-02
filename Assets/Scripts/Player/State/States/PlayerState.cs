@@ -42,7 +42,7 @@ public abstract class PlayerState : State<PlayerEventType>, IActionDeterminant<D
     protected virtual bool HandleInput(GameContext context)
     {
         var moved = false;
-        if (_moving || context.Dungeon.IsGamePaused || Game.States.AreMenusOpen)
+        if (_moving || context.Dungeon.IsGamePaused || Game.UI.IsMenuActive)
         {
             return true;
         }

@@ -46,7 +46,6 @@ public class Routine : IEnumerator
 
     protected Routine()
     {
-        TrackDebugTrace();
     }
 
     public Action CancellationCallback
@@ -58,15 +57,6 @@ public class Routine : IEnumerator
         : this()
     {       
         _func = func;
-    }
-
-    protected void TrackDebugTrace()
-    {
-        if (Game.States != null && Game.States.DebugEnabled)
-        {
-            System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-            Trace = t.ToString();
-        }
     }
 
     public bool DisableSafeMode = false;
@@ -82,11 +72,6 @@ public class Routine : IEnumerator
 
     protected virtual IEnumerator Execute()
     {
-        if (Game.States != null && Game.States.DebugEnabled)
-        {
-            Game.States.CoroutineTraces.Add(this);
-        }
-
         return _func();
     } 
 
@@ -140,18 +125,6 @@ public class Routine : IEnumerator
             }
 
             RunFinallies();
-
-            if (Game.States != null && Game.States.DebugEnabled)
-            {
-                try
-                {
-                    Game.States.CoroutineTraces.Remove(this);
-                }
-                catch
-                {
-                    // do nothing if this fails
-                }
-            }
 
             return false;
         }

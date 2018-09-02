@@ -12,7 +12,7 @@ public class WaitForSecondsSpeedable : CustomYieldInstruction
     {
         get
         {
-            _seconds -= Time.deltaTime * Game.States.GetMouseDownSpeedMultiplier();
+            _seconds -= Time.deltaTime * Utils.GetMouseDownSpeedMultiplier();
             return _seconds > 0.0f;
         }
     }

@@ -6,9 +6,7 @@ using UnityEngine;
 
 public class ParallelRoutineSet : IRoutineSet
 {
-    public static Func<IEnumerator, Coroutine> CoroutineRunner = null;
-
-    private Func<IEnumerator, Coroutine> Runner => CoroutineRunner ?? Game.States.StartCoroutine;
+    private Func<IEnumerator, Coroutine> Runner => CoRoutineRunner.Instance.StartCoroutine;
 
     private readonly HashSet<Routine> _routines = new HashSet<Routine>();
     private IEnumerator _func = null;
