@@ -1,4 +1,6 @@
-﻿public class DungeonStateController : StateController<DungeonState, DungeonStateChangeContext>, IActionDeterminant<DungeonActionType>
+﻿using Assets.Scripts.State;
+
+public class DungeonStateController : StateController<DungeonState, DungeonEventType>, IActionDeterminant<DungeonActionType>
 {
     private readonly AwaitingInputState awaitingInputState;
     private readonly AwaitingAIState awaitingAIState;
@@ -30,12 +32,6 @@
         CurrentState = FirstState;
     }
 
-    public void SendEvent(DungeonEventType eventType, GameContext context)
-    {
-        var eventContext = new DungeonStateChangeContext(eventType, context);
-        EventOccurred(eventContext);
-    }
-
     public bool CanPerformAction(DungeonActionType actionType)
     {
         return CanPerformActionInState(actionType);
@@ -44,6 +40,6 @@
     public void SwitchToTileSelection(GameContext context, EntitySelectionOptions options, ActionOnEntities doOnSelected)
     {
         awaitingGridSelection.StartSelection(context, options, doOnSelected);
-        ChangeState(awaitingGridSelection, new DungeonStateChangeContext(DungeonEventType.SelectionStarted, context));
+        ChangeState(awaitingGridSelection, new StateContext<DungeonEventType>(DungeonEventType.SelectionStarted, context, CurrentState));
     }
 }

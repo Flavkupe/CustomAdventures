@@ -29,7 +29,7 @@ public abstract class InventoryItemButton : MonoBehaviour, IBeginDragHandler, ID
             var pos = DurabilitySlider.rectTransform.localPosition;
             DurabilitySlider.rectTransform.localPosition = new Vector3(pos.x, -15.0f, pos.y);
         }
-    }    
+    }
 
     private CursorObject _dragObject;
 
@@ -40,6 +40,7 @@ public abstract class InventoryItemButton : MonoBehaviour, IBeginDragHandler, ID
             _dragObject = Utils.InstantiateOfType<CursorObject>("drag");
             _dragObject.transform.SetParent(Game.UI.MainCanvas.transform);
             _dragObject.SetImage(BackingItem.ItemData.Sprite, subImage.rectTransform);
+            _dragObject.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
             subImage.gameObject.SetActive(false);
             Cursor.visible = false;
         }

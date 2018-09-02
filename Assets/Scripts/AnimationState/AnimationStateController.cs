@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class AnimationStateController : StateController<AnimationState, AnimationStateChangeContext>, IActionDeterminant<DungeonActionType>
+public class AnimationStateController : StateController<AnimationState, AnimationEventType>, IActionDeterminant<DungeonActionType>
 {
     private BlockingAnimationState blockingAnimationsState;
     private NoAnimationState idleState;
@@ -35,15 +35,9 @@ public class AnimationStateController : StateController<AnimationState, Animatio
     /// </summary>
     public void AddAnimationRoutine(Routine animation, GameContext context)
     {
-        animation.Finally(() => SendEvent(AnimationEventType.AnimationEnd, context));
+        animation.Finally(() => HandleNewEvent(AnimationEventType.AnimationEnd, context));
         EnqueueRoutine(animation);
-        SendEvent(AnimationEventType.AnimationStart, context);
-    }
-
-    public void SendEvent(AnimationEventType eventType, GameContext context)
-    {
-        var eventContext = new AnimationStateChangeContext(eventType, context, this);
-        EventOccurred(eventContext);
+        HandleNewEvent(AnimationEventType.AnimationStart, context);
     }
 
     public bool CanPerformAction(DungeonActionType actionType)

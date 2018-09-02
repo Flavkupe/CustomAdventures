@@ -36,6 +36,7 @@ public class Dungeon : SingletonObject<Dungeon>
     private Player _player;
 
     private GameContext _context = new GameContext();
+    private DungeonStateProvider _stateProvider;
 
     private readonly List<Enemy> _enemies = new List<Enemy>();
     public List<Enemy> Enemies => _enemies;
@@ -130,14 +131,18 @@ public class Dungeon : SingletonObject<Dungeon>
         return _context;
     }
 
+    /// <summary>
+    /// The entry point for all events that should affect states.
+    /// Events here are broadcast to all state controllers.
+    /// </summary>
+    public void BroadcastEvent<TEventType>(TEventType eventType) where TEventType : struct
+    {
+        _stateProvider.HandleNewEvent(eventType);
+    }
+
     public IEnumerable<IStateController> GetStateControllers()
     {
-        return new List<IStateController> {
-            AnimationStateController,
-            DungeonStateController,
-            _player.StateController,
-            Game.UI.UIStateController,
-        };
+        return this._stateProvider.Controllers;
     }
 
     [UsedImplicitly]
@@ -162,33 +167,39 @@ public class Dungeon : SingletonObject<Dungeon>
     [UsedImplicitly]
     private void Start()
     {
+        _stateProvider = new DungeonStateProvider(this,
+            DungeonStateController,
+            AnimationStateController,
+            _player.StateController,
+            Game.UI.UIStateController);
+
         _context.Dungeon = this;
         _context.Player = _player;
         _context.UI = Game.UI;
+        _context.CanPerformAction = _stateProvider.CanPerformAction;
 
-        _context.DungeonActionChecks = new ActionCheckerContainer<DungeonActionType>(AnimationStateController, DungeonStateController, _player.StateController, Game.UI.UIStateController);
         DungeonStateController.Start();
         AnimationStateController.Start();
     }
 
     private void OnPlayerInputRequested(object sender, EventArgs e)
     {
-        _player.StateController.SendEvent(PlayerEventType.MouseInputRequested, GetGameContext());
+        BroadcastEvent(PlayerEventType.MouseInputRequested);
     }
 
     private void OnPlayerInputAcquired(object sender, EventArgs e)
     {
-        _player.StateController.SendEvent(PlayerEventType.MouseInputAcquired, GetGameContext());
+        BroadcastEvent(PlayerEventType.MouseInputAcquired);
     }
 
     private void OnCardDrawEnd(object sender, EventArgs e)
     {
-        AnimationStateController.SendEvent(AnimationEventType.AnimationEnd, GetGameContext());
+        AnimationStateController.HandleNewEvent(AnimationEventType.AnimationEnd, GetGameContext());
     }
 
     private void OnCardDrawStart(object sender, EventArgs e)
     {
-        AnimationStateController.SendEvent(AnimationEventType.AnimationStart, GetGameContext());
+        AnimationStateController.HandleNewEvent(AnimationEventType.AnimationStart, GetGameContext());
     }
 
     [UsedImplicitly]
@@ -235,7 +246,7 @@ public class Dungeon : SingletonObject<Dungeon>
 
     private void OnPlayerActionTaken(object sender, EventArgs e)
     {
-        DungeonStateController.SendEvent(DungeonEventType.AfterPlayerAction, GetGameContext());
+        BroadcastEvent(DungeonEventType.AfterPlayerAction);
     }
 
     [UsedImplicitly]

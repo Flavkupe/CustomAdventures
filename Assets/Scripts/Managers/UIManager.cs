@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.UI.State;
-using Assets.Scripts.UI.State.Context;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -85,7 +84,7 @@ public class UIManager : SingletonObject<UIManager>
         {
             // Toggle inventory pane
             var uiEvent = IsMenuActive ? UIEventType.InterfaceClosed : UIEventType.InterfaceOpened;
-            UIStateController.SendEvent(uiEvent, GameContext);
+            UIStateController.HandleNewEvent(uiEvent, GameContext);
             InventoryPanel.gameObject.SetActive(!InventoryPanel.gameObject.activeSelf);
             if (IsMenuActive)
             {
@@ -99,13 +98,13 @@ public class UIManager : SingletonObject<UIManager>
     public void ShowDialog(string message)
     {
         MessageDialog.Show(message);
-        UIStateController.SendEvent(UIEventType.DialogShown, GameContext);
+        UIStateController.HandleNewEvent(UIEventType.DialogShown, GameContext);
     }
 
     public void CloseDialog()
     {
         MessageDialog.Close();
-        UIStateController.SendEvent(UIEventType.DialogClosed, GameContext);
+        UIStateController.HandleNewEvent(UIEventType.DialogClosed, GameContext);
     }
 
     public void UpdateEntityPanels()

@@ -7,7 +7,7 @@ public class CursorObject : MonoBehaviour
 {
     private void Update()
     {
-        transform.position = Input.mousePosition;
+        SetPosition();
     }
 
     internal void SetImage(Sprite sprite, RectTransform rectTransform)
@@ -16,7 +16,12 @@ public class CursorObject : MonoBehaviour
         image.sprite = sprite;
         image.rectTransform.sizeDelta = rectTransform.rect.size;
         image.raycastTarget = false;
-        transform.position = Input.mousePosition;
+        SetPosition();
+    }
+
+    private void SetPosition()
+    {
+        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 }
 

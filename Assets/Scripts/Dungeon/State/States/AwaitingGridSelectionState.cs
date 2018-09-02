@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Assets.Scripts.State;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -11,11 +12,11 @@ public class AwaitingGridSelectionState : DungeonState
     private EntitySelectionOptions _options;
     private readonly List<TileEntity> _selectedTargets = new List<TileEntity>();
 
-    public AwaitingGridSelectionState(IStateController<DungeonStateChangeContext> contoller) : base(contoller)
+    public AwaitingGridSelectionState(IStateController<DungeonEventType> contoller) : base(contoller)
     {
     }
 
-    public override void StateEntered(IState<DungeonStateChangeContext> previousState, DungeonStateChangeContext context)
+    public override void StateEntered(IState<DungeonEventType> previousState, StateContext<DungeonEventType> context)
     {
         base.StateEntered(previousState, context);
         _selectedTargets.Clear();
@@ -24,7 +25,7 @@ public class AwaitingGridSelectionState : DungeonState
         _options.TileRange.ForEach(tile => tile.Show(true));
     }
 
-    public override void StateExited(IState<DungeonStateChangeContext> newState, DungeonStateChangeContext context)
+    public override void StateExited(IState<DungeonEventType> newState, StateContext<DungeonEventType> context)
     {
         base.StateExited(newState, context);
         context.GameContext.Dungeon.TileEntityClicked -= OnTileSelected;
@@ -54,7 +55,7 @@ public class AwaitingGridSelectionState : DungeonState
         {
             // Perform event, then after events done, change state back
             var performOnSelected = Routine.Create(() => _doOnSelected(_selectedTargets));
-            performOnSelected.Finally(() => RaiseEventOccurred(DungeonEventType.SelectionCompleted, Game.Dungeon.GetGameContext()));
+            performOnSelected.Finally(() => RaiseEventOccurred(DungeonEventType.SelectionCompleted, Game.Dungeon.GetGameContext(), true));
             EnqueueRoutine(performOnSelected);
         }
     }
@@ -85,8 +86,7 @@ public class AwaitingGridSelectionState : DungeonState
         // Right-click to cancel
         if (Input.GetMouseButtonUp(1))
         {
-            RaiseEventOccurred(DungeonEventType.SelectionCancelled, context);
-
+            RaiseEventOccurred(DungeonEventType.SelectionCancelled, context, true);
         }
     }
 }

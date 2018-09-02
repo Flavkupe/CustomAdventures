@@ -203,7 +203,7 @@ public class Player : TileActor
         AfterPlayerAction?.Invoke(this, null);
     }
 
-    public bool PlayerHasActions => Game.States.CanPlayerAct && !Game.Dungeon.IsCombat || CurrentStats.FullActions > 0;
+    public bool PlayerHasActions => CurrentStats.FullActions > 0;
     public bool PlayerHasMoves => PlayerHasActions || CurrentStats.FreeMoves > 0;
 
     public void PlayAttackEffects()
@@ -341,12 +341,12 @@ public class Player : TileActor
 
     private void HandleEnemyListChanged(object sender, List<Enemy> e)
     {
-        StateController.SendEvent(PlayerEventType.CombatStateChanged, Game.Dungeon.GetGameContext());
+        Game.Dungeon.BroadcastEvent(PlayerEventType.CombatStateChanged);
     }
 
     private void HandleCombatShouldStart(object sender, EventArgs e)
     {
-        StateController.SendEvent(PlayerEventType.InitializeCombat, Game.Dungeon.GetGameContext());
+        Game.Dungeon.BroadcastEvent(PlayerEventType.InitializeCombat);
     }
 }
 

@@ -1,27 +1,40 @@
-﻿using System;
+﻿using Assets.Scripts.State;
+using System;
 
-public interface IDecision<in TChangeContext>
+public interface IDecision
 {
-    bool Evaluate(TChangeContext context);
+    bool Evaluate(GameContext context);
 }
 
-public abstract class Decision<TChangeContext> : IDecision<TChangeContext>
+public interface IDecision<TEventType> where TEventType : struct
 {
-    public abstract bool Evaluate(TChangeContext context);
+    bool Evaluate(StateContext<TEventType> context);
 }
 
-public class DidEventOccur<TChangeContext, TEventType> : Decision<TChangeContext> where TEventType : struct
+public abstract class Decision<TEventType> : IDecision<TEventType> where TEventType : struct
+{
+    public abstract bool Evaluate(StateContext<TEventType> context);
+}
+
+public class Decisions<TEventType> where TEventType : struct
+{
+    public static DidEventOccur<TEventType> DidEventOccur(TEventType eventType)
+    {
+        return new DidEventOccur<TEventType>(eventType);
+    }
+}
+
+public class DidEventOccur<TEventType> : Decision<TEventType> where TEventType : struct
 {
     private TEventType _eventType;
-    private Func<TChangeContext, TEventType> _eventAccessorFunc;
-    public DidEventOccur(TEventType eventType, Func<TChangeContext, TEventType> eventAccessorFunc)
+    private Func<TEventType, TEventType> _eventAccessorFunc;
+    public DidEventOccur(TEventType eventType)
     {
         _eventType = eventType;
-        _eventAccessorFunc = eventAccessorFunc;
     }
 
-    public override bool Evaluate(TChangeContext context)
+    public override bool Evaluate(StateContext<TEventType> context)
     {
-        return _eventAccessorFunc(context).Equals(_eventType);
+        return context.Event.Equals(_eventType);
     }
 }

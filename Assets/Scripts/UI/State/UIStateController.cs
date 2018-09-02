@@ -1,10 +1,9 @@
-﻿using Assets.Scripts.UI.State.Context;
-using Assets.Scripts.UI.State.Decisions;
+﻿using Assets.Scripts.UI.State.Decisions;
 using Assets.Scripts.UI.State.States;
 
 namespace Assets.Scripts.UI.State
 {
-    public class UIStateController : StateController<UIState, UIStateChangeContext>, IActionDeterminant<DungeonActionType>
+    public class UIStateController : StateController<UIState, UIEventType>, IActionDeterminant<DungeonActionType>
     {
         public UIStateController() : base("UI")
         {
@@ -25,12 +24,6 @@ namespace Assets.Scripts.UI.State
 
             FirstState = idleState;
             CurrentState = FirstState;
-        }
-
-        public void SendEvent(UIEventType eventType, GameContext context)
-        {
-            var eventContext = new UIStateChangeContext(eventType, context);
-            EventOccurred(eventContext);
         }
 
         public bool CanPerformAction(DungeonActionType actionType)

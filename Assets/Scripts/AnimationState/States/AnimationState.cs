@@ -1,14 +1,14 @@
-﻿public class AnimationStateTransition : Transition<AnimationStateChangeContext>
+﻿public class AnimationStateTransition : Transition<AnimationEventType>
 {
-    public AnimationStateTransition(IDecision<AnimationStateChangeContext> decision, IState<AnimationStateChangeContext> next)
+    public AnimationStateTransition(IDecision<AnimationEventType> decision, IState<AnimationEventType> next)
         : base(decision, next)
     {
     }
 }
 
-public abstract class AnimationState : State<AnimationStateChangeContext>, IActionDeterminant<DungeonActionType>
+public abstract class AnimationState : State<AnimationEventType>, IActionDeterminant<DungeonActionType>
 {
-    protected AnimationState(IStateController<AnimationStateChangeContext> contoller) : base(contoller)
+    protected AnimationState(IStateController<AnimationEventType> contoller) : base(contoller)
     {
     }
 

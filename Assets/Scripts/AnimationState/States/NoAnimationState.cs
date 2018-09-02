@@ -1,6 +1,6 @@
 ﻿public class NoAnimationState : AnimationState
 {
-    public NoAnimationState(IStateController<AnimationStateChangeContext> contoller) : base(contoller)
+    public NoAnimationState(IStateController<AnimationEventType> contoller) : base(contoller)
     {
     }
 

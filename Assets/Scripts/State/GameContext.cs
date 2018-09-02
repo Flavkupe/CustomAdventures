@@ -1,6 +1,8 @@
-﻿public class GameContext
+﻿using System;
+
+public class GameContext
 {
-    public ActionCheckerContainer<DungeonActionType> DungeonActionChecks;
+    public Func<DungeonActionType, bool> CanPerformAction;
     public Dungeon Dungeon;
     public Player Player;
     public UIManager UI;

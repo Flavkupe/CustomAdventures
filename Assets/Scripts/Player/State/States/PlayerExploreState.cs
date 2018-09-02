@@ -1,14 +1,9 @@
-﻿using System.Collections;
-using System.Linq;
-using Assets.Scripts.Player.State.Context;
-using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// State in which the player is exploring the dungeon and can take inputs
 /// </summary>
 public class PlayerExploreState : PlayerState
 {
-    public PlayerExploreState(IStateController<PlayerStateChangeContext> controller) : base(controller)
+    public PlayerExploreState(IStateController<PlayerEventType> controller) : base(controller)
     {
     }
 
@@ -29,6 +24,7 @@ public class PlayerExploreState : PlayerState
     {
         base.OnAfterPlayerAction(context, isFullAction);
         context.Player.ActionTaken();
+        RaiseEventOccurred(PlayerEventType.AfterMove, context);
     }
 
     protected override bool OnDirectionInput(Direction direction, GameContext context)

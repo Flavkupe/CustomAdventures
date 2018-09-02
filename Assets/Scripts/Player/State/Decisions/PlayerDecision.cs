@@ -1,54 +1,37 @@
 ﻿
-using Assets.Scripts.Player.State.Context;
+using Assets.Scripts.State;
 
-public abstract class PlayerDecision : Decision<PlayerStateChangeContext>
+public abstract class PlayerDecision : Decision<PlayerEventType>
 {
-    public class Decisions
+    public class Decisions : Decisions<PlayerEventType>
     {
         public static DidPlayerTurnStart DidPlayerTurnStart => new DidPlayerTurnStart();
-        public static DidPlayerTurnEnd DidPlayerTurnEnd => new DidPlayerTurnEnd();
+        public static IsPlayerOutOfMoves IsPlayerOutOfMoves => new IsPlayerOutOfMoves();
         public static DidCombatEnd DidCombatEnd => new DidCombatEnd();
-        public static DidEventOccur<PlayerStateChangeContext, PlayerEventType> DidEventOccur(PlayerEventType eventType)
-        {
-            return new DidEventOccur<PlayerStateChangeContext, PlayerEventType>(eventType, a => a.EventType);
-        }
     }
 
     public class DidPlayerTurnStart : PlayerDecision
     {
-        public override bool Evaluate(PlayerStateChangeContext context)
+        public override bool Evaluate(StateContext<PlayerEventType> context)
         {
             var gameContext = context.GameContext;
-            if (context.EventType == PlayerEventType.AITurnsComplete ||
-                context.EventType == PlayerEventType.InitializeCombat)
-            {
-                if (gameContext.Dungeon.IsCombat)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return (context.Event == PlayerEventType.AITurnsComplete ||
+                context.Event == PlayerEventType.InitializeCombat) &&
+                gameContext.Dungeon.IsCombat;
         }
     }
 
-    public class DidPlayerTurnEnd : PlayerDecision
+    public class IsPlayerOutOfMoves : PlayerDecision
     {
-        public override bool Evaluate(PlayerStateChangeContext context)
+        public override bool Evaluate(StateContext<PlayerEventType> context)
         {
-            var gameContext = context.GameContext;
-            if (context.EventType == PlayerEventType.AfterMove)
-            {
-                return !gameContext.Player.PlayerHasMoves;
-            }
-
-            return false;
+            return !context.GameContext.Player.PlayerHasMoves;
         }
     }
 
     public class DidCombatEnd : PlayerDecision
     {
-        public override bool Evaluate(PlayerStateChangeContext context)
+        public override bool Evaluate(StateContext<PlayerEventType> context)
         {
             return !context.GameContext.Dungeon.IsCombat;
         }

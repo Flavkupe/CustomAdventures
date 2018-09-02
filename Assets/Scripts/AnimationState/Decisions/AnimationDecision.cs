@@ -1,37 +1,34 @@
-﻿using System;
+﻿using Assets.Scripts.State;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 
-public abstract class AnimationDecision : Decision<AnimationStateChangeContext>
+public abstract class AnimationDecision : Decision<AnimationEventType>
 {
-    public class Decisions
+    public class Decisions : Decisions<AnimationEventType>
     {
         public static DidAllAnimationsEndDecision DidAllAnimationsEndDecision => new DidAllAnimationsEndDecision();
         public static DidAnimationStartDecision DidAnimationStartDecision => new DidAnimationStartDecision();
-        public static DidEventOccur<AnimationStateChangeContext, AnimationEventType> DidEventOccur(AnimationEventType eventType)
-        {
-            return new DidEventOccur<AnimationStateChangeContext, AnimationEventType>(eventType, a => a.EventType);
-        }
     }
 }
 
 public class DidAllAnimationsEndDecision : AnimationDecision
 {
-    public override bool Evaluate(AnimationStateChangeContext context)
+    public override bool Evaluate(StateContext<AnimationEventType> context)
     {
         // Animation is actually done when AnimationEnd message passes and no more animations are in queue
-        return context.EventType == AnimationEventType.AnimationEnd && context.Controller.QueueIdle;
+        return context.Event == AnimationEventType.AnimationEnd && context.CurrentState.Controller.QueueIdle;
     }
 }
 
 public class DidAnimationStartDecision : AnimationDecision
 {
-    public override bool Evaluate(AnimationStateChangeContext context)
+    public override bool Evaluate(StateContext<AnimationEventType> context)
     {
-        return context.EventType == AnimationEventType.AnimationStart;
+        return context.Event == AnimationEventType.AnimationStart;
     }
 }
 

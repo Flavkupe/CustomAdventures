@@ -23,4 +23,3 @@ public class AmenityData : PropData<Amenity>
         return obj;
     }
 }
-

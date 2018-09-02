@@ -1,12 +1,10 @@
-﻿using Assets.Scripts.Player.State.Context;
-
-/// <summary>
+﻿/// <summary>
 /// State in which the player is await its turn, probably because the AI or enemy
 /// is moving
 /// </summary>
 public class PlayerAwaitingTurnState : PlayerState
 {
-    public PlayerAwaitingTurnState(IStateController<PlayerStateChangeContext> controller) : base(controller)
+    public PlayerAwaitingTurnState(IStateController<PlayerEventType> controller) : base(controller)
     {
     }
 

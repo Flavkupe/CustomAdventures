@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.State;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,11 @@ using UnityEngine;
 /// </summary>
 public class AwaitingAIState : DungeonState
 {
-    public AwaitingAIState(IStateController<DungeonStateChangeContext> contoller) : base(contoller)
+    public AwaitingAIState(IStateController<DungeonEventType> contoller) : base(contoller)
     {
     }
 
-    public override void StateEntered(IState<DungeonStateChangeContext> previousState, DungeonStateChangeContext context)
+    public override void StateEntered(IState<DungeonEventType> previousState, StateContext<DungeonEventType> context)
     {
         EnqueueEnemyTurns(context);
     }
@@ -33,13 +34,13 @@ public class AwaitingAIState : DungeonState
         }
     }
 
-    private void EnqueueEnemyTurns(DungeonStateChangeContext context)
+    private void EnqueueEnemyTurns(StateContext<DungeonEventType> context)
     {
         var enemies = context.GameContext.Dungeon.Enemies;
         var enemyTurns = new RoutineChain(enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());
         enemyTurns.Then(() =>
         {
-            RaiseEventOccurred(DungeonEventType.AllEnemiesTurnEnd, context.GameContext);
+            RaiseEventOccurred(DungeonEventType.AllEnemiesTurnEnd, context.GameContext, true);
         });
 
         EnqueueCoroutine(enemyTurns);

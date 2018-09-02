@@ -1,5 +1,5 @@
 ﻿
-using Assets.Scripts.Player.State.Context;
+using Assets.Scripts.State;
 using UnityEngine;
 
 /// <summary>
@@ -28,7 +28,7 @@ public class PlayerAwaitingEventsState : PlayerState
         }
     }
 
-    public override void StateEntered(IState<PlayerStateChangeContext> previousState, PlayerStateChangeContext context)
+    public override void StateEntered(IState<PlayerEventType> previousState, StateContext<PlayerEventType> context)
     {
         base.StateEntered(previousState, context);
         Debug.Log($"Awaiting event {_evenType.ToString()}");

@@ -1,42 +1,45 @@
-﻿using System;
+﻿using Assets.Scripts.State;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public interface IState<TChangeContext>
+public interface IState<TEventType> : IHandleStateEvent<TEventType> where TEventType : struct
 {
-    event EventHandler<TChangeContext> EventOccurred;
+    event EventHandler<StateContext<TEventType>> EventOccurred;
     event EventHandler<Routine> RequestRoutine;
 
-    IState<TChangeContext> GetNextState(TChangeContext context);
+    IState<TEventType> GetNextState(StateContext<TEventType> context);
 
-    void StateEntered(IState<TChangeContext> previousState, TChangeContext context);
+    void StateEntered(IState<TEventType> previousState, StateContext<TEventType> context);
 
-    void StateExited(IState<TChangeContext> newState, TChangeContext context);
+    void StateExited(IState<TEventType> newState, StateContext<TEventType> context);
 
-    void HandleNewEvent(TChangeContext context);
+    void AddTransitions(IEnumerable<ITransition<TEventType>> transitions);
 
-    void AddTransitions(IEnumerable<ITransition<TChangeContext>> transitions);
-
-    void AddTransition(ITransition<TChangeContext> transition);
+    void AddTransition(ITransition<TEventType> transition);
 
     void Update(GameContext context);
+
+    IStateController<TEventType> Controller { get; }
 }
 
-public class State<TChangeContext> : IState<TChangeContext>
+public class State<TEventType> : IState<TEventType> where TEventType : struct
 {
-    public event EventHandler<TChangeContext> EventOccurred;
+    public event EventHandler<StateContext<TEventType>> EventOccurred;
     public event EventHandler<Routine> RequestRoutine;
+    public IStateController<TEventType> Controller { get; }
 
-    public State(IStateController<TChangeContext> contoller)
+    public State(IStateController<TEventType> controller)
     {
-        contoller.RegisterState(this);
-        Transitions = new List<ITransition<TChangeContext>>();
+        controller.RegisterState(this);
+        Controller = controller;
+        Transitions = new List<ITransition<TEventType>>();
     }
 
-    protected void RaiseEventOccurred(TChangeContext context)
+    protected void RaiseEventOccurred(StateContext<TEventType> context)
     {
         EventOccurred?.Invoke(this, context);
     }
@@ -51,12 +54,12 @@ public class State<TChangeContext> : IState<TChangeContext>
         RequestRoutine?.Invoke(this, Routine.Create(coroutine));
     }
 
-    public void AddTransition(ITransition<TChangeContext> transition)
+    public void AddTransition(ITransition<TEventType> transition)
     {
         Transitions.Add(transition);
     }
 
-    public void AddTransitions(IEnumerable<ITransition<TChangeContext>> transitions)
+    public void AddTransitions(IEnumerable<ITransition<TEventType>> transitions)
     {
         Transitions.AddRange(transitions);
     }
@@ -65,13 +68,13 @@ public class State<TChangeContext> : IState<TChangeContext>
     {        
     }
 
-    public virtual void HandleNewEvent(TChangeContext context)
+    public virtual void HandleNewEvent(TEventType eventType, GameContext context)
     {
     }
 
-    protected List<ITransition<TChangeContext>> Transitions { get; }
+    protected List<ITransition<TEventType>> Transitions { get; }
 
-    public IState<TChangeContext> GetNextState(TChangeContext context)
+    public IState<TEventType> GetNextState(StateContext<TEventType> context)
     {
         foreach (var transition in Transitions)
         {
@@ -84,11 +87,11 @@ public class State<TChangeContext> : IState<TChangeContext>
         return this;
     }
 
-    public virtual void StateEntered(IState<TChangeContext> previousState, TChangeContext context)
+    public virtual void StateEntered(IState<TEventType> previousState, StateContext<TEventType> context)
     {
     }
 
-    public virtual void StateExited(IState<TChangeContext> newState, TChangeContext context)
+    public virtual void StateExited(IState<TEventType> newState, StateContext<TEventType> context)
     {
     }
 }

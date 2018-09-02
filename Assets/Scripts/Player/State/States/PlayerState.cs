@@ -1,28 +1,27 @@
-﻿
-using System.Collections;
-using System.Linq;
-using Assets.Scripts.Player.State.Context;
+﻿using System.Collections;
 using UnityEngine;
+using Assets.Scripts.State;
+using System;
 
-public class PlayerStateTransition : Transition<PlayerStateChangeContext>
+public class PlayerStateTransition : Transition<PlayerEventType>
 {
-    public PlayerStateTransition(IDecision<PlayerStateChangeContext> decision, IState<PlayerStateChangeContext> next)
+    public PlayerStateTransition(IDecision<PlayerEventType> decision, IState<PlayerEventType> next)
         : base(decision, next)
     {
     }
 }
 
-public class PlayerReturnStateTransition : ReturnTransition<PlayerState, PlayerStateChangeContext>
+public class PlayerReturnStateTransition : ReturnTransition<PlayerState, PlayerEventType>
 {
-    public PlayerReturnStateTransition(IDecision<PlayerStateChangeContext> decision, PlayerStateController controller)
+    public PlayerReturnStateTransition(IDecision<PlayerEventType> decision, PlayerStateController controller)
         : base(decision, controller)
     {
     }
 }
 
-public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDeterminant<DungeonActionType>
+public abstract class PlayerState : State<PlayerEventType>, IActionDeterminant<DungeonActionType>, IHandleStateEvent<DungeonEventType>
 {
-    protected PlayerState(IStateController<PlayerStateChangeContext> controller): base(controller)
+    protected PlayerState(IStateController<PlayerEventType> controller): base(controller)
     {
     }
 
@@ -32,7 +31,7 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
 
     protected void RaiseEventOccurred(PlayerEventType newEvent, GameContext context)
     {
-        RaiseEventOccurred(new PlayerStateChangeContext(newEvent, context));
+        RaiseEventOccurred(new StateContext<PlayerEventType>(newEvent, context, this));
     }
 
     public sealed override void Update(GameContext context)
@@ -48,7 +47,7 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
             return true;
         }
 
-        if (!context.DungeonActionChecks.CanPerformAction(DungeonActionType.PlayerMove))
+        if (!context.CanPerformAction(DungeonActionType.PlayerMove))
         {
             return true;
         }
@@ -196,5 +195,16 @@ public abstract class PlayerState : State<PlayerStateChangeContext>, IActionDete
         RaiseEventOccurred(PlayerEventType.StartedAnimation, context);
         fullInteractionRoutine.Finally(() => RaiseEventOccurred(PlayerEventType.EndedAnimation, context));
         EnqueueRoutine(fullInteractionRoutine);
+    }
+
+    /// <summary>
+    /// Handle events from Dungeon
+    /// </summary>
+    public virtual void HandleNewEvent(DungeonEventType eventType, GameContext context)
+    {
+        if (eventType == DungeonEventType.AllEnemiesTurnEnd)
+        {
+            RaiseEventOccurred(PlayerEventType.AITurnsComplete, context);
+        }
     }
 }

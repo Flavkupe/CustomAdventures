@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.State;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,11 +10,11 @@ using System.Threading.Tasks;
 /// </summary>
 public class AwaitingInputState : DungeonState
 {
-    public AwaitingInputState(IStateController<DungeonStateChangeContext> contoller) : base(contoller)
+    public AwaitingInputState(IStateController<DungeonEventType> contoller) : base(contoller)
     {
     }
 
-    public override void StateEntered(IState<DungeonStateChangeContext> previousState, DungeonStateChangeContext context)
+    public override void StateEntered(IState<DungeonEventType> previousState, StateContext<DungeonEventType> context)
     {
     }
 

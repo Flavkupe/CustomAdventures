@@ -147,9 +147,7 @@ public class CardEventController : MonoBehaviourEx
     {
         _dungeon.PauseActions();
 
-
-        var actionChecks = Game.Dungeon.GetGameContext().DungeonActionChecks;
-        yield return CoroutineUtils.WaitUntil(() => actionChecks.CanPerformAction(DungeonActionType.PerformCardDraw));
+        yield return CoroutineUtils.WaitUntil(() => Game.Dungeon.GetGameContext().CanPerformAction(DungeonActionType.PerformCardDraw));
 
         // TODO: replace this state system
         // yield return Game.States.WaitUntilNotState(GameState.CharacterMoving);

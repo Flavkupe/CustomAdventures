@@ -1,20 +1,9 @@
-﻿using Assets.Scripts.UI.State.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Assets.Scripts.UI.State.Decisions
+﻿namespace Assets.Scripts.UI.State.Decisions
 {
-    public abstract class UIDecision : Decision<UIStateChangeContext>
+    public abstract class UIDecision : Decision<UIEventType>
     {
-        public class Decisions
+        public class Decisions : Decisions<UIEventType>
         {
-            public static DidEventOccur<UIStateChangeContext, UIEventType> DidEventOccur(UIEventType eventType)
-            {
-                return new DidEventOccur<UIStateChangeContext, UIEventType>(eventType, a => a.EventType);
-            }
         }
     }
 }

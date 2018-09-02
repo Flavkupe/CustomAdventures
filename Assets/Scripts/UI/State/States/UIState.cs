@@ -1,23 +1,16 @@
-﻿using Assets.Scripts.UI.State.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Assets.Scripts.UI.State.States
+﻿namespace Assets.Scripts.UI.State.States
 {
-    public class UIStateTransition : Transition<UIStateChangeContext>
+    public class UIStateTransition : Transition<UIEventType>
     {
-        public UIStateTransition(IDecision<UIStateChangeContext> decision, IState<UIStateChangeContext> next)
+        public UIStateTransition(IDecision<UIEventType> decision, IState<UIEventType> next)
             : base(decision, next)
         {
         }
     }
 
-    public abstract class UIState : State<UIStateChangeContext>, IActionDeterminant<DungeonActionType>
+    public abstract class UIState : State<UIEventType>, IActionDeterminant<DungeonActionType>
     {
-        protected UIState(IStateController<UIStateChangeContext> contoller) : base(contoller)
+        protected UIState(IStateController<UIEventType> contoller) : base(contoller)
         {
         }
 

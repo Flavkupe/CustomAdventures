@@ -25,14 +25,13 @@ namespace Assets.Scripts.Editor
             }
 
             var context = Game.Dungeon.GetGameContext();
-            var actionChecks = context.DungeonActionChecks;
             var blueStyle = new GUIStyle(EditorStyles.label);
             blueStyle.normal.textColor = Color.blue;
 
             EditorGUILayout.LabelField("Actions", blueStyle);
             foreach (var val in Enum.GetValues(typeof(DungeonActionType)))
             {
-                EditorGUILayout.LabelField(Enum.GetName(typeof(DungeonActionType), val) + ": ", actionChecks.CanPerformAction((DungeonActionType)val).ToString());
+                EditorGUILayout.LabelField(Enum.GetName(typeof(DungeonActionType), val) + ": ", context.CanPerformAction((DungeonActionType)val).ToString());
             }
 
             foreach (var controller in Game.Dungeon.GetStateControllers())

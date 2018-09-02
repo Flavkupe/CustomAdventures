@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Assets.Scripts.Player.State.Context;
 
-public class PlayerStateController : StateController<PlayerState, PlayerStateChangeContext>, IActionDeterminant<DungeonActionType>
+public class PlayerStateController : StateController<PlayerState, PlayerEventType>, IActionDeterminant<DungeonActionType>
 {
     public PlayerStateController() : base("Player")
     {
@@ -25,7 +24,7 @@ public class PlayerStateController : StateController<PlayerState, PlayerStateCha
 
         combatTurnState.AddTransitions(new[]
         {
-            new PlayerStateTransition(PlayerDecision.Decisions.DidPlayerTurnEnd, awaitingTurnState),
+            new PlayerStateTransition(PlayerDecision.Decisions.IsPlayerOutOfMoves, awaitingTurnState),
         });
 
         AnyState.AddTransitions(new[] {
@@ -36,12 +35,6 @@ public class PlayerStateController : StateController<PlayerState, PlayerStateCha
 
         FirstState = exploreState;
         CurrentState = FirstState;
-    }
-
-    public void SendEvent(PlayerEventType eventType, GameContext context)
-    {
-        var eventContext = new PlayerStateChangeContext(eventType, context);
-        EventOccurred(eventContext);
     }
 
     public bool CanPerformAction(DungeonActionType actionType)

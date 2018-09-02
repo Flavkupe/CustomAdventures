@@ -1,15 +1,8 @@
-﻿using Assets.Scripts.UI.State.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Assets.Scripts.UI.State.States
+﻿namespace Assets.Scripts.UI.State.States
 {
     public class IdleUIState : UIState
     {
-        public IdleUIState(IStateController<UIStateChangeContext> contoller) : base(contoller)
+        public IdleUIState(IStateController<UIEventType> contoller) : base(contoller)
         {
         }
 

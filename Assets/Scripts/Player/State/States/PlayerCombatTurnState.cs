@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Scripts.Player.State.Context;
 using UnityEngine;
+using Assets.Scripts.State;
 
 /// <summary>
 /// State in which it's the player's turn in combat and some decision is being awaited
 /// </summary>
 public class PlayerCombatTurnState : PlayerState
 {
-    public PlayerCombatTurnState(IStateController<PlayerStateChangeContext> controller) : base(controller)
+    public PlayerCombatTurnState(IStateController<PlayerEventType> controller) : base(controller)
     {
     }
 
@@ -27,7 +26,7 @@ public class PlayerCombatTurnState : PlayerState
         }
     }
 
-    public override void StateEntered(IState<PlayerStateChangeContext> previousState, PlayerStateChangeContext context)
+    public override void StateEntered(IState<PlayerEventType> previousState, StateContext<PlayerEventType> context)
     {
         context.GameContext.Player.InitializePlayerTurn();
     }
@@ -94,5 +93,6 @@ public class PlayerCombatTurnState : PlayerState
         }
 
         context.Player.ActionTaken();
+        RaiseEventOccurred(PlayerEventType.AfterMove, context);
     }
 }

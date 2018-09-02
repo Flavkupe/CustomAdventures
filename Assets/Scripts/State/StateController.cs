@@ -1,19 +1,33 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.State;
+using System;
+using UnityEngine;
 
 public interface IStateController
 {
     string Name { get; }
     string StateName { get; }
+
+    /// <summary>
+    /// For handling incoming events not related to this state
+    /// </summary>
+    void HandleNewEvent<TIncomingEventType>(TIncomingEventType eventType, GameContext context) where TIncomingEventType : struct;
 }
 
-public interface IStateController<TContextType> : IStateController
+public interface IStateController<TEventType> : IStateController where TEventType : struct
 {
     void Update(GameContext context);
 
-    void RegisterState(IState<TContextType> state);
+    void RegisterState(IState<TEventType> state);
+
+    bool QueueIdle { get; }
+
+    /// <summary>
+    /// For handling incoming events
+    /// </summary>
+    void HandleNewEvent(TEventType eventType, GameContext context);
 }
 
-public abstract class StateController<TStateType, TContextType> : IStateController<TContextType> where TStateType : class, IState<TContextType>
+public abstract class StateController<TStateType, TEventType> : IStateController<TEventType> where TStateType : class, IState<TEventType> where TEventType : struct
 {
     public TStateType CurrentState { get; protected set; }
     public TStateType PreviousState => _previous ?? CurrentState;
@@ -22,7 +36,7 @@ public abstract class StateController<TStateType, TContextType> : IStateControll
     
     protected TStateType FirstState { get; set; }
 
-    protected State<TContextType> AnyState { get; }
+    protected State<TEventType> AnyState { get; }
 
     private StateEventQueue _eventQueue;
 
@@ -43,10 +57,10 @@ public abstract class StateController<TStateType, TContextType> : IStateControll
     protected StateController(string subjectName)
     {
         _name = subjectName;
-        AnyState = new State<TContextType>(this);
+        AnyState = new State<TEventType>(this);
     }
 
-    protected void ChangeState(TStateType newState, TContextType context)
+    protected void ChangeState(TStateType newState, StateContext<TEventType> context)
     {
         if (newState != CurrentState)
         {
@@ -59,7 +73,7 @@ public abstract class StateController<TStateType, TContextType> : IStateControll
         }
     }
 
-    protected void CheckState(TContextType context)
+    protected void CheckState(StateContext<TEventType> context)
     {
         var newState = CurrentState.GetNextState(context);
         if (!(newState is TStateType))
@@ -92,7 +106,7 @@ public abstract class StateController<TStateType, TContextType> : IStateControll
         CurrentState.Update(context);
     }
 
-    public void RegisterState(IState<TContextType> state)
+    public void RegisterState(IState<TEventType> state)
     {
         state.EventOccurred += (obj, type) => EventOccurred(type);
         state.RequestRoutine += OnRequestRoutine;
@@ -122,9 +136,37 @@ public abstract class StateController<TStateType, TContextType> : IStateControll
         }
     }
 
-    protected void EventOccurred(TContextType eventContext)
+    protected void EventOccurred(StateContext<TEventType> eventContext)
     {
-        CurrentState.HandleNewEvent(eventContext);
+        CurrentState.HandleNewEvent(eventContext.Event, eventContext.GameContext);
         CheckState(eventContext);
+    }
+
+    /// <summary>
+    /// For handling events related to this state
+    /// </summary>
+    /// <param name="eventType"></param>
+    /// <param name="context"></param>
+    public void HandleNewEvent(TEventType eventType, GameContext context)
+    {
+        EventOccurred(new StateContext<TEventType>(eventType, context, CurrentState));
+    }
+
+    /// <summary>
+    /// For handling events not related to this state
+    /// </summary>
+    public void HandleNewEvent<TIncomingEventType>(TIncomingEventType eventType, GameContext context) where TIncomingEventType : struct
+    {
+        // Do not need to handle these
+        if (typeof(TIncomingEventType) == typeof(TEventType))
+        {
+            return;
+        }
+
+        var state = CurrentState as IHandleStateEvent<TIncomingEventType>;
+        if (state != null)
+        {
+            state.HandleNewEvent(eventType, context);
+        }
     }
 }
