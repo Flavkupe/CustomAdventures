@@ -532,7 +532,6 @@
     <Compile Include="Assets\Scripts\Managers\DebugManager.cs" />
     <Compile Include="Assets\Scripts\Managers\DeckManager.cs" />
     <Compile Include="Assets\Scripts\Managers\SoundManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\StateManager.cs" />
     <Compile Include="Assets\Scripts\Managers\TextManager.cs" />
     <Compile Include="Assets\Scripts\Managers\UIManager.cs" />
     <Compile Include="Assets\Scripts\Misc\FloatyText.cs" />
@@ -599,8 +598,10 @@
     <Compile Include="Assets\Scripts\UI\UIEventButton.cs" />
     <Compile Include="Assets\Scripts\Utils\CooldownTimer.cs" />
     <Compile Include="Assets\Scripts\Utils\CoroutineUtils.cs" />
+    <Compile Include="Assets\Scripts\Utils\ExtensionFunctions.cs" />
     <Compile Include="Assets\Scripts\Utils\Logging\DefaultLogger.cs" />
     <Compile Include="Assets\Scripts\Utils\ProbabilityContainer.cs" />
+    <Compile Include="Assets\Scripts\Utils\Routine\CoRoutineRunner.cs" />
     <Compile Include="Assets\Scripts\Utils\Routine\ParallelRoutineSet.cs" />
     <Compile Include="Assets\Scripts\Utils\Routine\Routine.cs" />
     <Compile Include="Assets\Scripts\Utils\Routine\RoutineChain.cs" />

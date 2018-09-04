@@ -21,7 +21,7 @@ public class CursorObject : MonoBehaviour
 
     private void SetPosition()
     {
-        transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        transform.position = Utils.GetWorldMousePos();
     }
 }
 

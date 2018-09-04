@@ -71,6 +71,11 @@ public static class Utils
     {
         return Input.GetMouseButton(0) ? 3.0f : 1.0f;
     }
+
+    public static Vector3 GetWorldMousePos()
+    {
+        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
 }
 
 public class MoveToSpotOptions

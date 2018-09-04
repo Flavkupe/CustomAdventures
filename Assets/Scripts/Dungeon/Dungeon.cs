@@ -282,6 +282,11 @@ public class Dungeon : SingletonObject<Dungeon>
         return entities;
     }
 
+    public void ShuffleNewCardsIntoDeck<TCardType>(Deck<TCardType> deck, IList<TCardType> cards) where TCardType : class, ICard
+    {
+        StartCoroutine(_cardController.ShuffleNewCardsIntoDeck(deck, cards, ShuffleMode.SmallFromMouse));
+    }
+
     private int _pauseCounters;
     public void PauseActions()
     {

@@ -22,11 +22,14 @@ public class AbilityGainItemData : ItemUseData
             context.Player.PlaySounds(ItemUsedSounds);
         }
 
+        var newCards = new List<IAbilityCard>();
         foreach (var ability in AbilitiesToAdd)
         {
-            var card = ability.CreateCard<IAbilityCard>();
-            context.Dungeon.Decks.AbilityDeck.PushCard(card);
+            newCards.Add(ability.CreateCard<IAbilityCard>());
         }
+
+        var abilityDeck = context.Dungeon.Decks.AbilityDeck;
+        context.Dungeon.ShuffleNewCardsIntoDeck(context.Dungeon.Decks.AbilityDeck, newCards);
 
         return true;
     }

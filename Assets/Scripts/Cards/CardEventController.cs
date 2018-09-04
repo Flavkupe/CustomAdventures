@@ -5,6 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public enum ShuffleMode
+{
+    /// <summary>
+    /// Shuffle cards all at once starting out small, starting 
+    /// from cursor position
+    /// </summary>
+    SmallFromMouse,
+}
+
 [RequireComponent(typeof(CardAnimationController))]
 public class CardEventController : MonoBehaviourEx
 {
@@ -123,6 +132,16 @@ public class CardEventController : MonoBehaviourEx
         DestroyCards(props.DrawResults);
     }
 
+    public IEnumerator ShuffleNewCardsIntoDeck<TCardType>(Deck<TCardType> deck, IList<TCardType> cards, ShuffleMode mode = ShuffleMode.SmallFromMouse) where TCardType : class, ICard
+    {
+        Game.Sounds.PlayClip(MulliganSound);
+        _animationController.ArrangeCards(cards, mode);
+        yield return new WaitForSeconds(0.5f);
+        yield return _animationController.AnimateShuffleCardsIntoDeck(cards, deck, CardAnimationController.ScaleChange.NoChange);
+        deck.PushToBottom(cards);
+        Game.UI.UpdateEntityPanels();
+    }
+
     private void DestroyCards(IEnumerable<ICard> cards)
     {
         foreach (var card in cards)
@@ -197,7 +216,7 @@ public class CardEventController : MonoBehaviourEx
     {
         Game.Sounds.PlayClip(MulliganSound);
         Game.Player.GetPlayerStats().Mulligans--;
-        yield return _animationController.AnimateShuffleCardsIntoDeck(cards, deck.DeckHolder);
+        yield return _animationController.AnimateShuffleCardsIntoDeck(cards, deck, CardAnimationController.ScaleChange.BigToSmall);
         deck.PushToBottom(cards);
         Game.UI.UpdateEntityPanels();
     }
