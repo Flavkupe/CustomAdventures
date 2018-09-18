@@ -12,11 +12,6 @@ namespace Assets.Scripts
 
         public string TextValue;
 
-        void Awake()
-        {
-            // this._rect = 
-        }
-
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (_tooltip == null)
@@ -24,8 +19,8 @@ namespace Assets.Scripts
                 _tooltip = Instantiate(Game.UI.Templates.UIParts.HoverTooltip);
                 _tooltip.transform.SetParent(this.transform);
                 _tooltip.transform.localScale = Vector3.one;
-                _tooltip.transform.position = Utils.GetWorldMousePos();
-                _tooltip.SetText(TextValue);
+                var replaced = Game.Tokens.ReplaceTokens(TextValue);
+                _tooltip.SetText(replaced);
             }
         }
 

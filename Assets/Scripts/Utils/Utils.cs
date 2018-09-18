@@ -167,3 +167,21 @@ public class SingletonObject<T> : MonoBehaviourEx where T : MonoBehaviour
         protected set { _instance = value; }
     }
 }
+
+public class Singleton<T> where T : new()
+{
+    private static T _instance;
+
+    public static T Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new T();
+            }
+
+            return _instance;
+        }
+    }
+}

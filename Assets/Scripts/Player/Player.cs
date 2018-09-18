@@ -63,6 +63,9 @@ public class Player : TileActor
     {
         Instance = this;
         _soundGen = GetComponent<SoundGenerator>();
+
+        Game.Tokens.SetToken("PlayerHP", () => this.CurrentStats.HP.ToString());
+        Game.Tokens.SetToken("PlayerMaxHP", () => this.BaseStats.HP.ToString());
     }
 
     public void InitializePlayerTurn()

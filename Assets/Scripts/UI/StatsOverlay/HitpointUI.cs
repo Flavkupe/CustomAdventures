@@ -21,11 +21,6 @@ public class HitpointUI : MonoBehaviour {
     void Update ()
     {
         var player = Game.Player;
-        if (Input.GetKeyUp(KeyCode.L))
-        {
-            player.CurrentStats.HP--;
-        }
-
         if (player!= null) {
             if (_currentHP != player.CurrentStats.HP && player.BaseStats.HP > 0)
             {

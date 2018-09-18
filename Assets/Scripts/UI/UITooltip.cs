@@ -24,5 +24,10 @@ namespace Assets.Scripts.UI
             _tooltipRect.sizeDelta = new Vector2(textSize.x * ContentsRect.localScale.x, textSize.y * ContentsRect.localScale.y);
             ContentsRect.sizeDelta = textSize;
         }
+
+        void Update()
+        {
+            this.transform.position = Utils.GetWorldMousePos();
+        }
     }
 }

@@ -13,5 +13,7 @@ public static class Game
     public static DebugManager Debug => DebugManager.Instance;
 
     public static SoundManager Sounds => SoundManager.Instance;
+
+    public static TokenManager Tokens => TokenManager.Instance;
 }
 
