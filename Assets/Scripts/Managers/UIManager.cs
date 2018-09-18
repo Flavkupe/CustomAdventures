@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.UI.State;
+﻿using Assets.Scripts.UI;
+using Assets.Scripts.UI.State;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ public class UIManager : SingletonObject<UIManager>
     public MulliganPanel MulliganPanel;
 
     public MessageDialog MessageDialog;
+
+    public UIPrefabTemplates Templates;
 
     public Canvas MainCanvas;
 

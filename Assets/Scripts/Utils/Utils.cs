@@ -47,6 +47,13 @@ public static class Utils
         }
     }
 
+    public static T Clamp<T>(T min, T max, T value) where T : IComparable
+    {
+        if (value.CompareTo(min) < 0) return min;
+        if (value.CompareTo(max) > 0) return max;
+        return value;
+    }
+
     public static T InstantiateOfType<T>(string name = null) where T : MonoBehaviour
     {
         GameObject obj = new GameObject(name ?? typeof(T).Name);
