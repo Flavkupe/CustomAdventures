@@ -177,7 +177,7 @@ public class CardEventController : MonoBehaviourEx
         {
             cards = props.Deck.DrawCards(props.NumDraws, props.DrawConditionFunc).ToList();
             yield return _animationController.AnimateCardDraws(cards, props.Deck.DeckHolder);
-            if (props.AllowMulligan && Game.Player.GetPlayerStats().Mulligans > 0)
+            if (props.AllowMulligan && Game.Player.GetPlayerStats().Mulligans.Value > 0)
             {
                 Game.UI.ToggleMulliganPanel(true);
                 var pressEvent = new AwaitKeyPress(MulliganKey, TakeKey);
@@ -215,7 +215,7 @@ public class CardEventController : MonoBehaviourEx
     private IEnumerator MulliganCardsIntoDeck<TCardType>(Deck<TCardType> deck, List<TCardType> cards) where TCardType : class, ICard
     {
         Game.Sounds.PlayClip(MulliganSound);
-        Game.Player.GetPlayerStats().Mulligans--;
+        Game.Player.GetPlayerStats().Mulligans.Value--;
         yield return _animationController.AnimateShuffleCardsIntoDeck(cards, deck, CardAnimationController.ScaleChange.BigToSmall);
         deck.PushToBottom(cards);
         Game.UI.UpdateEntityPanels();

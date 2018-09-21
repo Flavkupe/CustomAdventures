@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using Assets.Scripts.State;
+using JetBrains.Annotations;
 using UnityEngine.SceneManagement;
 
 public class Player : TileActor
@@ -66,6 +70,7 @@ public class Player : TileActor
 
         Game.Tokens.SetToken("PlayerHP", () => this.CurrentStats.HP.ToString());
         Game.Tokens.SetToken("PlayerMaxHP", () => this.BaseStats.HP.ToString());
+        Game.Tokens.SetToken("Mulligans", () => this.GetPlayerStats().Mulligans.Value.ToString());
     }
 
     public void InitializePlayerTurn()
@@ -356,9 +361,18 @@ public class Player : TileActor
 [Serializable]
 public class PlayerStats : Stats
 {
-    public int Mulligans = 2;
+    public PlayerStats()
+    {
+        Mulligans.Value = 2;
+    }
+
+    public WorldUpdatingObservable<int>
+        Mulligans = new WorldUpdatingObservable<int>(SimpleWorldEvent.PlayerStatsChange);
+
     public int EXP = 0;
 }
+
+
 
 public enum PlayerInteraction
 {
@@ -367,3 +381,4 @@ public enum PlayerInteraction
     InteractWithObject,
     Attack
 }
+

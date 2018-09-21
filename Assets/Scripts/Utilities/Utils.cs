@@ -163,7 +163,10 @@ public class SingletonObject<T> : MonoBehaviourEx where T : MonoBehaviour
 
     public static T Instance
     {
-        get { return _instance; }
+        get
+        {
+            return _instance;
+        }
         protected set { _instance = value; }
     }
 }

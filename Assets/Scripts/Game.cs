@@ -15,5 +15,7 @@ public static class Game
     public static SoundManager Sounds => SoundManager.Instance;
 
     public static TokenManager Tokens => TokenManager.Instance;
+
+    public static World World => World.Instance;
 }
 

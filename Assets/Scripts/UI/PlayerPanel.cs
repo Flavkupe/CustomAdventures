@@ -7,7 +7,6 @@ public class PlayerPanel : MonoBehaviour
     {
         var stats = Game.Player.GetPlayerStats();
 
-
 // string weaponName = Game.Player.Inventory.EquippedWeapon == null ? "Fists" : Game.Player.Inventory.EquippedWeapon.ItemData.Name;
 
 //        string data = string.Format(

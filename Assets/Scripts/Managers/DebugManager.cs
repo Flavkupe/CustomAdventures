@@ -28,6 +28,16 @@ public class DebugManager : SingletonObject<DebugManager>
     {
         if (DebugMode)
         {
+            if (Input.GetKeyUp(KeyCode.Equals))
+            {
+                Game.Player.GetPlayerStats().Mulligans.Value++;
+            }
+
+            if (Input.GetKeyUp(KeyCode.Minus))
+            {
+                Game.Player.GetPlayerStats().Mulligans.Value--;
+            }
+
             if (Input.GetKeyUp(KeyCode.P) && ItemsToGive.Length > 0)
             {
                 foreach (var template in ItemsToGive)
