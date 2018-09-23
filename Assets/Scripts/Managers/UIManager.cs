@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.UI;
 using Assets.Scripts.UI.State;
+using Assets.Scripts.UI.StatsOverlay;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ public class UIManager : SingletonObject<UIManager>
     public InventoryPanel InventoryPanel;
 
     public MulliganPanel MulliganPanel;
+
+    public ActionIcons ActionIcons;
 
     public MessageDialog MessageDialog;
 
@@ -56,6 +59,11 @@ public class UIManager : SingletonObject<UIManager>
         {
             MessageDialog = FindObjectOfType<MessageDialog>();
             MessageDialog.gameObject.SetActive(false);
+        }
+
+        if (ActionIcons == null)
+        {
+            ActionIcons = FindObjectOfType<ActionIcons>();
         }
     }
 

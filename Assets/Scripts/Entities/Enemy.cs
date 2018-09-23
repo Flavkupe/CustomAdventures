@@ -27,8 +27,8 @@ public class Enemy : TileAI
     public override IEnumerator ProcessCharacterTurn()
     {
         // Initialize stats for start of turn
-        CurrentStats.FreeMoves = BaseStats.FreeMoves;
-        CurrentStats.FullActions = BaseStats.FullActions;
+        CurrentStats.FreeMoves.Value = BaseStats.FreeMoves.Value;
+        CurrentStats.FullActions.Value = BaseStats.FullActions.Value;
 
         // Do all strategies from behavior list
         yield return _behavior.DoStrategy(new GameContext {Dungeon = Game.Dungeon, Player = Game.Player});

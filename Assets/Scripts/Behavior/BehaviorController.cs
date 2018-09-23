@@ -21,11 +21,11 @@ public class BehaviorController : MonoBehaviour
         var stats = _subject.GetModifiedStats();
         while (stats.FreeMoves > 0 || stats.FullActions > 0)
         {
-            var total = stats.FreeMoves + stats.FullActions;
+            int total = stats.FreeMoves.Value + stats.FullActions.Value;
             var strat = _chain.GetCurrentStrategy(_subject, context);
             yield return strat.Execute(_subject, context);
             stats = _subject.GetModifiedStats();
-            if (total == stats.FreeMoves + stats.FullActions)
+            if (total == stats.FreeMoves.Value + stats.FullActions.Value)
             {
                 // Safety closure to ensure faulty strategies don't loop forever
                 Debug.Assert(false, "Number of moves did not change! Make sure all actions cost moves.");

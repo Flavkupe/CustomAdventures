@@ -3,29 +3,146 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Assets.Scripts
+[Serializable]
+public class Observable<T> : INotifyPropertyChanged where T : IComparable
 {
-    public class Observable<T> : INotifyPropertyChanged where T : IComparable
+    public Observable()
     {
-        private T _value;
+    }
 
-        public T Value
+    public Observable(T initialVal)
+    {
+        _value = initialVal;
+    }
+
+    public Observable(Observable<T> initial)
+    {
+        _value = initial.Value;
+        PropertyChanged += initial.PropertyChanged;
+    }
+
+    /// <summary>
+    /// Note: do not set this directly! This is meant only for the inspector. Use Value instead.
+    /// </summary>
+    public T _value;
+
+    public T Value
+    {
+        get { return _value; }
+        set
         {
-            get { return _value; }
-            set
-            {
-                if (value.Equals(_value)) return;
-                _value = value;
-                OnPropertyChanged(nameof(_value));
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (value.Equals(_value)) return;
+            _value = value;
+            OnPropertyChanged(nameof(_value));
         }
     }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [NotifyPropertyChangedInvocator]
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }
+
+[Serializable]
+public class IntObservable : Observable<int>
+{
+    public IntObservable()
+    {
+    }
+
+    public IntObservable(int initialValue)
+        : base (initialValue)
+    {
+    }
+
+    public IntObservable(IntObservable initialValue)
+        : base(initialValue)
+    {
+    }
+
+    public static IntObservable operator ++(IntObservable left)
+    {
+        left.Value++;
+        return left;
+    }
+
+    public static IntObservable operator --(IntObservable left)
+    {
+        left.Value--;
+        return left;
+    }
+
+    public static IntObservable operator +(IntObservable left, IntObservable right)
+    {
+        left.Value += right.Value;
+        return left;
+    }
+
+    public static IntObservable operator -(IntObservable left, IntObservable right)
+    {
+        left.Value -= right.Value;
+        return left;
+    }
+
+    public static IntObservable operator +(IntObservable left, int right)
+    {
+        left.Value += right;
+        return left;
+    }
+
+    public static IntObservable operator -(IntObservable left, int right)
+    {
+        left.Value -= right;
+        return left;
+    }
+
+
+    public static bool operator >(IntObservable left, int right)
+    {
+        return left.Value > right;
+    }
+
+    public static bool operator <(IntObservable left, int right)
+    {
+        return left.Value < right;
+    }
+
+    public static bool operator <=(IntObservable left, int right)
+    {
+        return left.Value <= right;
+    }
+
+    public static bool operator >=(IntObservable left, int right)
+    {
+        return left.Value >= right;
+    }
+
+    public static bool operator ==(IntObservable left, int right)
+    {
+        return left.Value == right;
+    }
+
+    public static bool operator !=(IntObservable left, int right)
+    {
+        return left.Value != right;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return base.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public static explicit operator int(IntObservable val)
+    {
+        return val.Value;
+    }
+}
+

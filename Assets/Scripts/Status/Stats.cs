@@ -1,19 +1,36 @@
-﻿using System;
+﻿using Assets.Scripts;
+using System;
+using System.ComponentModel;
 
 [Serializable]
 public class Stats
 {
+    public Stats()
+    {
+        HP.PropertyChanged += OnPropertyChanged;
+        FullActions.PropertyChanged += OnPropertyChanged;
+        FreeMoves.PropertyChanged += OnPropertyChanged;
+    }
+
+    protected virtual void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+    }
+
     public int Level = 1;
-    public int HP = 10;
+    public IntObservable HP = new IntObservable(10);
     public int Energy = 0;
     public int Strength = 1;
-    public int FullActions = 1;
-    public int FreeMoves = 1;
+    public IntObservable FullActions = new IntObservable(1);
+    public IntObservable FreeMoves = new IntObservable(1);
     public int VisibilityRange = 3;
 
     public Stats Clone()
     {
-        return MemberwiseClone() as Stats;
+        var newStats = MemberwiseClone() as Stats;
+        newStats.HP = new IntObservable(HP);
+        newStats.FullActions = new IntObservable(FullActions);
+        newStats.FreeMoves = new IntObservable(FreeMoves);
+        return newStats;
     }
 
     /// <summary>

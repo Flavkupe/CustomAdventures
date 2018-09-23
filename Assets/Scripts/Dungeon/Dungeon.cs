@@ -256,6 +256,12 @@ public class Dungeon : SingletonObject<Dungeon>
         _player.LevelupEvent += OnPlayerLevelupEvent;
         _player.AfterPlayerAction += OnPlayerActionTaken;
         _player.DungeonStarted(this);
+
+        // If enemies are present at start, invoke
+        if (_enemies.Count > 0)
+        {
+            EnemyListPopulated?.Invoke(this, null);
+        }
     }
 
     public List<GridTile> GetTilesNearPlayer(TileRangeType rangeType, int range)

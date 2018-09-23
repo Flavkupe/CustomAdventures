@@ -29,6 +29,13 @@ public class PlayerCombatTurnState : PlayerState
     public override void StateEntered(IState<PlayerEventType> previousState, StateContext<PlayerEventType> context)
     {
         context.GameContext.Player.InitializePlayerTurn();
+
+        Game.UI.ActionIcons.ToggleIcons(true);
+    }
+
+    public override void StateExited(IState<PlayerEventType> newState, StateContext<PlayerEventType> context)
+    {
+        Game.UI.ActionIcons.ToggleIcons(false);
     }
 
     protected override bool HandleInput(GameContext context)
@@ -40,8 +47,8 @@ public class PlayerCombatTurnState : PlayerState
 
         if (Input.GetKey(KeyCode.Space))
         {
-            context.Player.CurrentStats.FreeMoves = 0;
-            context.Player.CurrentStats.FullActions = 0;
+            context.Player.CurrentStats.FreeMoves.Value = 0;
+            context.Player.CurrentStats.FullActions.Value = 0;
             OnAfterPlayerMove(context);
             return true;
         }
@@ -89,7 +96,7 @@ public class PlayerCombatTurnState : PlayerState
         else
         {
             context.Player.CurrentStats.FullActions--;
-            context.Player.CurrentStats.FreeMoves = 0;
+            context.Player.CurrentStats.FreeMoves.Value = 0;
         }
 
         context.Player.ActionTaken();

@@ -33,8 +33,8 @@ public class IdleStrategy : ActorStrategy
     protected override IEnumerator PerformActions(TileAI subject, GameContext context)
     {
         // use up all actions
-        subject.CurrentStats.FreeMoves = 0;
-        subject.CurrentStats.FullActions = 0;
+        subject.CurrentStats.FreeMoves.Value = 0;
+        subject.CurrentStats.FullActions.Value = 0;
         yield return IdleAction;
     }
 }

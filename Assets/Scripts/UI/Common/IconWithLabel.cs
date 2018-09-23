@@ -24,7 +24,10 @@ public class IconWithLabel : MonoBehaviour, IUpdatesWhen
 
     private void UpdateText()
     {
-        Label.text = Game.Tokens.ReplaceTokens(TextTemplate);
+        if (Label != null && Game.Tokens != null)
+        {
+            Label.text = Game.Tokens.ReplaceTokens(TextTemplate);
+        }
     }
 
     [Tooltip("Optional condition which can cause text to update.")]

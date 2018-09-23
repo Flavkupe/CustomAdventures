@@ -89,7 +89,7 @@ public class ActorStrategy : ScriptableObject
         else
         {
             // If can't use free move, use full actions and forgo free moves for turn
-            subject.CurrentStats.FreeMoves = 0;
+            subject.CurrentStats.FreeMoves.Value = 0;
             subject.CurrentStats.FullActions--;
         }
 

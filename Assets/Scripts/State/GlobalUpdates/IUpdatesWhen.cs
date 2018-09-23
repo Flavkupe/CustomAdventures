@@ -16,11 +16,11 @@ namespace Assets.Scripts.State
         void Updated();
     }
 
-    public class WorldUpdatingObservable<T> : Observable<T> where T : IComparable
+    public class GlobalObservable<T> : Observable<T> where T : IComparable
     {
         private readonly SimpleWorldEvent _eventCaused;
 
-        public WorldUpdatingObservable(SimpleWorldEvent eventCaused)
+        public GlobalObservable(SimpleWorldEvent eventCaused)
         {
             _eventCaused = eventCaused;
             PropertyChanged += ObservableUpdater_PropertyChanged;

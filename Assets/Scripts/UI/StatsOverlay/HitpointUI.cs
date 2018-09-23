@@ -22,10 +22,10 @@ public class HitpointUI : MonoBehaviour {
     {
         var player = Game.Player;
         if (player!= null) {
-            if (_currentHP != player.CurrentStats.HP && player.BaseStats.HP > 0)
+            if (player.CurrentStats.HP != _currentHP && player.BaseStats.HP > 0)
             {
-                float ratio = (float)player.CurrentStats.HP / player.BaseStats.HP;
-                _currentHP = player.CurrentStats.HP;
+                float ratio = (float)player.CurrentStats.HP.Value / player.BaseStats.HP.Value;
+                _currentHP = player.CurrentStats.HP.Value;
                 HpText.text = _currentHP.ToString();
                 var height = rect.rect.height * (1.0f - ratio);
                 HpRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);

@@ -76,8 +76,8 @@ public class Player : TileActor
     public void InitializePlayerTurn()
     {
         var baseStats = GetModifiedStats(true);
-        CurrentStats.FullActions = baseStats.FullActions;
-        CurrentStats.FreeMoves = baseStats.FreeMoves;
+        CurrentStats.FullActions.Value = baseStats.FullActions.Value;
+        CurrentStats.FreeMoves.Value = baseStats.FreeMoves.Value;
     }
 
     public void EquipDrawnAbilityCard(IAbilityCard ability)
@@ -244,9 +244,7 @@ public class Player : TileActor
         }
 
         return damage;
-    }
-
-    
+    }    
 
     public IEnumerator TwitchTowards(TileEntity other, float speed = 5.0f)
     {
@@ -366,10 +364,17 @@ public class PlayerStats : Stats
         Mulligans.Value = 2;
     }
 
-    public WorldUpdatingObservable<int>
-        Mulligans = new WorldUpdatingObservable<int>(SimpleWorldEvent.PlayerStatsChange);
+    public GlobalObservable<int> Mulligans = new GlobalObservable<int>(SimpleWorldEvent.PlayerStatsChange);
 
     public int EXP = 0;
+
+    protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (Game.World != null)
+        {
+            Game.World.SimpleEventHappened(SimpleWorldEvent.PlayerStatsChange);
+        }
+    }
 }
 
 
