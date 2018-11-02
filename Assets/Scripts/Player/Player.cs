@@ -110,7 +110,7 @@ public class Player : TileActor
 
     public override void DoHealing(int healing)
     {
-        CurrentStats.HP += healing;
+        CurrentStats.HP.Value += healing;
         ShowFloatyText("+" + healing, Color.green, FloatyTextSize.Small);
         BlinkColor(Color.green);
     }
@@ -134,7 +134,7 @@ public class Player : TileActor
 
         if (damage > 0)
         {
-            CurrentStats.HP -= damage;
+            CurrentStats.HP.Value -= damage;
             ShowFloatyText("-" + damage, null, FloatyTextSize.Small);
             if (CurrentStats.HP <= 0)
             {
@@ -362,9 +362,10 @@ public class PlayerStats : Stats
     public PlayerStats()
     {
         Mulligans.Value = 2;
+        Mulligans.PropertyChanged += OnPropertyChanged;
     }
 
-    public GlobalObservable<int> Mulligans = new GlobalObservable<int>(SimpleWorldEvent.PlayerStatsChange);
+    public readonly IntObservable Mulligans = new IntObservable();
 
     public int EXP = 0;
 

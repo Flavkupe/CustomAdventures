@@ -11,8 +11,8 @@ public class AttributeGainCard : CharacterCard<AttributeGainCardData>
 
         if (Data.MaxHPGain > 0)
         {
-            context.Player.BaseStats.HP += Data.MaxHPGain;
-            context.Player.CurrentStats.HP += Data.MaxHPGain;
+            context.Player.BaseStats.HP.Value += Data.MaxHPGain;
+            context.Player.CurrentStats.HP.Value += Data.MaxHPGain;
         }
 
         yield return null;

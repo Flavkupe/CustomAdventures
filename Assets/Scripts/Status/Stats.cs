@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 
 [Serializable]
 public class Stats
@@ -17,19 +18,25 @@ public class Stats
     }
 
     public int Level = 1;
-    public IntObservable HP = new IntObservable(10);
+    public readonly IntObservable HP = new IntObservable(10);
     public int Energy = 0;
     public int Strength = 1;
-    public IntObservable FullActions = new IntObservable(1);
-    public IntObservable FreeMoves = new IntObservable(1);
+    public readonly IntObservable FullActions = new IntObservable(1);
+    public readonly IntObservable FreeMoves = new IntObservable(1);
     public int VisibilityRange = 3;
 
     public Stats Clone()
     {
-        var newStats = MemberwiseClone() as Stats;
-        newStats.HP = new IntObservable(HP);
-        newStats.FullActions = new IntObservable(FullActions);
-        newStats.FreeMoves = new IntObservable(FreeMoves);
+        var newStats = new Stats
+        {
+            Level = Level,
+            Energy = Energy,
+            VisibilityRange = VisibilityRange,
+        };
+
+        newStats.HP.Set(HP);
+        newStats.FullActions.Set(FullActions);
+        newStats.FreeMoves.Set(FreeMoves);
         return newStats;
     }
 
@@ -40,11 +47,11 @@ public class Stats
     public void Accumulate(Stats stats)
     {
         Level += stats.Level;
-        HP += stats.HP;
+        HP.Value += stats.HP;
         Energy += stats.Energy;
         Strength += stats.Strength;
-        FullActions += stats.FullActions;
-        FreeMoves += stats.FreeMoves;
+        FullActions.Value += stats.FullActions;
+        FreeMoves.Value += stats.FreeMoves;
         VisibilityRange += stats.VisibilityRange;
     }
 }

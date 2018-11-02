@@ -30,6 +30,8 @@ public class Enemy : TileAI
         CurrentStats.FreeMoves.Value = BaseStats.FreeMoves.Value;
         CurrentStats.FullActions.Value = BaseStats.FullActions.Value;
 
+        Trace.Info(TraceType.Behavior, $"Processing {Data.Name} turn. Moves: {CurrentStats.FreeMoves} | Actions: {CurrentStats.FullActions}");
+
         // Do all strategies from behavior list
         yield return _behavior.DoStrategy(new GameContext {Dungeon = Game.Dungeon, Player = Game.Player});
     }
@@ -44,7 +46,7 @@ public class Enemy : TileAI
     {
         if (_stats.HP > 0)
         {
-            _stats.HP -= damage;
+            _stats.HP.Value -= damage;
             ShowFloatyText("-" + damage.ToString(), null, FloatyTextSize.Small);
             if (_stats.HP <= 0)
             {

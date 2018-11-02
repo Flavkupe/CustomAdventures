@@ -37,12 +37,30 @@ public class Observable<T> : INotifyPropertyChanged where T : IComparable
         }
     }
 
+    public virtual void Set(Observable<T> other, bool fireChangedEvent = false)
+    {
+        if (fireChangedEvent)
+        {
+            Value = other.Value;
+        }
+        else
+        {
+            _value = other.Value;
+        }
+    }
+
+
     public event PropertyChangedEventHandler PropertyChanged;
 
     [NotifyPropertyChangedInvocator]
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    public override string ToString()
+    {
+        return Value.ToString();
     }
 }
 
@@ -93,6 +111,17 @@ public class IntObservable : Observable<int>
         return left;
     }
 
+    public static int operator +(int left, IntObservable right)
+    {
+        return left + right.Value;
+    }
+
+    public static int operator -(int left, IntObservable right)
+    {
+        return left - right.Value;
+    }
+
+
     public static IntObservable operator -(IntObservable left, int right)
     {
         left.Value -= right;
@@ -138,6 +167,11 @@ public class IntObservable : Observable<int>
     public override int GetHashCode()
     {
         return base.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return Value.ToString();
     }
 
     public static explicit operator int(IntObservable val)

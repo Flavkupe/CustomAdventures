@@ -15,23 +15,4 @@ namespace Assets.Scripts.State
 
         void Updated();
     }
-
-    public class GlobalObservable<T> : Observable<T> where T : IComparable
-    {
-        private readonly SimpleWorldEvent _eventCaused;
-
-        public GlobalObservable(SimpleWorldEvent eventCaused)
-        {
-            _eventCaused = eventCaused;
-            PropertyChanged += ObservableUpdater_PropertyChanged;
-        }
-
-        private void ObservableUpdater_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (Game.World != null)
-            {
-                Game.World.SimpleEventHappened(_eventCaused);
-            }
-        }
-    }
 }

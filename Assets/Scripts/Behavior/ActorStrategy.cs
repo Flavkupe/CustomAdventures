@@ -84,13 +84,13 @@ public class ActorStrategy : ScriptableObject
         if (CanUseFreeMove && subject.GetModifiedStats().FreeMoves > 0)
         {
             // First use free moves if available
-            subject.CurrentStats.FreeMoves--;
+            subject.CurrentStats.FreeMoves.Value--;
         }
         else
         {
             // If can't use free move, use full actions and forgo free moves for turn
             subject.CurrentStats.FreeMoves.Value = 0;
-            subject.CurrentStats.FullActions--;
+            subject.CurrentStats.FullActions.Value--;
         }
 
         // Handle countdown actions and toggle subject's Thought bubble

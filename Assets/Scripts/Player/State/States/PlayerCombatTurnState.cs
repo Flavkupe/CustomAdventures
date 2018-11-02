@@ -91,11 +91,11 @@ public class PlayerCombatTurnState : PlayerState
     {
         if (!isFullAction && context.Player.CurrentStats.FreeMoves > 0)
         {
-            context.Player.CurrentStats.FreeMoves--;
+            context.Player.CurrentStats.FreeMoves.Value--;
         }
         else
         {
-            context.Player.CurrentStats.FullActions--;
+            context.Player.CurrentStats.FullActions.Value--;
             context.Player.CurrentStats.FreeMoves.Value = 0;
         }
 

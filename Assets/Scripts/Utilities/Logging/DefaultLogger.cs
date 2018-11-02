@@ -9,6 +9,8 @@ public interface ILogger
     void Error(string error);
 
     void Error(Exception ex);
+
+    void Info(string info);
 }
 
 public class DefaultLogger : ILogger
@@ -27,6 +29,11 @@ public class DefaultLogger : ILogger
     {
         Debug.LogException(ex);
     }
+
+    public void Info(string info)
+    {
+        Debug.Log(info);
+    }
 }
 
 public class TestLogger : ILogger
@@ -44,6 +51,11 @@ public class TestLogger : ILogger
     public void Error(Exception ex)
     {
         LogAssert.Expect(LogType.Exception, ex.Message);
+    }
+
+    public void Info(string info)
+    {
+        LogAssert.Expect(LogType.Log, info);
     }
 }
 
@@ -70,5 +82,9 @@ public class Log
     {
         _logger.Error(ex);
     }
-}
 
+    public static void Info(string info)
+    {
+        _logger.Info(info);
+    }
+}
