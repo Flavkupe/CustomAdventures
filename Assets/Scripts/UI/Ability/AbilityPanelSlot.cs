@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class AbilityPanelSlot : MonoBehaviour
 {    
     public Image IconImage;
+    public Sprite LockIcon;
     private IAbilityCard ability;
         
     public IAbilityCard Ability { get { return ability; } }
@@ -21,23 +22,33 @@ public class AbilityPanelSlot : MonoBehaviour
         var fullSize = Game.Decks.DeckBigSize;
 
         this.ability = ability;
-        IconImage.sprite = ability.AbilityIcon;
-        IconImage.gameObject.SetActive(true);
+        SetSpriteImage(ability.AbilityIcon);
         
         if (this.ability.Object != null)
         {
             var rectTransform = GetComponent<RectTransform>();
             this.ability.Object.transform.SetParent(Game.Player.transform);
 
-            var propX = rectTransform.transform.position.x / Camera.main.pixelWidth;
-            var propY = rectTransform.transform.position.y / Camera.main.pixelHeight;
-            
-            Vector3 worldPosition = Camera.main.ViewportToWorldPoint(new Vector3(propX, propY));            
-            this.ability.Object.transform.position = new Vector3(worldPosition.x, worldPosition.y + 3.0f, -5.0f);
+            var propX = rectTransform.transform.position.x;
+            var propY = rectTransform.transform.position.y;
+
+            // TODO: this is a shitty way to do it; create a clone of this instead!
+            this.ability.Object.transform.position = new Vector3(propX, propY + 3.0f, -5.0f);
             this.ability.SetFaceUp();
             this.ability.Object.gameObject.SetActive(false);
             this.ability.Object.transform.localScale = new Vector3(fullSize, fullSize, fullSize);
         }
+    }
+
+    private void SetSpriteImage(Sprite sprite)
+    {
+        IconImage.sprite = sprite;
+        IconImage.gameObject.SetActive(true);
+    }
+
+    public void SetLocked()
+    {
+        SetSpriteImage(LockIcon);
     }
 
     public void Clear()

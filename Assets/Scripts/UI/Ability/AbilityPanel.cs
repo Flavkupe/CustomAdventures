@@ -51,6 +51,11 @@ public class AbilityPanel : SingletonObject<AbilityPanel>
                 return;
             }
         }
+
+        for (i = player.AbilityThreshold; i < slots.Count; i++)
+        {
+            slots[i].SetLocked();
+        }
     }
 
     private void Awake()
