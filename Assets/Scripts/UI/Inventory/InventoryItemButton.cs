@@ -37,8 +37,10 @@ public abstract class InventoryItemButton : MonoBehaviour, IBeginDragHandler, ID
     {
         if (BackingItem != null)
         {
-            _dragObject = Utils.InstantiateOfType<CursorObject>("drag");
-            _dragObject.transform.SetParent(Game.UI.MainCanvas.transform);
+            _dragObject = Instantiate(Game.UI.Templates.UIParts.CursorObject);
+            _dragObject.name = "drag";
+            _dragObject.transform.SetParent(Game.UI.MainCanvas.transform, false);
+            // _dragObject.transform.SetParent(Game.UI.InventoryPanel.transform, false);
             _dragObject.SetImage(BackingItem.ItemData.Sprite, subImage.rectTransform);
             _dragObject.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
             subImage.gameObject.SetActive(false);

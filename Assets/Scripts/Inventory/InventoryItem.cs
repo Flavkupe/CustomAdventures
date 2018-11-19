@@ -46,7 +46,7 @@ public abstract class InventoryItem : StackableItem
     public bool ItemUsed(ItemUseContext context)
     {
         var used = false;
-        if (ItemData.UsageData.Length > 0)
+        if (ItemData.UsageData != null && ItemData.UsageData.Length > 0)
         {
             foreach (var item in ItemData.UsageData)
             {

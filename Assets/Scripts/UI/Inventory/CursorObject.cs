@@ -1,10 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
 public class CursorObject : MonoBehaviour
 {
+    private RectTransform rect;
     private void Update()
     {
         SetPosition();
@@ -19,9 +19,15 @@ public class CursorObject : MonoBehaviour
         SetPosition();
     }
 
+    private void Awake()
+    {
+        rect = GetComponent<RectTransform>();
+    }
+
     private void SetPosition()
     {
         transform.position = Utils.GetWorldMousePos();
+        rect.anchoredPosition3D = rect.anchoredPosition3D.SetZ(0.0f);
     }
 }
 

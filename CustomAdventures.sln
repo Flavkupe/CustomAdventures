@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
+# Visual Studio 2015
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAdventures", "CustomAdventures.csproj", "{82E2CD2E-578B-501B-8D4E-DE1C372C8E3D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetIcons", "AssetIcons.csproj", "{DF1F5E04-87FC-13A2-0928-2A316FC96F92}"

@@ -16,6 +16,8 @@ namespace Assets.Scripts.UI
         public class UIPartPrefabs
         {
             public UITooltip HoverTooltip;
+
+            public CursorObject CursorObject;
         }
     }
 }

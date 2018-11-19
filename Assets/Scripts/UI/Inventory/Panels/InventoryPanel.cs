@@ -54,9 +54,7 @@ public class InventoryPanel : MonoBehaviour
             for (int i = 0; i < inv.MaxItems - slots.Length; i++)
             {
                 var slot = Instantiate(InventorySlotTemplate);
-                slot.transform.SetParent(InventorySlots.transform);
-                slot.transform.localScale = new Vector3(1.0f, 1.0f);
-                slot.transform.localPosition = slot.transform.localPosition.SetZ(0);
+                ParentTo(slot.transform, InventorySlots.transform);
             }
 
             RefreshInventoryButtons();
@@ -105,8 +103,7 @@ public class InventoryPanel : MonoBehaviour
             {
                 // Create new buttons as needed
                 var newButton = Instantiate(GroundSlotTemplate);
-                newButton.transform.SetParent(GroundSlots.transform);
-                newButton.transform.localScale = new Vector3(1.0f, 1.0f);
+                ParentTo(newButton.transform, GroundSlots.transform);
                 newButton.Type = InventoryItemButtonType.Ground;
                 groundButtons.Add(newButton);
             }
@@ -123,5 +120,16 @@ public class InventoryPanel : MonoBehaviour
             groundButtons.Remove(button);
             button.DestroyButton();
         }        
+    }
+
+    private void ParentTo(Transform item, Transform parent)
+    {
+        item.SetParent(parent, false);
+        item.localScale = new Vector3(1.0f, 1.0f);
+        var rect = item.GetComponent<RectTransform>();
+        if (rect != null)
+        {
+            rect.anchoredPosition3D = rect.anchoredPosition3D.SetZ(0.0f);
+        }
     }
 }
