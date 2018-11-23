@@ -2,6 +2,7 @@
 using Assets.Scripts.UI.State;
 using Assets.Scripts.UI.StatsOverlay;
 using JetBrains.Annotations;
+using System;
 using UnityEngine;
 
 public class UIManager : SingletonObject<UIManager>
@@ -20,7 +21,11 @@ public class UIManager : SingletonObject<UIManager>
 
     public UIPrefabTemplates Templates;
 
+    public CombatActionsPanel CombatActionsPanel;
+
     public Canvas MainCanvas;
+
+    public event EventHandler<UIEvent> UIEventTriggered;
 
     private UIEvent? _currentUIEvent;
 
@@ -64,6 +69,12 @@ public class UIManager : SingletonObject<UIManager>
         if (ActionIcons == null)
         {
             ActionIcons = FindObjectOfType<ActionIcons>();
+        }
+
+        if (CombatActionsPanel == null)
+        {
+            CombatActionsPanel = FindObjectOfType<CombatActionsPanel>();
+            CombatActionsPanel.gameObject.SetActive(false);
         }
     }
 
@@ -151,6 +162,11 @@ public class UIManager : SingletonObject<UIManager>
         MulliganPanel.gameObject.SetActive(show);
     }
 
+    public void ToggleCombatActionPanel(bool show)
+    {
+        CombatActionsPanel.gameObject.SetActive(show);
+    }
+
     public void UpdateInventory()
     {
         if (InventoryPanel.gameObject.activeSelf)
@@ -167,6 +183,10 @@ public class UIManager : SingletonObject<UIManager>
     public void SetCurrentUIEvent(UIEvent? uiEvent)
     {
         _currentUIEvent = uiEvent;
+        if (UIEventTriggered != null && uiEvent != null)
+        {
+            UIEventTriggered.Invoke(this, uiEvent.Value);
+        }
     }
 }
 
@@ -174,4 +194,5 @@ public enum UIEvent
 {
     MulliganPressed,
     TakePressed,
+    SkipTurnPressed,
 }

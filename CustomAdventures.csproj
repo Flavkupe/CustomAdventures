@@ -580,6 +580,7 @@
     <Compile Include="Assets\Scripts\Tiles\TileGrid.cs" />
     <Compile Include="Assets\Scripts\UI\Ability\AbilityPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Ability\AbilityPanelSlot.cs" />
+    <Compile Include="Assets\Scripts\UI\CombatActionsPanel.cs" />
     <Compile Include="Assets\Scripts\UI\Common\IconWithLabel.cs" />
     <Compile Include="Assets\Scripts\UI\Common\UITooltip.cs" />
     <Compile Include="Assets\Scripts\UI\Common\UITooltipController.cs" />

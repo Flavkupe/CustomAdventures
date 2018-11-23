@@ -29,13 +29,16 @@ public class PlayerCombatTurnState : PlayerState
     public override void StateEntered(IState<PlayerEventType> previousState, StateContext<PlayerEventType> context)
     {
         context.GameContext.Player.InitializePlayerTurn();
-
+        Game.UI.UIEventTriggered += UIEventTriggered;
         Game.UI.ActionIcons.ToggleIcons(true);
+        Game.UI.ToggleCombatActionPanel(true);
     }
 
     public override void StateExited(IState<PlayerEventType> newState, StateContext<PlayerEventType> context)
     {
         Game.UI.ActionIcons.ToggleIcons(false);
+        Game.UI.UIEventTriggered -= UIEventTriggered;
+        Game.UI.ToggleCombatActionPanel(false);
     }
 
     protected override bool HandleInput(GameContext context)
@@ -85,6 +88,22 @@ public class PlayerCombatTurnState : PlayerState
         {
             yield return enemy.AttackPlayer();
         }
+    }
+
+    private void UIEventTriggered(object sender, UIEvent e)
+    {
+        if (e == UIEvent.SkipTurnPressed)
+        {
+            SkipTurn();
+        }
+    }
+
+    private void SkipTurn()
+    {
+        var context = Game.Dungeon.GetGameContext();
+        context.Player.CurrentStats.FreeMoves.Value = 0;
+        context.Player.CurrentStats.FullActions.Value = 0;
+        OnAfterPlayerMove(context);
     }
 
     protected override void OnAfterPlayerAction(GameContext context, bool isFullAction)
