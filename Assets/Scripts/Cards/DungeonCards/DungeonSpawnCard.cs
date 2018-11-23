@@ -91,8 +91,12 @@ public abstract class DungeonSpawnCard<TDataType, TEntityType> : DungeonCard<TDa
         var effect = Data.CardMoveToEffect ?? context.Dungeon.Templates.CardParts.Effects.DefaultCardMoveToEffect;
         if (effect != null)
         {
+            var placeholder = Instantiate(context.Dungeon.Templates.DungeonParts.TileSpawnMarker);
+            placeholder.transform.position = tile.transform.position;
+            placeholder.transform.SetParent(tile.transform);
             var cardTravelEffect = effect.CreateTargetedEffect(tile.transform.position, transform.position);
             yield return cardTravelEffect.CreateRoutine();
+            Destroy(placeholder.gameObject);
         }
     }
 

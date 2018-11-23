@@ -14,6 +14,7 @@ public class DungeonPrefabTemplates : ScriptableObject
     public class DungeonPartPrefabs
     {
         public GridTile GridTile;
+        public GameObject TileSpawnMarker;
     }
 
     [Serializable]
