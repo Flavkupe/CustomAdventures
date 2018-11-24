@@ -18,11 +18,11 @@ public class Stats
     }
 
     public int Level = 1;
-    public readonly IntObservable HP = new IntObservable(10);
+    public IntObservable HP = new IntObservable(10);
     public int Energy = 0;
     public int Strength = 1;
-    public readonly IntObservable FullActions = new IntObservable(1);
-    public readonly IntObservable FreeMoves = new IntObservable(1);
+    public IntObservable FullActions = new IntObservable(1);
+    public IntObservable FreeMoves = new IntObservable(1);
     public int VisibilityRange = 3;
 
     public Stats Clone()

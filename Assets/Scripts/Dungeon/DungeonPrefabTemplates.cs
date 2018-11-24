@@ -8,6 +8,7 @@ public class DungeonPrefabTemplates : ScriptableObject
     public class EntityPartPrefabs
     {
         public ThoughtBubble ThoughtBubble;
+        public HealthHearts HealthHearts;
     }
 
     [Serializable]

@@ -510,6 +510,7 @@
     <Compile Include="Assets\Scripts\Entities\DecorativeTileObject.cs" />
     <Compile Include="Assets\Scripts\Entities\Enemy.cs" />
     <Compile Include="Assets\Scripts\Entities\IDungeonActor.cs" />
+    <Compile Include="Assets\Scripts\Entities\Parts\HealthHearts.cs" />
     <Compile Include="Assets\Scripts\Entities\Parts\ThoughtBubble.cs" />
     <Compile Include="Assets\Scripts\Entities\PassableTileEntity.cs" />
     <Compile Include="Assets\Scripts\Entities\PassableTileItem.cs" />

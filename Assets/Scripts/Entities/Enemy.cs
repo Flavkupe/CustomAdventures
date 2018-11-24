@@ -23,6 +23,7 @@ public class Enemy : TileAI
 
     private SoundGenerator _soundGen;
     private BehaviorController _behavior;
+    private HealthHearts _hearts;
 
     public override IEnumerator ProcessCharacterTurn()
     {
@@ -47,6 +48,7 @@ public class Enemy : TileAI
         if (_stats.HP > 0)
         {
             _stats.HP.Value -= damage;
+            _hearts.UpdateHearts(_stats.HP.Value);
             ShowFloatyText("-" + damage.ToString(), null, FloatyTextSize.Small);
             if (_stats.HP <= 0)
             {
@@ -82,6 +84,11 @@ public class Enemy : TileAI
         _soundGen = GetComponent<SoundGenerator>();
         GetComponent<BoxCollider2D>().size = new Vector3(1.0f, 1.0f);
         _behavior = GetComponent<BehaviorController>();
+
+        _hearts = Instantiate(Game.Dungeon.Templates.EntityParts.HealthHearts);
+        _hearts.transform.SetParent(transform);
+        _hearts.transform.localPosition = new Vector3(-0.25f, 0.5f);
+        _hearts.UpdateHearts(_stats.HP.Value);
     }
 
     protected override void Init()
