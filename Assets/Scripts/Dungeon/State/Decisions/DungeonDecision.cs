@@ -12,6 +12,8 @@ public abstract class DungeonDecision : Decision<DungeonEventType>
     {
         public static DidEnemyTurnStart DidEnemyTurnStart => new DidEnemyTurnStart();
         public static DidEnemyTurnEnd DidEnemyTurnEnd => new DidEnemyTurnEnd();
+        public static DidSelectionEndTurn DidSelectionEndTurn => new DidSelectionEndTurn();
+        public static DidSelectionNotEndTurn DidSelectionNotEndTurn => new DidSelectionNotEndTurn();
     }
 
     public class DidEnemyTurnStart : DungeonDecision
@@ -19,7 +21,8 @@ public abstract class DungeonDecision : Decision<DungeonEventType>
         public override bool Evaluate(StateContext<DungeonEventType> context)
         {
             var gameContext = context.GameContext;
-            if (context.Event == DungeonEventType.AfterPlayerAction)
+            if (context.Event == DungeonEventType.AfterPlayerAction ||
+                context.Event == DungeonEventType.SelectionCompleted)
             {
                 if (gameContext.Dungeon.IsCombat && !gameContext.Player.PlayerHasMoves)
                 {
@@ -36,6 +39,32 @@ public abstract class DungeonDecision : Decision<DungeonEventType>
         public override bool Evaluate(StateContext<DungeonEventType> context)
         {
             return context.Event == DungeonEventType.AllEnemiesTurnEnd;
+        }
+    }
+
+    public class DidSelectionEndTurn : DungeonDecision
+    {
+        public override bool Evaluate(StateContext<DungeonEventType> context)
+        {
+            if (context.Event == DungeonEventType.SelectionCancelled)
+            {
+                return false;
+            }
+            
+            if (context.GameContext.Player.PlayerHasMoves)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public class DidSelectionNotEndTurn : DidSelectionEndTurn
+    {
+        public override bool Evaluate(StateContext<DungeonEventType> context)
+        {
+            return !base.Evaluate(context);
         }
     }
 }

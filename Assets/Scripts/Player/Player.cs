@@ -52,6 +52,8 @@ public class Player : TileActor
 
     public event EventHandler AfterPlayerAction;
 
+    public event EventHandler<IAbilityCard> AbilityCardUsed;
+
     public PlayerStateController StateController { get; } = new PlayerStateController();
 
     // Sounds
@@ -99,7 +101,10 @@ public class Player : TileActor
     {
         // TODO: put in player state... somehow?
         ProcessEffects(EffectActivatorType.Attacks);
-        // OnAfterPlayerAction(true);
+        if (AbilityCardUsed != null)
+        {
+            AbilityCardUsed.Invoke(this, ability);
+        }
     }
 
     public void UseAbility(IAbilityCard ability)
@@ -198,6 +203,10 @@ public class Player : TileActor
         StartCoroutine(routine);
     }
 
+    /// <summary>
+    /// Updates status effects, buffs and enchantments affected by specific actions being
+    /// taken, such as walking or attacking
+    /// </summary>
     public void ProcessEffects(EffectActivatorType actionTaken)
     {
         foreach (PersistentStatusEffect effect in Effects.ToList())

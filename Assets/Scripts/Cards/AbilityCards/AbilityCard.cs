@@ -11,14 +11,17 @@ public abstract class AbilityCard<T> : Card<T>, IAbilityCard where T : AbilityCa
     // TODO: based on character class and card
     public bool ForgetOnUse => true;
 
+    public AbilityUsageRequirementType UsageRequirement => Data.UsageRequirement;
+
     public abstract void ActivateAbility(GameContext context);
 
     protected void AfterCardUsed()
     {
-        Game.Player.AfterAbilityUsed(this);
+        var player = Game.Player;
+        player.AfterAbilityUsed(this);
         if (ForgetOnUse)
         {
-            Game.Player.ForgetAbility(this);
+            player.ForgetAbility(this);
         }
     }
 }
@@ -30,9 +33,17 @@ public interface IAbilityCard : ICard
 
     Sprite AbilityIcon { get; }
 
+    AbilityUsageRequirementType UsageRequirement { get; }
     bool ForgetOnUse { get; }
 
     void ActivateAbility(GameContext context);
+}
+
+public enum AbilityUsageRequirementType
+{
+    FullAction,
+    FullTurn,
+    Free,
 }
 
 public enum AbilityActivationType
@@ -52,4 +63,5 @@ public abstract class AbilityCardData : CardData
     public abstract AbilityCardType AbilityCardType { get; }
     public AbilityActivationType ActivationType;
     public Sprite AbilityIcon;
+    public AbilityUsageRequirementType UsageRequirement;
 }

@@ -137,13 +137,13 @@ public abstract class PlayerState : State<PlayerEventType>, IActionDeterminant<D
     protected virtual void OnAfterPlayerInteract(GameContext context)
     {
         context.Player.ProcessEffects(EffectActivatorType.Steps);
-        OnAfterPlayerAction(context, true);
+        OnAfterPlayerAction(context, PlayerActionRequirementType.FullTurn);
     }
 
     protected virtual void OnAfterPlayerMove(GameContext context)
     {
         context.Player.ProcessEffects(EffectActivatorType.Steps);
-        OnAfterPlayerAction(context, false);
+        OnAfterPlayerAction(context, PlayerActionRequirementType.FreeMove);
     }
 
     protected virtual void OnAfterPlayerAttack(GameContext context)
@@ -155,10 +155,10 @@ public abstract class PlayerState : State<PlayerEventType>, IActionDeterminant<D
             inv.EquippedWeapon.ItemDurabilityExpended();
         }
 
-        OnAfterPlayerAction(context, true);
+        OnAfterPlayerAction(context, PlayerActionRequirementType.FullTurn);
     }
 
-    protected virtual void OnAfterPlayerAction(GameContext context, bool isFullAction)
+    protected virtual void OnAfterPlayerAction(GameContext context, PlayerActionRequirementType actionRequirement)
     {
     }
 
@@ -207,4 +207,12 @@ public abstract class PlayerState : State<PlayerEventType>, IActionDeterminant<D
             RaiseEventOccurred(PlayerEventType.AITurnsComplete, context);
         }
     }
+}
+
+public enum PlayerActionRequirementType
+{
+    FullAction,
+    FullTurn,
+    FreeMove,
+    Free,
 }

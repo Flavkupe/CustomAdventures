@@ -14,4 +14,6 @@ public enum PlayerEventType
 
     InitializeCombat,
     CombatStateChanged,
+
+    AbilityUsed,
 }

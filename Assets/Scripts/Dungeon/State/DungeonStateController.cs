@@ -24,8 +24,8 @@ public class DungeonStateController : StateController<DungeonState, DungeonEvent
 
         awaitingGridSelection.AddTransitions(new[]
         {
-            new DungeonStateTransition(DungeonDecision.Decisions.DidEventOccur(DungeonEventType.SelectionCancelled), awaitingInputState),
-            new DungeonStateTransition(DungeonDecision.Decisions.DidEventOccur(DungeonEventType.SelectionCompleted), awaitingInputState),
+            new DungeonStateTransition(DungeonDecision.Decisions.DidSelectionNotEndTurn, awaitingInputState),
+            new DungeonStateTransition(DungeonDecision.Decisions.DidSelectionEndTurn, awaitingAIState),
         });
 
         FirstState = awaitingInputState;

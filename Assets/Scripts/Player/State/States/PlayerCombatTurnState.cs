@@ -28,14 +28,36 @@ public class PlayerCombatTurnState : PlayerState
 
     public override void StateEntered(IState<PlayerEventType> previousState, StateContext<PlayerEventType> context)
     {
-        context.GameContext.Player.InitializePlayerTurn();
+        var player = context.GameContext.Player;
+        player.InitializePlayerTurn();
+        player.AbilityCardUsed += HandleAbilityCardUsed;
         Game.UI.UIEventTriggered += UIEventTriggered;
         Game.UI.ActionIcons.ToggleIcons(true);
         Game.UI.ToggleCombatActionPanel(true);
+
+    }
+
+    private void HandleAbilityCardUsed(object sender, IAbilityCard e)
+    {
+        var context = Game.Dungeon.GetGameContext();
+        var stats = context.Player.CurrentStats;
+        var actionType = PlayerActionRequirementType.Free;
+        switch (e.UsageRequirement)
+        {
+            case AbilityUsageRequirementType.FullAction:
+                actionType = PlayerActionRequirementType.FullAction;
+                break;
+            case AbilityUsageRequirementType.FullTurn:
+                actionType = PlayerActionRequirementType.FullTurn;
+                break;
+        }
+
+        OnAfterPlayerAction(context, actionType);
     }
 
     public override void StateExited(IState<PlayerEventType> newState, StateContext<PlayerEventType> context)
     {
+        context.GameContext.Player.AbilityCardUsed -= HandleAbilityCardUsed;
         Game.UI.ActionIcons.ToggleIcons(false);
         Game.UI.UIEventTriggered -= UIEventTriggered;
         Game.UI.ToggleCombatActionPanel(false);
@@ -103,19 +125,31 @@ public class PlayerCombatTurnState : PlayerState
         var context = Game.Dungeon.GetGameContext();
         context.Player.CurrentStats.FreeMoves.Value = 0;
         context.Player.CurrentStats.FullActions.Value = 0;
-        OnAfterPlayerMove(context);
+        OnAfterPlayerAction(context, PlayerActionRequirementType.FullTurn);
     }
 
-    protected override void OnAfterPlayerAction(GameContext context, bool isFullAction)
+    protected override void OnAfterPlayerAction(GameContext context, PlayerActionRequirementType actionRequirement)
     {
-        if (!isFullAction && context.Player.CurrentStats.FreeMoves > 0)
+        var stats = context.Player.CurrentStats;
+        if (actionRequirement == PlayerActionRequirementType.FreeMove)
         {
-            context.Player.CurrentStats.FreeMoves.Value--;
+            if (context.Player.CurrentStats.FreeMoves > 0)
+            {
+                stats.FreeMoves.Value--;
+            }
+            else
+            {
+                stats.FullActions.Value--;
+            }
         }
-        else
+        else if (actionRequirement == PlayerActionRequirementType.FullTurn)
         {
-            context.Player.CurrentStats.FullActions.Value--;
-            context.Player.CurrentStats.FreeMoves.Value = 0;
+            stats.FullActions.Value--;
+            stats.FreeMoves.Value = 0;
+        }
+        else if (actionRequirement == PlayerActionRequirementType.FullAction)
+        {
+            stats.FullActions.Value--;
         }
 
         context.Player.ActionTaken();

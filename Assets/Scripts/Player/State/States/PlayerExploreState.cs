@@ -20,9 +20,9 @@ public class PlayerExploreState : PlayerState
         }
     }
 
-    protected override void OnAfterPlayerAction(GameContext context, bool isFullAction)
+    protected override void OnAfterPlayerAction(GameContext context, PlayerActionRequirementType actionRequirement)
     {
-        base.OnAfterPlayerAction(context, isFullAction);
+        base.OnAfterPlayerAction(context, actionRequirement);
         context.Player.ActionTaken();
         RaiseEventOccurred(PlayerEventType.AfterMove, context);
     }
