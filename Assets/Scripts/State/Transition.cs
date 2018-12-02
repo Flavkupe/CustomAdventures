@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.State;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,16 @@ public class Transition<TEventType> : ITransition<TEventType> where TEventType :
     {
         Decision = decision;
         Next = next;
+    }
+
+    public Transition(Func<GameContext, bool> contextDecision, IState<TEventType> next)
+    {
+        Decision = new LambdaDecision<TEventType>(contextDecision);
+    }
+
+    public Transition(Func<GameContext, bool> contextDecision, Func<StateContext<TEventType>, bool> eventDecision, IState<TEventType> next)
+    {
+        Decision = new LambdaDecision<TEventType>(contextDecision, eventDecision);
     }
 
     public IDecision<TEventType> Decision { get; }

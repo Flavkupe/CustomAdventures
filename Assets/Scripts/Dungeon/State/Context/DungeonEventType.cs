@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 public enum DungeonEventType
 {
-    AfterPlayerAction,
     EnemyTurnStart,
     EnemyTurnEnd,
     AllEnemiesTurnEnd,

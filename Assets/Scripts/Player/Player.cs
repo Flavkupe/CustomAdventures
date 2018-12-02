@@ -50,8 +50,6 @@ public class Player : TileActor
 
     public event EventHandler<Player> LevelupEvent;
 
-    public event EventHandler AfterPlayerAction;
-
     public event EventHandler<IAbilityCard> AbilityCardUsed;
 
     public PlayerStateController StateController { get; } = new PlayerStateController();
@@ -215,11 +213,6 @@ public class Player : TileActor
         }
     }
 
-    public void ActionTaken()
-    {
-        AfterPlayerAction?.Invoke(this, null);
-    }
-
     public bool PlayerHasActions => CurrentStats.FullActions > 0;
     public bool PlayerHasMoves => PlayerHasActions || CurrentStats.FreeMoves > 0;
 
@@ -347,7 +340,7 @@ public class Player : TileActor
         // TODO: revamp with FSM!
         if (dungeon.IsCombat)
         {
-            this.InitializePlayerTurn();
+            InitializePlayerTurn();
         }
 
         dungeon.EnemyListPopulated += HandleCombatShouldStart;

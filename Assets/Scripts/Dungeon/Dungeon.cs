@@ -140,9 +140,19 @@ public class Dungeon : SingletonObject<Dungeon>
         _stateProvider.HandleNewEvent(eventType);
     }
 
+    public void RegisterToBroadcastEvents<TEventType>(EventHandler<TEventType> callback) where TEventType : struct
+    {
+        _stateProvider.RegisterToBroadcastEvents(callback);
+    }
+
+    public void UnregisterFromBroadcastEvents<TEventType>(EventHandler<TEventType> callback) where TEventType : struct
+    {
+        _stateProvider.UnregisterFromBroadcastEvents(callback);
+    }
+
     public IEnumerable<IStateController> GetStateControllers()
     {
-        return this._stateProvider.Controllers;
+        return _stateProvider.Controllers;
     }
 
     [UsedImplicitly]
@@ -244,9 +254,8 @@ public class Dungeon : SingletonObject<Dungeon>
         StartCoroutine(_cardController.PerformDungeonEvents(e));
     }
 
-    private void OnPlayerActionTaken(object sender, EventArgs e)
+    private void HandlePlayerBroadcastEvents(object source, PlayerEventType eventType)
     {
-        BroadcastEvent(DungeonEventType.AfterPlayerAction);
     }
 
     [UsedImplicitly]
@@ -254,8 +263,9 @@ public class Dungeon : SingletonObject<Dungeon>
     {
         _player.AbilityCardNeeded += OnPlayerAbilityCardNeeded;
         _player.LevelupEvent += OnPlayerLevelupEvent;
-        _player.AfterPlayerAction += OnPlayerActionTaken;
         _player.DungeonStarted(this);
+
+        RegisterToBroadcastEvents<PlayerEventType>(HandlePlayerBroadcastEvents);
 
         // If enemies are present at start, invoke
         if (_enemies.Count > 0)

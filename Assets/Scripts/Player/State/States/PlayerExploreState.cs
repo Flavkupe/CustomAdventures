@@ -23,8 +23,9 @@ public class PlayerExploreState : PlayerState
     protected override void OnAfterPlayerAction(GameContext context, PlayerActionRequirementType actionRequirement)
     {
         base.OnAfterPlayerAction(context, actionRequirement);
-        context.Player.ActionTaken();
-        RaiseEventOccurred(PlayerEventType.AfterMove, context);
+        // context.Player.ActionTaken();
+        // RaiseEventOccurred(PlayerEventType.AfterMove, context);
+        context.Dungeon.BroadcastEvent(PlayerEventType.AfterMove);
     }
 
     protected override bool OnDirectionInput(Direction direction, GameContext context)

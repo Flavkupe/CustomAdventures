@@ -16,4 +16,6 @@ public enum PlayerEventType
     CombatStateChanged,
 
     AbilityUsed,
+
+    Levelup,
 }

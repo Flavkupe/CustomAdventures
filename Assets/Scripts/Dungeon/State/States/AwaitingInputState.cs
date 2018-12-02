@@ -14,7 +14,7 @@ public class AwaitingInputState : DungeonState
     {
     }
 
-    public override void StateEntered(IState<DungeonEventType> previousState, StateContext<DungeonEventType> context)
+    public override void StateEntered(IState<DungeonEventType> previousState, StateContext context)
     {
     }
 

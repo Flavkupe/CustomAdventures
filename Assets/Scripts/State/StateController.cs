@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.State;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IStateController
@@ -25,6 +26,8 @@ public interface IStateController<TEventType> : IStateController where TEventTyp
     /// For handling incoming events
     /// </summary>
     void HandleNewEvent(TEventType eventType, GameContext context);
+
+    event EventHandler<TEventType> NewEventRaised;
 }
 
 public abstract class StateController<TStateType, TEventType> : IStateController<TEventType> where TStateType : class, IState<TEventType> where TEventType : struct
@@ -44,6 +47,8 @@ public abstract class StateController<TStateType, TEventType> : IStateController
 
     public bool QueueIdle => _eventQueue.Idle;
 
+    public event EventHandler<TEventType> NewEventRaised;
+
     public string Name => _name;
     public string StateName => CurrentState.GetType().Name;
 
@@ -60,7 +65,7 @@ public abstract class StateController<TStateType, TEventType> : IStateController
         AnyState = new State<TEventType>(this);
     }
 
-    protected void ChangeState(TStateType newState, StateContext<TEventType> context)
+    protected void ChangeState(TStateType newState, StateContext context)
     {
         if (newState != CurrentState)
         {
@@ -99,6 +104,34 @@ public abstract class StateController<TStateType, TEventType> : IStateController
         }
 
         ChangeState((TStateType)newState, context);
+    }
+
+    protected void CheckState(GameContext context)
+    {
+        var newState = CurrentState.GetNextState(context);
+        if (!(newState is TStateType))
+        {
+            Debug.LogError("State of wrong type used!");
+            return;
+        }
+
+        if (newState == AnyState)
+        {
+            Debug.LogError("Can't transition into AnyState!");
+            return;
+        }
+
+        if (newState == CurrentState)
+        {
+            // If nothing changes, check global rules based on AnyState
+            var state = AnyState.GetNextState(context);
+            if (state != null && state != AnyState)
+            {
+                newState = state;
+            }
+        }
+
+        ChangeState((TStateType)newState, new StateContext(context));
     }
 
     public void Update(GameContext context)
@@ -149,6 +182,7 @@ public abstract class StateController<TStateType, TEventType> : IStateController
     /// <param name="context"></param>
     public void HandleNewEvent(TEventType eventType, GameContext context)
     {
+        NewEventRaised?.Invoke(this, eventType);
         EventOccurred(new StateContext<TEventType>(eventType, context, CurrentState));
     }
 
@@ -168,5 +202,8 @@ public abstract class StateController<TStateType, TEventType> : IStateController
         {
             state.HandleNewEvent(eventType, context);
         }
+
+        // Always attempt to update on any new event
+        CheckState(context);
     }
 }

@@ -74,5 +74,30 @@ public class DungeonStateProvider : IDungeonStateProvider
             }
         }
     }
-}
 
+    private List<DungeonEventType> DungeonEventList = new List<DungeonEventType>();
+
+    public void RegisterToBroadcastEvents<TEventType>(EventHandler<TEventType> callback) where TEventType : struct
+    {
+        foreach (var controller in _controllers)
+        {
+            var stateController = controller as IStateController<TEventType>;
+            if (stateController != null)
+            {
+                stateController.NewEventRaised += callback;
+            }
+        }
+    }
+
+    public void UnregisterFromBroadcastEvents<TEventType>(EventHandler<TEventType> callback) where TEventType : struct
+    {
+        foreach (var controller in _controllers)
+        {
+            var stateController = controller as IStateController<TEventType>;
+            if (stateController != null)
+            {
+                stateController.NewEventRaised -= callback;
+            }
+        }
+    }
+}

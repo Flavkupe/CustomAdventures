@@ -26,14 +26,14 @@ public class PlayerCombatTurnState : PlayerState
         }
     }
 
-    public override void StateEntered(IState<PlayerEventType> previousState, StateContext<PlayerEventType> context)
+    public override void StateEntered(IState<PlayerEventType> previousState, StateContext context)
     {
         var player = context.GameContext.Player;
         player.InitializePlayerTurn();
         player.AbilityCardUsed += HandleAbilityCardUsed;
-        Game.UI.UIEventTriggered += UIEventTriggered;
-        Game.UI.ActionIcons.ToggleIcons(true);
-        Game.UI.ToggleCombatActionPanel(true);
+        context.GameContext.UI.UIEventTriggered += UIEventTriggered;
+        context.GameContext.UI.ActionIcons.ToggleIcons(true);
+        context.GameContext.UI.ToggleCombatActionPanel(true);
 
     }
 
@@ -55,12 +55,12 @@ public class PlayerCombatTurnState : PlayerState
         OnAfterPlayerAction(context, actionType);
     }
 
-    public override void StateExited(IState<PlayerEventType> newState, StateContext<PlayerEventType> context)
+    public override void StateExited(IState<PlayerEventType> newState, StateContext context)
     {
         context.GameContext.Player.AbilityCardUsed -= HandleAbilityCardUsed;
-        Game.UI.ActionIcons.ToggleIcons(false);
-        Game.UI.UIEventTriggered -= UIEventTriggered;
-        Game.UI.ToggleCombatActionPanel(false);
+        context.GameContext.UI.ActionIcons.ToggleIcons(false);
+        context.GameContext.UI.UIEventTriggered -= UIEventTriggered;
+        context.GameContext.UI.ToggleCombatActionPanel(false);
     }
 
     protected override bool HandleInput(GameContext context)
@@ -152,7 +152,6 @@ public class PlayerCombatTurnState : PlayerState
             stats.FullActions.Value--;
         }
 
-        context.Player.ActionTaken();
-        RaiseEventOccurred(PlayerEventType.AfterMove, context);
+        context.Dungeon.BroadcastEvent(PlayerEventType.AfterMove);
     }
 }

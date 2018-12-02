@@ -28,7 +28,7 @@ public class PlayerAwaitingEventsState : PlayerState
         }
     }
 
-    public override void StateEntered(IState<PlayerEventType> previousState, StateContext<PlayerEventType> context)
+    public override void StateEntered(IState<PlayerEventType> previousState, StateContext context)
     {
         base.StateEntered(previousState, context);
         Debug.Log($"Awaiting event {_evenType.ToString()}");

@@ -16,7 +16,7 @@ public class AwaitingGridSelectionState : DungeonState
     {
     }
 
-    public override void StateEntered(IState<DungeonEventType> previousState, StateContext<DungeonEventType> context)
+    public override void StateEntered(IState<DungeonEventType> previousState, StateContext context)
     {
         base.StateEntered(previousState, context);
         _selectedTargets.Clear();
@@ -25,7 +25,7 @@ public class AwaitingGridSelectionState : DungeonState
         _options.TileRange.ForEach(tile => tile.Show(true));
     }
 
-    public override void StateExited(IState<DungeonEventType> newState, StateContext<DungeonEventType> context)
+    public override void StateExited(IState<DungeonEventType> newState, StateContext context)
     {
         base.StateExited(newState, context);
         context.GameContext.Dungeon.TileEntityClicked -= OnTileSelected;

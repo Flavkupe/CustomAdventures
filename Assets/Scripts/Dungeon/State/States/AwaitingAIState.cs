@@ -15,7 +15,7 @@ public class AwaitingAIState : DungeonState
     {
     }
 
-    public override void StateEntered(IState<DungeonEventType> previousState, StateContext<DungeonEventType> context)
+    public override void StateEntered(IState<DungeonEventType> previousState, StateContext context)
     {
         EnqueueEnemyTurns(context);
     }
@@ -34,7 +34,7 @@ public class AwaitingAIState : DungeonState
         }
     }
 
-    private void EnqueueEnemyTurns(StateContext<DungeonEventType> context)
+    private void EnqueueEnemyTurns(StateContext context)
     {
         var enemies = context.GameContext.Dungeon.Enemies;
         var enemyTurns = new RoutineChain(enemies.Select(a => Routine.Create(a.ProcessCharacterTurn)).ToArray());

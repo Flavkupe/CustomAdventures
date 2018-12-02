@@ -17,7 +17,7 @@ public abstract class AnimationDecision : Decision<AnimationEventType>
 
 public class DidAllAnimationsEndDecision : AnimationDecision
 {
-    public override bool Evaluate(StateContext<AnimationEventType> context)
+    public override bool EvaluateEvent(StateContext<AnimationEventType> context)
     {
         // Animation is actually done when AnimationEnd message passes and no more animations are in queue
         return context.Event == AnimationEventType.AnimationEnd && context.CurrentState.Controller.QueueIdle;
@@ -26,7 +26,7 @@ public class DidAllAnimationsEndDecision : AnimationDecision
 
 public class DidAnimationStartDecision : AnimationDecision
 {
-    public override bool Evaluate(StateContext<AnimationEventType> context)
+    public override bool EvaluateEvent(StateContext<AnimationEventType> context)
     {
         return context.Event == AnimationEventType.AnimationStart;
     }

@@ -18,16 +18,16 @@ public abstract class DungeonDecision : Decision<DungeonEventType>
 
     public class DidEnemyTurnStart : DungeonDecision
     {
-        public override bool Evaluate(StateContext<DungeonEventType> context)
+        public override bool EvaluateEvent(StateContext<DungeonEventType> context)
         {
-            var gameContext = context.GameContext;
-            if (context.Event == DungeonEventType.AfterPlayerAction ||
-                context.Event == DungeonEventType.SelectionCompleted)
+            return false;
+        }
+
+        public override bool EvaluateContext(GameContext gameContext)
+        {
+            if (gameContext.Dungeon.IsCombat && !gameContext.Player.PlayerHasMoves)
             {
-                if (gameContext.Dungeon.IsCombat && !gameContext.Player.PlayerHasMoves)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -36,7 +36,7 @@ public abstract class DungeonDecision : Decision<DungeonEventType>
 
     public class DidEnemyTurnEnd : DungeonDecision
     {
-        public override bool Evaluate(StateContext<DungeonEventType> context)
+        public override bool EvaluateEvent(StateContext<DungeonEventType> context)
         {
             return context.Event == DungeonEventType.AllEnemiesTurnEnd;
         }
@@ -44,7 +44,7 @@ public abstract class DungeonDecision : Decision<DungeonEventType>
 
     public class DidSelectionEndTurn : DungeonDecision
     {
-        public override bool Evaluate(StateContext<DungeonEventType> context)
+        public override bool EvaluateEvent(StateContext<DungeonEventType> context)
         {
             if (context.Event == DungeonEventType.SelectionCancelled)
             {
@@ -62,9 +62,9 @@ public abstract class DungeonDecision : Decision<DungeonEventType>
 
     public class DidSelectionNotEndTurn : DidSelectionEndTurn
     {
-        public override bool Evaluate(StateContext<DungeonEventType> context)
+        public override bool EvaluateEvent(StateContext<DungeonEventType> context)
         {
-            return !base.Evaluate(context);
+            return !base.EvaluateEvent(context);
         }
     }
 }

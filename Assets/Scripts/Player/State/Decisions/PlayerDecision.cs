@@ -12,7 +12,7 @@ public abstract class PlayerDecision : Decision<PlayerEventType>
 
     public class DidPlayerTurnStart : PlayerDecision
     {
-        public override bool Evaluate(StateContext<PlayerEventType> context)
+        public override bool EvaluateEvent(StateContext<PlayerEventType> context)
         {
             var gameContext = context.GameContext;
             return (context.Event == PlayerEventType.AITurnsComplete ||
@@ -23,7 +23,7 @@ public abstract class PlayerDecision : Decision<PlayerEventType>
 
     public class IsPlayerOutOfMoves : PlayerDecision
     {
-        public override bool Evaluate(StateContext<PlayerEventType> context)
+        public override bool EvaluateEvent(StateContext<PlayerEventType> context)
         {
             return !context.GameContext.Player.PlayerHasMoves;
         }
@@ -31,7 +31,7 @@ public abstract class PlayerDecision : Decision<PlayerEventType>
 
     public class DidCombatEnd : PlayerDecision
     {
-        public override bool Evaluate(StateContext<PlayerEventType> context)
+        public override bool EvaluateEvent(StateContext<PlayerEventType> context)
         {
             return !context.GameContext.Dungeon.IsCombat;
         }

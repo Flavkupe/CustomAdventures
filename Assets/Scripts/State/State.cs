@@ -13,9 +13,11 @@ public interface IState<TEventType> : IHandleStateEvent<TEventType> where TEvent
 
     IState<TEventType> GetNextState(StateContext<TEventType> context);
 
-    void StateEntered(IState<TEventType> previousState, StateContext<TEventType> context);
+    IState<TEventType> GetNextState(GameContext context);
 
-    void StateExited(IState<TEventType> newState, StateContext<TEventType> context);
+    void StateEntered(IState<TEventType> previousState, StateContext context);
+
+    void StateExited(IState<TEventType> newState, StateContext context);
 
     void AddTransitions(IEnumerable<ITransition<TEventType>> transitions);
 
@@ -78,7 +80,7 @@ public class State<TEventType> : IState<TEventType> where TEventType : struct
     {
         foreach (var transition in Transitions)
         {
-            if (transition.Decision.Evaluate(context))
+            if (transition.Decision.EvaluateEvent(context) || transition.Decision.EvaluateContext(context.GameContext))
             {
                 return transition.Next;
             }
@@ -87,11 +89,24 @@ public class State<TEventType> : IState<TEventType> where TEventType : struct
         return this;
     }
 
-    public virtual void StateEntered(IState<TEventType> previousState, StateContext<TEventType> context)
+    public IState<TEventType> GetNextState(GameContext context)
+    {
+        foreach (var transition in Transitions)
+        {
+            if (transition.Decision.EvaluateContext(context))
+            {
+                return transition.Next;
+            }
+        }
+
+        return this;
+    }
+
+    public virtual void StateEntered(IState<TEventType> previousState, StateContext context)
     {
     }
 
-    public virtual void StateExited(IState<TEventType> newState, StateContext<TEventType> context)
+    public virtual void StateExited(IState<TEventType> newState, StateContext context)
     {
     }
 }

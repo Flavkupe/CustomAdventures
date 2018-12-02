@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.State;
 using UnityEngine;
 
 public class World : SingletonObject<World>
 {
-    private GlobalUpdateController _globalUpdater;
+    private List<IUpdatesWhen> _updateable;
 
     private void Awake()
     {
@@ -16,8 +17,7 @@ public class World : SingletonObject<World>
     void Start ()
 	{
 	    var allObjects = FindObjectsOfType<Object>();
-        _globalUpdater = Utils.InstantiateOfType<GlobalUpdateController>();
-	    _globalUpdater.InitObjects(allObjects);
+	    InitObjects(allObjects);
 	}
 	
 	// Update is called once per frame
@@ -25,11 +25,16 @@ public class World : SingletonObject<World>
 		
 	}
 
+    public void InitObjects(Object[] objects)
+    {
+        _updateable = objects.OfType<IUpdatesWhen>().ToList();
+    }
+
     public void SimpleEventHappened(SimpleWorldEvent eventType)
     {
-        if (_globalUpdater != null)
+        foreach (var obj in _updateable.Where(a => a.RequiredCondition == eventType))
         {
-            _globalUpdater.SimpleEventHappened(eventType);
+            obj.Updated();
         }
     }
 }
