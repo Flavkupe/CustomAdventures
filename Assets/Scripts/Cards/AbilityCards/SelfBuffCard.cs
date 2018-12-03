@@ -5,7 +5,8 @@ public class SelfBuffCard : AbilityCard<SelfBuffCardData>
     {
         foreach (var buff in Data.Buffs)
         {
-            StartCoroutine(buff.ApplyEffectOn(context.Player, context.Player));
+            var routine = Routine.Create(buff.ApplyEffectOn, context.Player, context.Player);
+            context.Dungeon.EnqueueAnimation(routine);
         }
     }
 }

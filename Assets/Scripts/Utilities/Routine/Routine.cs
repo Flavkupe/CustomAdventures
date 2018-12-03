@@ -248,9 +248,17 @@ public class Routine : IEnumerator
     /// Runs at the end, no matter what (even if rejected)
     /// </summary>
     /// <param name="action"></param>
-    public void Finally(Action action)
+    /// <param name="addToFront">Set to true if this action should take priority over all other 'finally' actions.</param>
+    public void Finally(Action action, bool addToFront = false)
     {
-        _finally.Add(action);
+        if (addToFront)
+        {
+            _finally.Insert(0, action);
+        }
+        else
+        {
+            _finally.Add(action);
+        }
     }
 
     /// <summary>

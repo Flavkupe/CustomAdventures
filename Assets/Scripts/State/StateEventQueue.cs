@@ -31,7 +31,7 @@ public class StateEventQueue : MonoBehaviour
         if (_routineQueue.Count > 0)
         {
             Routine routine = _routineQueue.Dequeue();
-            routine.Finally(() => _processingCoroutine = false);
+            routine.Finally(() => _processingCoroutine = false, true);
             _processingCoroutine = true;
             yield return routine;
             _processingCoroutine = false;
