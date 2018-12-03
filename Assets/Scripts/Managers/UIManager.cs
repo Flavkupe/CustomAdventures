@@ -23,6 +23,8 @@ public class UIManager : SingletonObject<UIManager>
 
     public CombatActionsPanel CombatActionsPanel;
 
+    public EffectPanel EffectPanel;
+
     public Canvas MainCanvas;
 
     public event EventHandler<UIEvent> UIEventTriggered;
@@ -75,6 +77,11 @@ public class UIManager : SingletonObject<UIManager>
         {
             CombatActionsPanel = FindObjectOfType<CombatActionsPanel>();
             CombatActionsPanel.gameObject.SetActive(false);
+        }
+
+        if (EffectPanel == null)
+        {
+            EffectPanel = FindObjectOfType<EffectPanel>();
         }
     }
 

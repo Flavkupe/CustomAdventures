@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -49,18 +50,32 @@ public abstract class PersistentStatusEffect
     }
 
     public abstract void Expire(TileActor subject);
+
+    public abstract PersistentEffectData GetData();
 }
 
 public abstract class PersistentStatusEffect<TDataType> : PersistentStatusEffect where TDataType : PersistentEffectData
 {
+    public PersistentStatusEffect(TDataType data)
+    {
+        _uniqueIdentifier = data.Identifier + "_" + Guid.NewGuid().ToString();
+    }
+
     protected TDataType Data;
+
+    private string _uniqueIdentifier;
+
+    public override PersistentEffectData GetData()
+    {
+        return Data;
+    }
 
     /// <summary>
     /// A way to identify this effect data uniquely.
     /// </summary>
     public override string GetIdentifier()
     {
-        return Data.GetIdentifier();
+        return _uniqueIdentifier ?? Data.GetIdentifier();
     }
 
     public override void Expire(TileActor subject)

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -25,6 +26,7 @@ public class EnchantmentEffectData : PersistentEffectData
 public class EnchantmentEffect : PersistentStatusEffect<EnchantmentEffectData>
 {
     public EnchantmentEffect(EnchantmentEffectData data)
+        : base(data)
     {
         Data = data;
         _duration = data.Duration;

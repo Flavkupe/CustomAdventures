@@ -32,6 +32,7 @@ public class ProccingPersistentEffectData : PersistentEffectData
 public class ProccingPersistentEffect : PersistentStatusEffect<ProccingPersistentEffectData>
 {
     public ProccingPersistentEffect(ProccingPersistentEffectData data)
+        : base(data)
     {
         Data = data;
         _duration = data.Duration;

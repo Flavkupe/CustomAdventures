@@ -8,6 +8,8 @@ public class SelfBuffCard : AbilityCard<SelfBuffCardData>
             var routine = Routine.Create(buff.ApplyEffectOn, context.Player, context.Player);
             context.Dungeon.EnqueueAnimation(routine);
         }
+
+        AfterCardUsed();
     }
 }
 

@@ -20,7 +20,7 @@ public abstract class TileActor : TileEntity, IDungeonActor
     {
     }
 
-    public void AddStatusEffect(PersistentStatusEffect effect)
+    public virtual void AddStatusEffect(PersistentStatusEffect effect)
     {
         Effects.Add(effect);
     }
@@ -30,7 +30,13 @@ public abstract class TileActor : TileEntity, IDungeonActor
         if (effect != null && Effects.Contains(effect))
         {
             Effects.Remove(effect);
+            OnEffectExpired(effect);
         }
+    }
+
+    protected virtual void OnEffectExpired(PersistentStatusEffect effect)
+    {
+        // For overriding
     }
 
     /// <summary>

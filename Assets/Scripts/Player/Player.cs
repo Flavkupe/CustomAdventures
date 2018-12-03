@@ -118,6 +118,24 @@ public class Player : TileActor
         BlinkColor(Color.green);
     }
 
+    public override void AddStatusEffect(PersistentStatusEffect effect)
+    {
+        base.AddStatusEffect(effect);
+        var persistentEffect = effect as PersistentStatusEffect;
+        if (persistentEffect != null && Game.UI?.EffectPanel)
+        {
+            Game.UI.EffectPanel.CreateIcon(persistentEffect);
+        }
+    }
+
+    protected override void OnEffectExpired(PersistentStatusEffect effect)
+    {
+        if (Game.UI?.EffectPanel)
+        {
+            Game.UI.EffectPanel.ExpireEffect(effect);
+        }
+    }
+
     public override void DoDamage(int damage)
     {
         var defensiveItems = Inventory.GetDefensiveItems();
@@ -212,6 +230,8 @@ public class Player : TileActor
             effect.ActionTaken(this, actionTaken);
         }
     }
+
+    
 
     public bool PlayerHasActions => CurrentStats.FullActions > 0;
     public bool PlayerHasMoves => PlayerHasActions || CurrentStats.FreeMoves > 0;
